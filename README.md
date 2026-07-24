@@ -51,6 +51,36 @@ Phase 2 replaces the fixed-radius circle model with a full planar diffusion:
 10. [`.agent/reviews/TASK-002-opencode-glm52-review.md`](.agent/reviews/TASK-002-opencode-glm52-review.md)
     — independent GLM 5.2 mathematical review and provenance.
 
+## Phase 3 reading order
+
+Phase 3 answers the dimensional critique by returning to the original scalar
+Brownian driver and constructing an injective complex representation with
+stochastic radius:
+
+1. [`complex_brownian_motion_critique.md`](complex_brownian_motion_critique.md)
+   — the distinction between scalar and planar Brownian motion that motivates
+   this phase.
+2. [`PHASE_3_PLAN.md`](PHASE_3_PLAN.md) — approved scope and acceptance
+   criteria.
+3. [`10_SCALAR_POLAR_FORM_AND_ZERO_CROSSINGS.md`](10_SCALAR_POLAR_FORM_AND_ZERO_CROSSINGS.md)
+   — the literal real-axis polar form, stopping at zero, and Tanaka local
+   time.
+4. [`11_ONE_DRIVER_LOGARITHMIC_SPIRAL.md`](11_ONE_DRIVER_LOGARITHMIC_SPIRAL.md)
+   — the faithful one-driver exponential with stochastic radius and angle.
+5. [`12_EMBEDDING_RANK_AND_MODEL_EQUIVALENCE.md`](12_EMBEDDING_RANK_AND_MODEL_EQUIVALENCE.md)
+   — the general rank-one theorem and precise meanings of representation.
+6. [`PHASE_3_LITERATURE_REVIEW.md`](PHASE_3_LITERATURE_REVIEW.md) — verified
+   Itô, local-time, stochastic-logarithm, planar-comparison, and numerical
+   sources.
+7. [`notebooks/phase3_one_driver_complex_embedding.ipynb`](notebooks/phase3_one_driver_complex_embedding.ipynb)
+   — executed pathwise, moment, rank, convergence, and local-time checks.
+8. [`PHASE_3_SIMULATION_RESULTS.md`](PHASE_3_SIMULATION_RESULTS.md) —
+   reproducibility record and numerical results.
+9. [`PHASE_3_SYNTHESIS.md`](PHASE_3_SYNTHESIS.md) — final distinction between
+   faithful one-driver representation and rank-two planar Brownian motion.
+10. [`.agent/reviews/TASK-003-opencode-glm52-review.md`](.agent/reviews/TASK-003-opencode-glm52-review.md)
+    — independent GLM 5.2 review after implementation.
+
 ## Main formula
 
 If
@@ -84,6 +114,39 @@ dZ_t
 =\left(i\omega-\frac12\beta^2\right)Z_tdt
 +i\beta Z_tdW_t.
 \]
+
+For a faithful one-driver representation with stochastic radius, let
+
+\[
+X_t=X_0+\mu t+\sigma W_t,
+\qquad
+c=\alpha+i\beta,
+\qquad
+\alpha\ne0.
+\]
+
+Then
+
+\[
+\boxed{
+Z_t=Z_0e^{c(X_t-X_0)},}
+\]
+
+\[
+\boxed{
+\frac{dZ_t}{Z_t}
+=
+\left(c\mu+\frac12c^2\sigma^2\right)dt
++c\sigma dW_t.}
+\]
+
+Its radius recovers the original scalar state:
+
+\[
+X_t=X_0+\frac1\alpha\log\frac{|Z_t|}{|Z_0|}.
+\]
+
+This is a rank-one logarithmic-spiral diffusion, not planar Brownian motion.
 
 For full isotropic planar Brownian motion,
 
