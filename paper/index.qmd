@@ -1,0 +1,852 @@
+---
+title: "A Faithful One-Driver Complex Embedding of Arithmetic Brownian Motion"
+subtitle: "Itô dynamics, covariance rank, and zero crossings"
+author:
+  - name: "Complex–Itô Random-Walk Research Project"
+date: 2026-07-23
+date-format: long
+abstract: |
+  We study how a scalar arithmetic Brownian motion can be represented by a
+  complex exponential whose radius and angle are both stochastic without
+  introducing a second Brownian driver. For
+  $dX_t=\mu\,dt+\sigma\,dW_t$, $c=\alpha+i\beta$, and
+  $Z_t=Z_0\exp(c(X_t-X_0))$, the radius recovers the scalar state whenever
+  $\alpha\ne0$, while the unwrapped angle and log-radius lie on a
+  deterministic line. We derive the induced complex Itô equation, exact
+  finite-step multiplicative walk, distributions, moments, and both the
+  bilinear and Hermitian complex quadratic variations. A general rank theorem
+  shows that every smooth complex image of a scalar diffusion has
+  instantaneous Cartesian covariance of rank at most one. This distinguishes
+  the embedding from planar Brownian motion, whose local covariance has rank
+  two. We also explain why the literal polar representation of a signed scalar
+  process is only local before a zero and why Tanaka local time is required
+  globally. Symbolic checks, exact-path identities, Monte Carlo estimates,
+  shared-path strong-convergence experiments, and local-time approximations
+  are preserved in an executable discovery notebook. The construction is an
+  information-preserving geometric representation of one-dimensional noise,
+  not a relabelling of planar Brownian motion.
+keywords:
+  - Itô calculus
+  - complex stochastic process
+  - arithmetic Brownian motion
+  - logarithmic spiral
+  - covariance rank
+  - quadratic variation
+  - local time
+  - Tanaka formula
+output-file: phase3-one-driver-complex-embedding
+---
+
+# Introduction {#sec-introduction}
+
+The symbolic rule
+
+$$
+(dW_t)^2=dt
+$$
+
+and the algebraic identity $i^2=-1$ look tantalizingly similar. They are not
+the same kind of statement. The first abbreviates a quadratic-variation
+limit; the second is an exact identity in the complex numbers. Nevertheless,
+complex multiplication is valuable for organizing stochastic scale and
+rotation. The question is how to use that geometry without changing the
+underlying stochastic model.
+
+Let
+
+$$
+dX_t=\mu\,dt+\sigma\,dW_t,\qquad X_0\in\mathbb R,
+$$ {#eq-scalar-sde}
+
+where $W$ is one standard real Brownian motion. We seek a complex process
+whose radius and angle both fluctuate, which contains exactly the information
+in $X$, and which is still driven by this one $W$. The central construction
+is
+
+$$
+\boxed{
+Z_t=Z_0\exp\!\left(c(X_t-X_0)\right),\qquad
+c=\alpha+i\beta,\quad \alpha\ne0.
+}
+$$ {#eq-central-map}
+
+Its polar coordinates are
+
+$$
+\log R_t=\log R_0+\alpha(X_t-X_0),\qquad
+\Theta_t=\Theta_0+\beta(X_t-X_0).
+$$ {#eq-polar-coordinates}
+
+Both coordinates are stochastic if $\alpha\beta\ne0$, but they share one
+Brownian direction. The resulting path lies on a logarithmic spiral and has
+rank-one instantaneous covariance. That rank is the mathematical distinction
+between a faithful complex embedding of scalar Brownian motion and a genuine
+two-driver Brownian motion in the plane.
+
+![Starting from a scalar state, design log-radius and unwrapped angle as functions of that state, reconstruct a complex variable, and recover the state through an invertible radius map.](figures/vector/f01_discovery_map.pdf){#fig-discovery-map fig-alt="A flow diagram maps the scalar process X into log-radius A and angle Theta, combines them as the complex exponential Z, and recovers X from an invertible radial map." width=100%}
+
+@Fig-discovery-map summarizes the constructive strategy. The contribution is
+a rigorous synthesis and visual account of standard Itô tools applied to this
+specific design problem. We do **not** claim that the exponential map, the
+logarithmic spiral, or the outer-product rank calculation is a new theorem.
+
+The main results are:
+
+1. an injective one-driver complex embedding with stochastic radius and angle;
+2. two matching derivations of its complex Itô equation;
+3. exact state recovery and an exact finite-step multiplicative random walk;
+4. a general rank-one obstruction for smooth complex images of scalar
+   diffusions;
+5. explicit complex brackets, distributions, and moments; and
+6. a localized and global treatment of scalar zero crossings.
+
+# Literature and positioning {#sec-literature}
+
+The multidimensional Itô formula and the covariance factorization
+$\Sigma\Sigma^\mathsf T$ are standard. We use them componentwise for complex
+maps, treating $\mathbb C$ as $\mathbb R^2$; accessible derivations appear
+in Goodman’s stochastic-calculus notes and the broad survey by Pitman and Yor
+[@goodman2007ito; @pitmanyor2018guide].
+
+The distinction between stochastic exponentials and stochastic logarithms is
+important near zeros. Larsson and Ruf formulate these transforms on stochastic
+intervals and make explicit why continuous hitting of zero matters
+[@larssonruf2019]. Brownian local time, occupation density, and Tanaka’s
+formula are standard tools for the nonsmooth absolute-value map
+[@mortersperes2010; @biskup2025localtime].
+
+Planar Brownian motion supplies a necessary control, not an alternative
+description of the scalar model. Its radial Bessel behavior, nonhitting of a
+fixed point when started elsewhere, and winding process belong to a genuinely
+two-dimensional theory [@pitmanyor2018guide; @pitmanyor1986]. The numerical
+strong-convergence experiment follows the shared-Brownian-path methodology
+used in expositions of Euler–Maruyama [@higham2001].
+
+The particular synthesis developed below—designing a recoverable log-polar
+embedding, stating its noise-rank obstruction, and relating it to exact complex
+random-walk steps—is derived directly from these standard tools. The paper is
+therefore best read as an expository computational mathematics note.
+
+# Preliminaries and notation {#sec-preliminaries}
+
+We identify $z=x+iy\in\mathbb C$ with $(x,y)\in\mathbb R^2$. For a complex
+continuous semimartingale $Z=U+iV$, define
+
+$$
+[Z,Z]=[U,U]-[V,V]+2i[U,V]
+$$ {#eq-bilinear-bracket}
+
+and
+
+$$
+[Z,\overline Z]=[U,U]+[V,V].
+$$ {#eq-hermitian-bracket}
+
+The first is complex bilinear and can exhibit phase cancellation. The second
+is Hermitian, real, and nonnegative.
+
+The angle $\Theta$ in this paper is an *unwrapped* continuous lift, not merely
+an element of $\mathbb R/(2\pi\mathbb Z)$. This distinction matters when
+discussing recovery from phase.
+
+| Symbol | Meaning |
+|:---|:---|
+| $X_t$ | scalar arithmetic Brownian motion |
+| $W_t$ | one standard real Brownian driver |
+| $\mu,\sigma$ | scalar drift and volatility, with $\sigma>0$ |
+| $Z_t$ | complex embedding |
+| $R_t=\lvert Z_t\rvert$ | stochastic radius |
+| $\Theta_t$ | unwrapped stochastic angle |
+| $A_t=\log R_t$ | log-radius |
+| $c=\alpha+i\beta$ | complex embedding parameter |
+| $[Y_1,Y_2]_t$ | quadratic covariation |
+| $\tau_0$ | first hitting time of zero by a scalar process |
+| $L_t^0(X)$ | symmetric local time of $X$ at zero |
+
+: Core notation. {#tbl-notation}
+
+Three levels of equality will be kept separate:
+
+- a **pathwise identity**, such as @eq-central-map;
+- an **Itô differential identity**, determined by finite variation and
+  quadratic covariation; and
+- a **mnemonic**, such as $(dW)^2=dt$, which must not be read as an ordinary
+  finite-increment algebraic equation.
+
+# Problem formulation {#sec-problem}
+
+The word *representation* can mean several different things.
+
+| Meaning | Requirement | What it preserves |
+|:---|:---|:---|
+| Deterministic image | $Z_t=F(X_t)$ | a chosen geometric view |
+| State-injective embedding | $F$ is injective | pointwise scalar state |
+| Pathwise recovery | the lifted $Z$-path determines $X$ | path information |
+| Planar-model equality | the local law and covariance match a target in $\mathbb R^2$ | full planar stochastic model |
+
+: Four meanings of representation. {#tbl-representation}
+
+![The logarithmic spiral satisfies deterministic image, state-injective embedding, and pathwise recovery, but it cannot equal a full-rank planar Brownian model.](figures/vector/f16_representation_taxonomy.pdf){#fig-representation-taxonomy fig-alt="Four boxes progress from deterministic image to state injection, pathwise recovery, and planar model equality. An arrow marks the one-driver logarithmic spiral through the first three and states that it fails the rank-two target." width=100%}
+
+The desired object must satisfy the first three notions while retaining one
+Brownian driver. The fourth is neither required nor possible for a rank-two
+target. @Fig-representation-taxonomy makes this hierarchy explicit.
+
+Write general log-polar coordinates as
+
+$$
+A_t=a(X_t),\qquad \Theta_t=b(X_t),\qquad
+Z_t=e^{A_t+i\Theta_t}.
+$$ {#eq-general-log-polar}
+
+For $C^2$ functions $a,b$, scalar Itô calculus already guarantees that the
+two coordinates share one driver:
+
+$$
+\begin{aligned}
+dA_t
+&=\left(\mu a'(X_t)+\tfrac12\sigma^2a''(X_t)\right)dt
+  +\sigma a'(X_t)dW_t,\\
+d\Theta_t
+&=\left(\mu b'(X_t)+\tfrac12\sigma^2b''(X_t)\right)dt
+  +\sigma b'(X_t)dW_t.
+\end{aligned}
+$$ {#eq-general-polar-ito}
+
+Thus the design problem becomes deterministic: choose $a$ invertible for
+state recovery and choose both derivatives nonzero for stochastic radius and
+angle.
+
+# The logarithmic-spiral construction {#sec-construction}
+
+The simplest globally smooth choice is affine:
+
+$$
+a(x)=\log R_0+\alpha(x-X_0),\qquad
+b(x)=\Theta_0+\beta(x-X_0).
+$$ {#eq-affine-log-polar}
+
+Substitution in @eq-general-log-polar gives @eq-central-map.
+
+::: {#thm-embedding}
+## Faithful one-driver embedding
+
+Let $X$ satisfy @eq-scalar-sde, let $Z_0\ne0$, and let
+$c=\alpha+i\beta$ with $\alpha\ne0$. Then the process in
+@eq-central-map is nonvanishing and state-injective. Specifically,
+
+$$
+\boxed{
+X_t=X_0+\frac1\alpha\log\frac{|Z_t|}{|Z_0|}.
+}
+$$ {#eq-inverse-radius}
+
+Consequently, after completion in the usual way,
+$\sigma(Z_s:0\le s\le t)=\sigma(X_s:0\le s\le t)$ for each $t$.
+:::
+
+The proof is immediate from
+$|Z_t|=R_0e^{\alpha(X_t-X_0)}$. The formula also shows why the lifted angle
+is not needed for recovery when $\alpha\ne0$.
+
+Eliminating $X_t-X_0$ from @eq-polar-coordinates gives
+
+$$
+\boxed{
+\Theta_t-\Theta_0
+=\frac{\beta}{\alpha}\log\frac{R_t}{R_0}.
+}
+$$ {#eq-spiral-relation}
+
+Thus the two visible polar coordinates are exactly coupled.
+
+![The scalar path, log-radius, radius, and unwrapped angle share every reversal because they are deterministic functions of one state.](figures/vector/f02_linked_path.pdf){#fig-linked-path fig-alt="Four stacked time-series panels show X, log R over R0, R, and unwrapped angle. All features occur at the same times, illustrating the shared scalar driver." width=92%}
+
+![A time-colored sample path lies on and repeatedly retraces one deterministic logarithmic spiral.](figures/vector/f03_complex_spiral.pdf){#fig-complex-spiral fig-alt="A gray logarithmic spiral supports colored sample points ordered by time. The process moves back and forth along the same curve rather than diffusing across planar area." width=72%}
+
+The parameter cases are:
+
+| Parameters | Geometry | Stochastic information |
+|:---|:---|:---|
+| $\alpha=0,\ \beta\ne0$ | circle | radius loses the state; lifted phase can retain it |
+| $\alpha\ne0,\ \beta=0$ | ray | radius alone is injective |
+| $\alpha\beta\ne0$ | logarithmic spiral | radius and angle fluctuate, rank one |
+| $\alpha=\beta=0$ | one point | all state information is lost |
+
+: Parameter classification. {#tbl-parameter-cases}
+
+![Changing alpha and beta produces a circle, a ray, an expanding spiral, or a contracting spiral.](figures/vector/f05_parameter_gallery.pdf){#fig-parameter-gallery fig-alt="A four-panel gallery shows the geometric support for pure rotation, pure radial scaling, expanding spiral, and contracting spiral parameter choices." width=82%}
+
+# Itô dynamics and the exact random walk {#sec-ito}
+
+Let $F(x)=Z_0e^{c(x-X_0)}$. Since $F'=cF$ and $F''=c^2F$, scalar Itô
+calculus gives
+
+$$
+\boxed{
+\frac{dZ_t}{Z_t}
+=\left(c\mu+\frac12c^2\sigma^2\right)dt
++c\sigma\,dW_t.
+}
+$$ {#eq-complex-sde}
+
+Equivalently,
+
+$$
+dZ_t=\lambda Z_t\,dt+\nu Z_t\,dW_t,\qquad
+\lambda=c\mu+\tfrac12c^2\sigma^2,\quad \nu=c\sigma.
+$$ {#eq-linear-complex-sde}
+
+The differential $dZ_t/Z_t$ in @eq-complex-sde is the stochastic logarithm
+differential of $Z$ [@larssonruf2019].
+
+There is an independent polar derivation. From @eq-polar-coordinates,
+
+$$
+dA_t=\alpha\mu\,dt+\alpha\sigma\,dW_t,\qquad
+d\Theta_t=\beta\mu\,dt+\beta\sigma\,dW_t.
+$$ {#eq-linear-polar-sde}
+
+For $Z=e^{A+i\Theta}$, two-dimensional Itô calculus yields
+
+$$
+\frac{dZ}{Z}
+=dA+i\,d\Theta
++\frac12\left(d[A,A]-d[\Theta,\Theta]\right)
++i\,d[A,\Theta].
+$$ {#eq-polar-reconstruction}
+
+Using
+
+$$
+d[A,A]=\alpha^2\sigma^2dt,\quad
+d[\Theta,\Theta]=\beta^2\sigma^2dt,\quad
+d[A,\Theta]=\alpha\beta\sigma^2dt
+$$ {#eq-polar-brackets}
+
+reduces @eq-polar-reconstruction exactly to @eq-complex-sde. The mixed
+covariation is essential; omitting it loses the imaginary Itô correction.
+
+Because @eq-central-map is pathwise, a grid increment has the exact update
+
+$$
+\boxed{
+Z_{n+1}=Z_n\exp\!\left(c\,\Delta X_n\right),\qquad
+\Delta X_n=\mu\,\Delta t+\sigma\,\Delta W_n.
+}
+$$ {#eq-exact-step}
+
+![One scalar increment first appears as radial scaling and then as angular rotation; together they equal the exact complex factor.](figures/vector/f09_exact_multiplicative_step.pdf){#fig-exact-step fig-alt="A complex-plane vector Z n is radially scaled by exp alpha Delta X and rotated by beta Delta X to reach Z n plus 1." width=70%}
+
+@Eq-exact-step is not Euler–Maruyama. It is exact at every grid point because
+the exponential factors telescope.
+
+The diffusion coefficient in @eq-complex-sde is $c\sigma Z_t$, a single
+complex vector. It determines one instantaneous direction in
+$\mathbb R^2$, even though the direction rotates with the state.
+
+![Red arrows show the single diffusion direction tangent to the supporting spiral at several states.](figures/vector/f06_local_noise_direction.pdf){#fig-local-direction fig-alt="A logarithmic spiral has one red tangent arrow at each of several points. The arrows rotate along the curve but only one direction exists at any given point." width=70%}
+
+The complex brackets follow immediately from the diffusion term:
+
+$$
+\boxed{
+d[Z,Z]_t=c^2\sigma^2Z_t^2\,dt,\qquad
+d[Z,\overline Z]_t=|c|^2\sigma^2|Z_t|^2\,dt.
+}
+$$ {#eq-complex-brackets}
+
+![Discrete bilinear and Hermitian bracket sums approach their different Itô-integral targets as the grid is refined.](figures/vector/f18_complex_quadratic_variation.pdf){#fig-complex-qv fig-alt="A log-log plot shows decreasing pathwise errors for the bilinear bracket Z Z and the Hermitian bracket Z conjugate Z across seven step sizes." width=70%}
+
+The pathwise convergence in @Fig-complex-qv is irregular, as expected for one
+sample path, but both finest-grid errors are substantially below their
+coarsest-grid values.
+
+Finally, $Y_t=X_t-X_0\sim N(\mu t,\sigma^2t)$, so
+
+$$
+\mathbb E[R_t^p]
+=R_0^p\exp\!\left(
+p\alpha\mu t+\tfrac12p^2\alpha^2\sigma^2t
+\right)
+$$ {#eq-radial-moments}
+
+and, for integers $n$,
+
+$$
+\mathbb E\!\left[\left(\frac{Z_t}{Z_0}\right)^n\right]
+=\exp\!\left(
+nc\mu t+\tfrac12n^2c^2\sigma^2t
+\right).
+$$ {#eq-complex-moments}
+
+# Noise dimension and covariance rank {#sec-rank}
+
+The log-polar covariance density from @eq-linear-polar-sde is
+
+$$
+K
+=\sigma^2
+\begin{pmatrix}
+\alpha^2&\alpha\beta\\
+\alpha\beta&\beta^2
+\end{pmatrix}
+=\sigma^2
+\begin{pmatrix}\alpha\\\beta\end{pmatrix}
+\begin{pmatrix}\alpha&\beta\end{pmatrix}.
+$$ {#eq-polar-covariance}
+
+Its eigenvalues are $0$ and
+$\sigma^2(\alpha^2+\beta^2)$. Both coordinates fluctuate, but their local
+correlation has absolute value one when $\alpha\beta\ne0$.
+
+::: {#thm-rank}
+## Rank-one theorem for scalar complex images
+
+Let
+
+$$
+dX_t=b_t\,dt+s_t\,dW_t
+$$
+
+be a scalar Itô process and let
+$F=(F_1,F_2):\mathbb R\to\mathbb R^2$ be $C^2$. Then the instantaneous
+Cartesian covariance density of $F(X_t)$ is
+
+$$
+C_t=s_t^2F'(X_t)F'(X_t)^\mathsf T,
+$$ {#eq-general-rank-covariance}
+
+and therefore
+
+$$
+\operatorname{rank}C_t\le1.
+$$ {#eq-rank-bound}
+:::
+
+**Proof.** Componentwise Itô calculus gives
+
+$$
+dF_j(X_t)
+=\left(b_tF_j'(X_t)+\tfrac12s_t^2F_j''(X_t)\right)dt
++s_tF_j'(X_t)dW_t.
+$$
+
+The two-dimensional diffusion matrix has the single column
+$s_tF'(X_t)$. Its covariance is the outer product in
+@eq-general-rank-covariance, whose rank is at most one. $\square$
+
+The same conclusion holds for any adapted two-dimensional Itô process driven
+by one scalar Brownian motion:
+
+$$
+dY_t=q_t\,dt+v_t\,dW_t
+\quad\Longrightarrow\quad
+\frac{d[Y,Y]_t}{dt}=v_tv_t^\mathsf T.
+$$ {#eq-stronger-rank}
+
+Path dependence and state dependence can rotate $v_t$, but cannot create a
+second simultaneous noise direction.
+
+For comparison only, isotropic planar Brownian motion
+
+$$
+d\widetilde Z_t=\sigma(dW_t^1+i\,dW_t^2)
+$$ {#eq-planar-control}
+
+has Cartesian covariance $\sigma^2I_2$, of rank two. At a fixed nonzero
+radius $r$, its log-polar covariance is
+$(\sigma^2/r^2)I_2$. The numerical control below uses $r=1.30$, so its
+theoretical log-polar eigenvalues are
+$\sigma^2/r^2=0.4225/1.69=0.25$. This is a distinct stochastic model with two
+independent Brownian drivers [@pitmanyor2018guide].
+
+![The empirical one-driver covariance has one numerical-zero eigenvalue, while the two-driver control has two positive eigenvalues.](figures/vector/f07_covariance_eigenspectrum.pdf){#fig-eigenspectrum fig-alt="Two bar charts compare covariance eigenvalues. The one-driver chart has one zero and one positive bar. The two-driver chart has two nearly equal positive bars." width=78%}
+
+![Normalized one-driver increments collapse to a line, while two-driver control increments occupy a two-dimensional cloud.](figures/vector/f08_covariance_geometry.pdf){#fig-covariance-geometry fig-alt="Two scatter plots show a thin line of one-driver increments and a circular cloud of two-driver increments, with the corresponding degenerate and full-rank covariance outlines." width=92%}
+
+This distinction concerns the local covariance, not the long-time visual
+support alone. A one-driver diffusion can trace a curved subset of the plane,
+and a state-dependent one-driver diffusion can even have two-dimensional
+support over time. At each instant, however, its continuous martingale
+increment still lies in one direction.
+
+# Scalar polar coordinates and zero crossings {#sec-zero}
+
+A literal embedding of the signed scalar state is
+
+$$
+Z_t^{\mathrm{axis}}=X_t+i0.
+$$ {#eq-real-axis}
+
+Away from zero, $R_t=|X_t|$ and
+$\Theta_t=0$ for $X_t>0$, $\Theta_t=\pi$ for $X_t<0$. Let
+
+$$
+\tau_0=\inf\{t\ge0:X_t=0\}.
+$$
+
+On $t<\tau_0$, scalar Itô calculus gives the localized identity
+
+$$
+d\log|X_t|
+=\left(\frac{\mu}{X_t}-\frac{\sigma^2}{2X_t^2}\right)dt
++\frac{\sigma}{X_t}\,dW_t.
+$$ {#eq-local-log}
+
+This is exact on the stochastic interval before the zero, consistent with the
+general need to stop logarithms at continuous zeros [@larssonruf2019]. It is
+not a global formula through sign changes.
+
+The correct global formula for the radius is Tanaka’s formula:
+
+$$
+\boxed{
+|X_t|
+=|X_0|
++\int_0^t\operatorname{sgn}(X_s)\,dX_s
++L_t^0(X).
+}
+$$ {#eq-tanaka}
+
+Here $L_t^0(X)$ is symmetric local time at zero
+[@mortersperes2010; @biskup2025localtime]. With constant volatility,
+
+$$
+L_t^0(X)
+=\lim_{\varepsilon\downarrow0}
+\frac{1}{2\varepsilon}
+\int_0^t\mathbf 1_{\{|X_s|<\varepsilon\}}\,d[X,X]_s
+=\lim_{\varepsilon\downarrow0}
+\frac{\sigma^2}{2\varepsilon}
+\int_0^t\mathbf 1_{\{|X_s|<\varepsilon\}}\,ds
+$$ {#eq-occupation-density}
+
+in the standard sense.
+
+![A signed Brownian path crosses zero while its absolute value reflects, creating the nonsmooth point that invalidates a global ordinary logarithm.](figures/vector/f13_zero_crossing_anatomy.pdf){#fig-zero-crossings fig-alt="The top panel plots a Brownian path with marked sign changes at zero. The bottom panel plots its absolute value, showing reflection at the origin." width=88%}
+
+![The reflected path equals the stochastic sign integral plus the accumulated discrete local-time residual.](figures/vector/f14_tanaka_decomposition.pdf){#fig-tanaka fig-alt="Four curves compare absolute Brownian motion, the stochastic sign integral, accumulated local time, and their Tanaka reconstruction. The reconstruction overlays the absolute path." width=88%}
+
+![Shrinking occupation bands concentrate around zero, and the occupation-density bias decreases under joint grid and bandwidth refinement.](figures/vector/f15_occupation_density.pdf){#fig-occupation fig-alt="The left panel shows nested horizontal bands around zero on a Brownian path. The right panel shows decreasing absolute mean bias of an occupation-density local-time estimator." width=92%}
+
+The logarithmic-spiral embedding avoids this singularity because
+$|Z_t|=R_0e^{\alpha(X_t-X_0)}>0$ for every finite $X_t$. It should not be
+confused with the literal polar coordinates of $X_t+i0$; the two
+representations answer different geometric questions.
+
+# Numerical methods {#sec-methods}
+
+The executable supplement is
+`notebooks/phase3_discovery.ipynb`. It was generated by
+`notebooks/build_phase3_discovery.py` and executed from a clean kernel in the
+`phase3-paper` conda environment.
+
+The principal parameters were
+
+$$
+\mu=0.20,\quad \sigma=0.65,\quad
+\alpha=0.45,\quad\beta=1.10,\quad
+X_0=-0.30,\quad R_0=1.20,\quad
+\Theta_0=0.40,\quad T=1.25.
+$$ {#eq-numerical-parameters}
+
+The master seed was `20260723`; independent experiments used deterministic
+offsets from that seed.
+
+The experiments were:
+
+1. exact Gaussian simulation of a 4096-step arithmetic Brownian path;
+2. pathwise comparison of the direct map, cumulative exact products, inverse
+   radius, and spiral constraint;
+3. 200,000 independent terminal draws for radial and complex moments;
+4. 250,000 local increments for rank-one and rank-two covariance estimates;
+5. 10,000 Brownian paths coupled across six Euler–Maruyama resolutions;
+6. discrete bilinear and Hermitian bracket sums on seven nested grids;
+7. a pathwise discrete Tanaka identity; and
+8. 6,000-path local-time estimates on four grids.
+
+For the exact discrete Tanaka check we used
+
+$$
+\ell_n
+=|W_{n+1}|-|W_n|-\operatorname{sgn}(W_n)\Delta W_n.
+$$ {#eq-discrete-tanaka-increment}
+
+The sum of $\ell_n$ closes the discrete identity algebraically. The separate
+occupation estimator used
+
+$$
+\widehat L_{T,\varepsilon,h}^0
+=\frac1{2\varepsilon}
+\sum_n\mathbf1_{\{|W_n|<\varepsilon\}}h,
+\qquad \varepsilon=0.5h^{1/4}.
+$$ {#eq-occupation-estimator}
+
+The analytic derivations are the proofs. Monte Carlo estimates test the code,
+scale of uncertainty, and visual consequences.
+
+# Numerical results {#sec-results}
+
+## Pathwise identities
+
+The maximum errors along the 4096-step path were:
+
+| Identity | Maximum absolute error |
+|:---|---:|
+| cumulative exact product versus direct $Z_t$ | $6.273\times10^{-15}$ |
+| $X_t$ versus inverse-radius recovery | $1.110\times10^{-15}$ |
+| logarithmic-spiral constraint | $5.274\times10^{-16}$ |
+
+: Pathwise exactness checks; the residuals are floating-point roundoff. {#tbl-exactness}
+
+The space-time view in @fig-space-time is intentionally three-dimensional
+only to display temporal ordering. It must not be read as evidence of a
+second planar noise direction.
+
+![Adding time as the third axis separates repeated visits along the spiral without changing the one-driver interpretation.](figures/vector/f04_space_time_trajectory.pdf){#fig-space-time fig-alt="A three-dimensional curve plots real Z, imaginary Z, and time. It shows repeated motion along a spiral as time increases." width=75%}
+
+## Distribution and moment checks
+
+The radial samples agree with the lognormal law implied by
+@eq-radial-moments.
+
+![Monte Carlo histograms of radius and log-radius overlay their exact lognormal and Gaussian densities.](figures/vector/f10_distribution_checks.pdf){#fig-distributions fig-alt="Two histograms show terminal radius with an exact lognormal curve and terminal log-radius with an exact Gaussian curve; the overlays closely agree." width=88%}
+
+| Quantity | Component | Estimate | Exact | Standard error | $z$-score |
+|:---|:---|---:|---:|---:|---:|
+| $\mathbb E[R_T]$ | real | 1.415923 | 1.416649 | 0.001063 | -0.683 |
+| $\mathbb E[R_T^2]$ | real | 2.230873 | 2.233419 | 0.003636 | -0.700 |
+| $\mathbb E[Z_T/Z_0]$ | real | 0.737468 | 0.737199 | 0.001063 | 0.253 |
+| $\mathbb E[Z_T/Z_0]$ | imaginary | 0.437494 | 0.438321 | 0.001715 | -0.482 |
+| $\mathbb E[(Z_T/Z_0)^2]$ | real | -0.009798 | -0.010754 | 0.003038 | 0.315 |
+| $\mathbb E[(Z_T/Z_0)^2]$ | imaginary | 0.431580 | 0.431934 | 0.002867 | -0.124 |
+
+: Monte Carlo moment validation with 200,000 terminal draws. {#tbl-moments}
+
+![Empirical complex moments with two-standard-error bars coincide with their exact targets in the complex plane.](figures/vector/f11_complex_moments.pdf){#fig-complex-moments fig-alt="A complex-plane plot shows first and second empirical moments with horizontal and vertical two-standard-error bars beside exact cross markers." width=68%}
+
+## Covariance rank
+
+| Model | Small eigenvalue | Large eigenvalue | Relative matrix error |
+|:---|---:|---:|---:|
+| one-driver log-polar embedding | $-1.39\times10^{-16}$ | 0.595978 | 0.00135 |
+| two-driver log-polar control ($r=1.30$) | 0.249766 | 0.250352 | 0.00120 |
+
+: Empirical log-polar covariance eigenspectra. The tiny negative value is roundoff from a theoretically positive-semidefinite rank-one matrix. {#tbl-covariance-results}
+
+These values numerically expose the exact rank distinction already proved in
+@thm-rank. The experiment is a check of implementation, not an independent
+proof.
+
+## Strong convergence
+
+| Steps $N$ | $h$ | Mean terminal error | Standard error |
+|---:|---:|---:|---:|
+| 16 | 0.078125 | 0.150392 | 0.001469 |
+| 32 | 0.0390625 | 0.106417 | 0.000972 |
+| 64 | 0.0195313 | 0.075794 | 0.000690 |
+| 128 | 0.00976563 | 0.052824 | 0.000455 |
+| 256 | 0.00488281 | 0.037456 | 0.000311 |
+| 512 | 0.00244141 | 0.026537 | 0.000229 |
+
+: Coupled Euler–Maruyama strong errors. {#tbl-convergence}
+
+The fitted log-log slope was $0.5015$, consistent with strong order
+$1/2$ [@higham2001].
+
+![The shared-path Euler–Maruyama errors follow the half-order reference line.](figures/vector/f12_strong_convergence.pdf){#fig-strong-convergence fig-alt="A log-log graph plots mean Euler--Maruyama terminal error with uncertainty bars and a dashed h to the one-half reference line. The fitted slope is about 0.502." width=70%}
+
+## Local time
+
+For standard Brownian motion over $T=1.25$,
+
+$$
+\mathbb E[L_T^0]=\sqrt{\frac{2T}{\pi}}=0.892062.
+$$
+
+| Steps $N$ | $\varepsilon$ | Discrete mean | Occupation mean | Occupation absolute error | Identity max error |
+|---:|---:|---:|---:|---:|---:|
+| 128 | 0.157179 | 0.895332 | 0.832549 | 0.059513 | $2.82\times10^{-15}$ |
+| 512 | 0.111142 | 0.882717 | 0.834180 | 0.057882 | $7.11\times10^{-15}$ |
+| 2048 | 0.078590 | 0.884203 | 0.845796 | 0.046266 | $1.07\times10^{-14}$ |
+| 8192 | 0.055571 | 0.893896 | 0.868905 | 0.023157 | $2.00\times10^{-14}$ |
+
+: Discrete Tanaka and occupation-density results over 6,000 paths. {#tbl-local-time}
+
+The discrete identity closes to roundoff on every grid. The occupation
+estimator has visible finite-bandwidth bias, which decreases but converges more
+slowly. This is why exact grid hits are not used as a local-time estimator.
+
+# Discussion {#sec-discussion}
+
+The construction resolves the apparent tension between a stochastic radius
+and a scalar Brownian driver. A random radius does not imply two-dimensional
+noise. In @eq-polar-coordinates, both log-radius and angle are random because
+both depend on $X_t$. They are nevertheless perfectly locally coupled, as
+@eq-spiral-relation and @eq-polar-covariance show.
+
+The embedding preserves more than a visual trace. For $\alpha\ne0$,
+@eq-inverse-radius reconstructs the scalar state at every time, so the complex
+and scalar processes generate the same information. Yet it preserves less
+than a full planar model: no deterministic or adapted transformation driven by
+one scalar Brownian motion can match a positive-definite instantaneous
+two-dimensional covariance.
+
+This distinction clarifies the roles of $i$ and quadratic variation:
+
+- multiplication by $i$ rotates a complex vector by $90^\circ$;
+- the imaginary part of $c$ converts a scalar displacement into phase;
+- $i^2=-1$ is exact complex algebra;
+- $[W,W]_t=t$ is a pathwise limit of squared increments; and
+- the Itô drift correction in @eq-complex-sde comes from the second derivative
+  and quadratic variation, not from treating $dW$ as an ordinary square
+  root of $dt$.
+
+![The notebook classifies each major statement as exact, localized, asymptotic, numerical, or heuristic.](figures/vector/f17_claim_hierarchy.pdf){#fig-claim-hierarchy fig-alt="A matrix marks the embedding, inverse, Itô SDE, rank theorem, and Tanaka identity as exact; log absolute X as localized; occupation estimation as asymptotic; Monte Carlo as numerical; and finite differential algebra as heuristic only." width=88%}
+
+@Fig-claim-hierarchy is a compact guard against overinterpretation. In
+particular, the finite-increment statement
+$(\Delta W)^2=\Delta t$ is false pathwise. Only aggregated squared
+increments converge to elapsed time.
+
+# Limitations {#sec-limitations}
+
+The construction has clear boundaries.
+
+1. It is a deterministic embedding of a scalar process, not a universal model
+   of planar stochastic motion.
+2. When $\alpha=0$, radius no longer provides pointwise recovery. A
+   continuously lifted phase can preserve the scalar path, but the wrapped
+   complex state need not be injective.
+3. The literal real-axis polar form is singular at zero; localization and
+   Tanaka local time are structural necessities, not numerical nuisances.
+4. The covariance theorem concerns instantaneous continuous-martingale rank.
+   It does not assert that every one-driver process has one-dimensional
+   long-time support.
+5. The occupation-density estimator converges slowly because grid and
+   bandwidth limits interact.
+6. Monte Carlo results validate implementation and scale; they do not prove
+   the analytic identities.
+7. No claim of historical novelty is made for the logarithmic-spiral map or
+   the rank-one outer-product argument.
+
+# Conclusion {#sec-conclusion}
+
+A scalar arithmetic Brownian motion has the faithful complex form
+
+$$
+Z_t=Z_0e^{(\alpha+i\beta)(X_t-X_0)},\qquad \alpha\ne0,
+$$
+
+with both stochastic radius and stochastic angle. Its induced Itô dynamics
+are
+
+$$
+\frac{dZ_t}{Z_t}
+=\left[
+(\alpha+i\beta)\mu
++\frac12(\alpha+i\beta)^2\sigma^2
+\right]dt
++(\alpha+i\beta)\sigma\,dW_t,
+$$
+
+and its exact random-walk step is
+
+$$
+Z_{n+1}
+=Z_n\exp\!\left[
+(\alpha+i\beta)
+(\mu\Delta t+\sigma\Delta W_n)
+\right].
+$$
+
+The radius reconstructs $X_t$; the angle supplies a geometric rotation; and
+the shared Brownian increment forces rank-one local covariance. A genuine
+planar Brownian motion remains a different, rank-two, two-driver model. At
+scalar zero crossings, the ordinary polar logarithm must give way to
+localization and Tanaka local time.
+
+The bridge between complex numbers and Itô calculus is therefore precise but
+limited: complex exponentials organize stochastic scale and rotation, while
+quadratic variation—not the algebraic identity $i^2=-1$—produces the Itô
+correction.
+
+# Appendix A. Expanded Itô algebra {#sec-appendix-ito}
+
+Starting from @eq-polar-reconstruction and @eq-linear-polar-sde,
+
+$$
+\begin{aligned}
+\frac{dZ}{Z}
+&=\alpha\mu\,dt+\alpha\sigma\,dW
+  +i\beta\mu\,dt+i\beta\sigma\,dW\\
+&\quad+\frac12(\alpha^2-\beta^2)\sigma^2dt
+  +i\alpha\beta\sigma^2dt\\
+&=\left[
+(\alpha+i\beta)\mu
++\frac12(\alpha^2-\beta^2+2i\alpha\beta)\sigma^2
+\right]dt\\
+&\quad+(\alpha+i\beta)\sigma\,dW\\
+&=\left(c\mu+\frac12c^2\sigma^2\right)dt+c\sigma\,dW.
+\end{aligned}
+$$
+
+The symbolic notebook independently simplifies the difference between the
+direct and polar drifts to zero.
+
+# Appendix B. Exact moment derivation {#sec-appendix-moments}
+
+For any complex $q$, the entire Gaussian moment-generating function gives
+
+$$
+\mathbb E[e^{qY_t}]
+=\exp\!\left(q\mu t+\tfrac12q^2\sigma^2t\right),
+\qquad Y_t=X_t-X_0.
+$$
+
+Taking $q=p\alpha$ and multiplying by $R_0^p$ gives
+@eq-radial-moments. Taking $q=nc$ gives @eq-complex-moments. No complex
+branch choice appears because the random variable is defined by the entire
+exponential function, not by applying a logarithm to sampled $Z_t$.
+
+# Appendix C. Reproducibility manifest {#sec-reproducibility}
+
+The preserved execution used:
+
+| Component | Version |
+|:---|:---|
+| Python | 3.12.13 |
+| NumPy | 2.5.1 |
+| SciPy | 1.18.0 |
+| pandas | 3.0.3 |
+| Matplotlib | 3.11.1 |
+| Seaborn | 0.13.2 |
+| SymPy | 1.14.0 |
+| nbformat | 5.10.4 |
+| Quarto | 1.9.38 |
+| TinyTeX | 2026 |
+
+: Software used for the executed notebook and manuscript. {#tbl-software}
+
+From the repository root, regenerate and execute the notebook with:
+
+```bash
+conda run -n phase3-paper python \
+  paper/notebooks/build_phase3_discovery.py
+
+conda run -n phase3-paper jupyter nbconvert \
+  --to notebook --execute --inplace \
+  --ExecutePreprocessor.timeout=900 \
+  paper/notebooks/phase3_discovery.ipynb
+```
+
+Then render the paper:
+
+```bash
+quarto render paper --to pdf
+```
+
+The notebook writes all figure sources to `paper/figures/`, all numerical
+tables to `paper/tables/`, and a machine-readable summary to
+`paper/tables/numerical_summary.json`.

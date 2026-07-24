@@ -1,5 +1,63 @@
 # Handoff
 
+## Active work
+
+`TASK-004` is complete under the user's Codex-direct exception. No
+implementation was delegated. On 2026-07-24, the user separately authorized a
+feature-branch commit, push, and pull request; merge and release remain out of
+scope.
+
+## TASK-004 outcome
+
+The completed Phase 3 mathematics is now presented as a self-contained
+technical paper, an executed computational-discovery notebook, 18
+publication-quality vector figures with PNG companions, generated numerical
+tables, and reproducible PDF/HTML outputs.
+
+The canonical sources and outputs are:
+
+- `PHASE_3_TECHNICAL_PAPER_PLAN.md`;
+- `paper/index.qmd`;
+- `paper/notebooks/build_phase3_discovery.py`;
+- `paper/notebooks/phase3_discovery.ipynb`;
+- `paper/figures/`;
+- `paper/tables/`;
+- `paper/output/phase3-one-driver-complex-embedding.pdf`;
+- `paper/output/phase3-one-driver-complex-embedding.html`;
+- `.agent/reviews/TASK-004-opencode-glm52-review.md`.
+
+## TASK-004 verification
+
+The notebook executed twice from clean kernels through the approved external
+boundary necessitated by the workspace's Jupyter socket restriction. All 15
+code-cell sources, outputs, and execution counts matched exactly; counts were
+sequential from 1 through 15, and there were zero error outputs.
+
+Quarto rendered the project successfully with Quarto 1.9.38, TinyTeX 2026,
+and the `phase3-paper` Python 3.12.13 environment. The final PDF has 23
+letter-size pages with all fonts embedded. It uses vector PDF figures; the
+HTML uses all 18 PNG companions and has no missing figure alt text. Extracted
+PDF text and HTML contain no unresolved cross-reference markers. The final
+affected PDF pages were inspected visually after the editorial corrections.
+
+## TASK-004 independent review
+
+opencode with `zai-coding-plan/glm-5.2` returned **PASS**, with no critical or
+major findings. It independently re-derived the central Itô SDE, inverse map,
+moments, complex brackets, covariance-rank theorem, exact step, and
+Tanaka/local-time formulas, and independently recomputed the reported
+numerical targets.
+
+All four editorial notes were resolved: missing plus signs in notebook
+markdown were corrected and regenerated; the obsolete draft QMD was removed;
+the planar control radius and log-polar basis were stated explicitly; and the
+stochastic logarithm was named in the manuscript.
+
+Review usage ID: `0afa46c6-6b46-4dd2-a026-7b43209ae569`. Scorecard evaluation
+ID: `c2c88e0f-1bcd-4ed3-a4d1-e2b0bbd72663`.
+
+# TASK-003 historical record
+
 ## Outcome
 
 Success. Codex completed the user-authorized direct implementation of

@@ -1,0 +1,5 @@
+output/** -whitespace
+*.ipynb -diff
+*.pdf binary
+*.png binary
+*.woff binary
