@@ -86,7 +86,7 @@ standard semimartingale form.
 
 Martin Larsson and Johannes Ruf, “Stochastic Exponentials and Logarithms on
 Stochastic Intervals — A Survey,” *Journal of Mathematical Analysis and
-Applications* 476 (2019), 186–206:
+Applications* 476(1) (2019), 2–12:
 
 https://arxiv.org/abs/1702.03573
 

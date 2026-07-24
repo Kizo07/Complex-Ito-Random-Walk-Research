@@ -1,41 +1,31 @@
 # Status
 
-- Active task: `TASK-003`
+- Active task: `TASK-004`
 - Owner: Codex (user-authorized direct exception)
 - State: complete
 - Allowed writes: project directory only
-- Conda environment: `base` (Python 3.13.9, NumPy 2.3.5, SciPy 1.16.3,
-  Matplotlib 3.10.6, nbformat 5.10.4)
-- Approved plan: `PHASE_3_PLAN.md`
+- Conda environment: `phase3-paper` (Python 3.12.13)
+- Approved plan: `PHASE_3_TECHNICAL_PAPER_PLAN.md`
+- Scope: Phase 3 technical paper only
 - Central model:
   \(Z_t=Z_0\exp((\alpha+i\beta)(X_t-X_0))\)
-- Deliverables: complete; see `README.md` Phase 3 reading order
 - Primary notebook:
-  `notebooks/phase3_one_driver_complex_embedding.ipynb`
-- Builder: `notebooks/build_phase3_notebook.py`
-- Primary execution: `conda run -n base jupyter nbconvert --to notebook
-  --execute --inplace --ExecutePreprocessor.timeout=900
-  notebooks/phase3_one_driver_complex_embedding.ipynb`
-- Clean-kernel recheck: `conda run -n base jupyter nbconvert --to notebook
-  --execute --output /tmp/phase3_one_driver_complex_embedding_recheck.ipynb
-  --ExecutePreprocessor.timeout=900
-  notebooks/phase3_one_driver_complex_embedding.ipynb`
-- Test result: passed twice with seven identical text-output streams, no cell
-  errors, sequential execution counts 1–7, and all embedded assertions
-  passing
-- Numerical headline: exact-product, inverse-radius, and spiral-constraint
-  errors were at most \(6.273\times10^{-15}\); the empirical one-driver
-  covariance had eigenvalues approximately \(0\) and \(0.5963867\), while
-  the two-driver planar comparison had eigenvalues \(0.2492954\) and
-  \(0.2499687\); the Euler–Maruyama strong-error slope was \(0.5029\)
-- Independent review: PASS by opencode
-  `zai-coding-plan/glm-5.2`; no critical, major, or minor mathematical or
-  numerical errors
-- Review artifact:
-  `.agent/reviews/TASK-003-opencode-glm52-review.md`
-- Review usage ID: `676ca875-893f-40a7-af9e-4afd763c516e`
-- Review scorecard evaluation ID: `1ac43d08-8859-45a4-b620-32aaf2d9a91e`
-- Documentation checks: all authoritative Markdown renders with Pandoc;
-  notebook and state JSON parse successfully; `git diff --check` passes
+  `paper/notebooks/phase3_discovery.ipynb`
+- Canonical manuscript: `paper/index.qmd`
+- Rendered PDF: `paper/output/phase3-one-driver-complex-embedding.pdf`
+- Rendered HTML: `paper/output/phase3-one-driver-complex-embedding.html`
+- Toolchain check: Quarto 1.9.38 and TinyTeX 2026 detected; required Python
+  numerical, notebook, cache, and static-export packages import successfully
+- Execution note: the managed workspace blocks Jupyter's local sockets, so
+  two clean-kernel executions used the approved external execution boundary
+- Reproducibility result: 15 code-cell outputs exactly equal across clean
+  executions; sequential counts 1–15; zero error outputs
+- Publication result: 23-page PDF, HTML companion, 18 vector figures with
+  raster companions, 8 generated CSV/JSON tables
+- Independent review: opencode `zai-coding-plan/glm-5.2` returned **PASS**,
+  with no critical or major findings; all four editorial notes were addressed
+- Review usage ID: `0afa46c6-6b46-4dd2-a026-7b43209ae569`
+- Scorecard evaluation ID: `c2c88e0f-1bcd-4ed3-a4d1-e2b0bbd72663`
 - Blockers: none
-- Next action: await the user's direction for any Phase 4 research
+- Git note: the user authorized a feature-branch commit, push, and pull
+  request on 2026-07-24; merge and release remain out of scope

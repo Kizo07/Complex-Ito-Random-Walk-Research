@@ -1,0 +1,37 @@
+{
+  "parameters": {
+    "mu": 0.2,
+    "sigma": 0.65,
+    "alpha": 0.45,
+    "beta": 1.1,
+    "X0": -0.3,
+    "R0": 1.2,
+    "theta0": 0.4,
+    "T": 1.25,
+    "master_seed": 20260723
+  },
+  "exactness": {
+    "exact_product_max_error": 6.2727600891321345e-15,
+    "inverse_radius_max_error": 1.1102230246251565e-15,
+    "spiral_relation_max_error": 5.273559366969494e-16
+  },
+  "covariance": [
+    {
+      "model": "one-driver log-polar",
+      "eigenvalue_1": -1.3877787807814457e-16,
+      "eigenvalue_2": 0.5959779016059853,
+      "relative_matrix_error": 0.001346135445801706
+    },
+    {
+      "model": "two-driver planar control",
+      "eigenvalue_1": 0.2497659718490787,
+      "eigenvalue_2": 0.25035200092391635,
+      "relative_matrix_error": 0.001195571247100207
+    }
+  ],
+  "strong_convergence_slope": 0.5015310910600802,
+  "local_time_exact_mean": 0.8920620580763856,
+  "local_time_finest_occupation_mean": 0.8689047556166085,
+  "tanaka_path_max_residual": 5.995204332975845e-15,
+  "figure_count": 18
+}

@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Complex–Itô Random-Walk Research Project">
+<meta name="dcterms.date" content="2026-07-23">
+<meta name="keywords" content="Itô calculus, complex stochastic process, arithmetic Brownian motion, logarithmic spiral, covariance rank, quadratic variation, local time, Tanaka formula">
+
+<title>A Faithful One-Driver Complex Embedding of Arithmetic Brownian Motion</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-a88deade1133a401a461acf351919818.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-60c0ec0b239ced4b3bf57618c5bff8ba.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta name="citation_title" content="A Faithful One-Driver Complex Embedding of Arithmetic Brownian Motion">
+<meta name="citation_abstract" content="We study how a scalar arithmetic Brownian motion can be represented by a
+complex exponential whose radius and angle are both stochastic without
+introducing a second Brownian driver. For
+$dX_t=\mu\,dt+\sigma\,dW_t$, $c=\alpha+i\beta$, and
+$Z_t=Z_0\exp(c(X_t-X_0))$, the radius recovers the scalar state whenever
+$\alpha\ne0$, while the unwrapped angle and log-radius lie on a
+deterministic line. We derive the induced complex Itô equation, exact
+finite-step multiplicative walk, distributions, moments, and both the
+bilinear and Hermitian complex quadratic variations. A general rank theorem
+shows that every smooth complex image of a scalar diffusion has
+instantaneous Cartesian covariance of rank at most one. This distinguishes
+the embedding from planar Brownian motion, whose local covariance has rank
+two. We also explain why the literal polar representation of a signed scalar
+process is only local before a zero and why Tanaka local time is required
+globally. Symbolic checks, exact-path identities, Monte Carlo estimates,
+shared-path strong-convergence experiments, and local-time approximations
+are preserved in an executable discovery notebook. The construction is an
+information-preserving geometric representation of one-dimensional noise,
+not a relabelling of planar Brownian motion.
+">
+<meta name="citation_keywords" content="Itô calculus,complex stochastic process,arithmetic Brownian motion,logarithmic spiral,covariance rank,quadratic variation,local time,Tanaka formula">
+<meta name="citation_author" content="Complex–Itô Random-Walk Research Project">
+<meta name="citation_publication_date" content="2026-07-23">
+<meta name="citation_cover_date" content="2026-07-23">
+<meta name="citation_year" content="2026">
+<meta name="citation_online_date" content="2026-07-23">
+<meta name="citation_language" content="en">
+<meta name="citation_reference" content="citation_title=Stochastic calculus notes: Lecture 8;,citation_author=Jonathan Goodman;,citation_publication_date=2007;,citation_cover_date=2007;,citation_year=2007;,citation_fulltext_html_url=https://math.nyu.edu/~goodman/teaching/StochCalc2007/notes/l8.pdf;,citation_publisher=Courant Institute of Mathematical Sciences, New York University;">
+<meta name="citation_reference" content="citation_title=Brownian motion;,citation_author=Peter Mörters;,citation_author=Yuval Peres;,citation_publication_date=2010;,citation_cover_date=2010;,citation_year=2010;,citation_doi=10.1017/CBO9780511750489;,citation_isbn=9780521760188;,citation_series_title=Cambridge series in statistical and probabilistic mathematics;">
+<meta name="citation_reference" content="citation_title=Brownian local time;,citation_author=Marek Biskup;,citation_publication_date=2025;,citation_cover_date=2025;,citation_year=2025;,citation_fulltext_html_url=https://www.math.ucla.edu/~biskup/275d.1.25f/PDFs/ch29.pdf;,citation_publisher=MATH 275D Notes, Chapter 29, University of California, Los Angeles;">
+<meta name="citation_reference" content="citation_title=Stochastic exponentials and logarithms on stochastic intervals—a survey;,citation_author=Martin Larsson;,citation_author=Johannes Ruf;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_fulltext_html_url=https://arxiv.org/abs/1702.03573;,citation_issue=1;,citation_doi=10.1016/j.jmaa.2018.11.040;,citation_volume=476;,citation_journal_title=Journal of Mathematical Analysis and Applications;">
+<meta name="citation_reference" content="citation_title=A guide to brownian motion and related stochastic processes;,citation_author=Jim Pitman;,citation_author=Marc Yor;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_fulltext_html_url=https://arxiv.org/abs/1802.09679;">
+<meta name="citation_reference" content="citation_title=Asymptotic laws of planar brownian motion;,citation_author=Jim Pitman;,citation_author=Marc Yor;,citation_publication_date=1986;,citation_cover_date=1986;,citation_year=1986;,citation_fulltext_html_url=https://www.jstor.org/stable/2244132;,citation_issue=3;,citation_issn=0091-1798;,citation_volume=14;,citation_journal_title=The Annals of Probability;">
+<meta name="citation_reference" content="citation_title=An algorithmic introduction to numerical simulation of stochastic differential equations;,citation_author=Desmond J. Higham;,citation_publication_date=2001;,citation_cover_date=2001;,citation_year=2001;,citation_issue=3;,citation_doi=10.1137/S0036144500378302;,citation_volume=43;,citation_journal_title=SIAM Review;">
+</head>
+
+<body class="quarto-light">
+
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">A Faithful One-Driver Complex Embedding of Arithmetic Brownian Motion</h1>
+            <p class="subtitle lead">Itô dynamics, covariance rank, and zero crossings</p>
+          </div>
+
+    
+    <div class="quarto-title-meta-container">
+      <div class="quarto-title-meta-column-start">
+        
+        <div class="quarto-title-meta">
+
+                <div>
+            <div class="quarto-title-meta-heading">Author</div>
+            <div class="quarto-title-meta-contents">
+                        <p>Complex–Itô Random-Walk Research Project </p>
+                      </div>
+          </div>
+                
+                <div>
+            <div class="quarto-title-meta-heading">Published</div>
+            <div class="quarto-title-meta-contents">
+              <p class="date">July 23, 2026</p>
+            </div>
+          </div>
+          
+                
+              </div>
+      </div>
+      <div class="quarto-title-meta-column-end quarto-other-formats-target">
+      <div class="quarto-alternate-formats"><div class="quarto-title-meta-heading">Other Formats</div><div class="quarto-title-meta-contents"><p><a href="phase3-one-driver-complex-embedding.pdf"><i class="bi bi-file-pdf"></i>PDF</a></p></div></div></div>
+    </div>
+
+    <div>
+      <div class="abstract">
+        <div class="block-title">Abstract</div>
+        <p>We study how a scalar arithmetic Brownian motion can be represented by a complex exponential whose radius and angle are both stochastic without introducing a second Brownian driver. For <span class="math inline">\(dX_t=\mu\,dt+\sigma\,dW_t\)</span>, <span class="math inline">\(c=\alpha+i\beta\)</span>, and <span class="math inline">\(Z_t=Z_0\exp(c(X_t-X_0))\)</span>, the radius recovers the scalar state whenever <span class="math inline">\(\alpha\ne0\)</span>, while the unwrapped angle and log-radius lie on a deterministic line. We derive the induced complex Itô equation, exact finite-step multiplicative walk, distributions, moments, and both the bilinear and Hermitian complex quadratic variations. A general rank theorem shows that every smooth complex image of a scalar diffusion has instantaneous Cartesian covariance of rank at most one. This distinguishes the embedding from planar Brownian motion, whose local covariance has rank two. We also explain why the literal polar representation of a signed scalar process is only local before a zero and why Tanaka local time is required globally. Symbolic checks, exact-path identities, Monte Carlo estimates, shared-path strong-convergence experiments, and local-time approximations are preserved in an executable discovery notebook. The construction is an information-preserving geometric representation of one-dimensional noise, not a relabelling of planar Brownian motion.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="keywords">
+        <div class="block-title">Keywords</div>
+        <p>Itô calculus, complex stochastic process, arithmetic Brownian motion, logarithmic spiral, covariance rank, quadratic variation, local time, Tanaka formula</p>
+      </div>
+    </div>
+
+    <div class="quarto-other-links-text-target">
+    </div>  </div>
+</header><div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-introduction" id="toc-sec-introduction" class="nav-link active" data-scroll-target="#sec-introduction">Introduction</a></li>
+  <li><a href="#sec-literature" id="toc-sec-literature" class="nav-link" data-scroll-target="#sec-literature">Literature and positioning</a></li>
+  <li><a href="#sec-preliminaries" id="toc-sec-preliminaries" class="nav-link" data-scroll-target="#sec-preliminaries">Preliminaries and notation</a></li>
+  <li><a href="#sec-problem" id="toc-sec-problem" class="nav-link" data-scroll-target="#sec-problem">Problem formulation</a></li>
+  <li><a href="#sec-construction" id="toc-sec-construction" class="nav-link" data-scroll-target="#sec-construction">The logarithmic-spiral construction</a></li>
+  <li><a href="#sec-ito" id="toc-sec-ito" class="nav-link" data-scroll-target="#sec-ito">Itô dynamics and the exact random walk</a></li>
+  <li><a href="#sec-rank" id="toc-sec-rank" class="nav-link" data-scroll-target="#sec-rank">Noise dimension and covariance rank</a></li>
+  <li><a href="#sec-zero" id="toc-sec-zero" class="nav-link" data-scroll-target="#sec-zero">Scalar polar coordinates and zero crossings</a></li>
+  <li><a href="#sec-methods" id="toc-sec-methods" class="nav-link" data-scroll-target="#sec-methods">Numerical methods</a></li>
+  <li><a href="#sec-results" id="toc-sec-results" class="nav-link" data-scroll-target="#sec-results">Numerical results</a>
+  <ul class="collapse">
+  <li><a href="#pathwise-identities" id="toc-pathwise-identities" class="nav-link" data-scroll-target="#pathwise-identities">Pathwise identities</a></li>
+  <li><a href="#distribution-and-moment-checks" id="toc-distribution-and-moment-checks" class="nav-link" data-scroll-target="#distribution-and-moment-checks">Distribution and moment checks</a></li>
+  <li><a href="#covariance-rank" id="toc-covariance-rank" class="nav-link" data-scroll-target="#covariance-rank">Covariance rank</a></li>
+  <li><a href="#strong-convergence" id="toc-strong-convergence" class="nav-link" data-scroll-target="#strong-convergence">Strong convergence</a></li>
+  <li><a href="#local-time" id="toc-local-time" class="nav-link" data-scroll-target="#local-time">Local time</a></li>
+  </ul></li>
+  <li><a href="#sec-discussion" id="toc-sec-discussion" class="nav-link" data-scroll-target="#sec-discussion">Discussion</a></li>
+  <li><a href="#sec-limitations" id="toc-sec-limitations" class="nav-link" data-scroll-target="#sec-limitations">Limitations</a></li>
+  <li><a href="#sec-conclusion" id="toc-sec-conclusion" class="nav-link" data-scroll-target="#sec-conclusion">Conclusion</a></li>
+  <li><a href="#sec-appendix-ito" id="toc-sec-appendix-ito" class="nav-link" data-scroll-target="#sec-appendix-ito">Appendix A. Expanded Itô algebra</a></li>
+  <li><a href="#sec-appendix-moments" id="toc-sec-appendix-moments" class="nav-link" data-scroll-target="#sec-appendix-moments">Appendix B. Exact moment derivation</a></li>
+  <li><a href="#sec-reproducibility" id="toc-sec-reproducibility" class="nav-link" data-scroll-target="#sec-reproducibility">Appendix C. Reproducibility manifest</a></li>
+  </ul>
+<div class="quarto-alternate-notebooks"><h2>Notebooks</h2><ul><li><a href="notebooks/phase3_discovery-preview.html"><i class="bi bi-journal-code"></i>Phase 3 discovery notebook</a></li></ul></div></nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+  
+
+
+<section id="sec-introduction" class="level1">
+<h1>Introduction</h1>
+<p>The symbolic rule</p>
+<p><span class="math display">\[
+(dW_t)^2=dt
+\]</span></p>
+<p>and the algebraic identity <span class="math inline">\(i^2=-1\)</span> look tantalizingly similar. They are not the same kind of statement. The first abbreviates a quadratic-variation limit; the second is an exact identity in the complex numbers. Nevertheless, complex multiplication is valuable for organizing stochastic scale and rotation. The question is how to use that geometry without changing the underlying stochastic model.</p>
+<p>Let</p>
+<p><span id="eq-scalar-sde"><span class="math display">\[
+dX_t=\mu\,dt+\sigma\,dW_t,\qquad X_0\in\mathbb R,
+\tag{1}\]</span></span></p>
+<p>where <span class="math inline">\(W\)</span> is one standard real Brownian motion. We seek a complex process whose radius and angle both fluctuate, which contains exactly the information in <span class="math inline">\(X\)</span>, and which is still driven by this one <span class="math inline">\(W\)</span>. The central construction is</p>
+<p><span id="eq-central-map"><span class="math display">\[
+\boxed{
+Z_t=Z_0\exp\!\left(c(X_t-X_0)\right),\qquad
+c=\alpha+i\beta,\quad \alpha\ne0.
+}
+\tag{2}\]</span></span></p>
+<p>Its polar coordinates are</p>
+<p><span id="eq-polar-coordinates"><span class="math display">\[
+\log R_t=\log R_0+\alpha(X_t-X_0),\qquad
+\Theta_t=\Theta_0+\beta(X_t-X_0).
+\tag{3}\]</span></span></p>
+<p>Both coordinates are stochastic if <span class="math inline">\(\alpha\beta\ne0\)</span>, but they share one Brownian direction. The resulting path lies on a logarithmic spiral and has rank-one instantaneous covariance. That rank is the mathematical distinction between a faithful complex embedding of scalar Brownian motion and a genuine two-driver Brownian motion in the plane.</p>
+<div id="fig-discovery-map" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A flow diagram maps the scalar process X into log-radius A and angle Theta, combines them as the complex exponential Z, and recovers X from an invertible radial map.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-discovery-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/raster/f01_discovery_map.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: Starting from a scalar state, design log-radius and unwrapped angle as functions of that state, reconstruct a complex variable, and recover the state through an invertible radius map."><img src="figures/raster/f01_discovery_map.png" class="img-fluid figure-img" style="width:100.0%" alt="A flow diagram maps the scalar process X into log-radius A and angle Theta, combines them as the complex exponential Z, and recovers X from an invertible radial map."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-discovery-map-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Starting from a scalar state, design log-radius and unwrapped angle as functions of that state, reconstruct a complex variable, and recover the state through an invertible radius map.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-discovery-map" class="quarto-xref">Figure&nbsp;1</a> summarizes the constructive strategy. The contribution is a rigorous synthesis and visual account of standard Itô tools applied to this specific design problem. We do <strong>not</strong> claim that the exponential map, the logarithmic spiral, or the outer-product rank calculation is a new theorem.</p>
+<p>The main results are:</p>
+<ol type="1">
+<li>an injective one-driver complex embedding with stochastic radius and angle;</li>
+<li>two matching derivations of its complex Itô equation;</li>
+<li>exact state recovery and an exact finite-step multiplicative random walk;</li>
+<li>a general rank-one obstruction for smooth complex images of scalar diffusions;</li>
+<li>explicit complex brackets, distributions, and moments; and</li>
+<li>a localized and global treatment of scalar zero crossings.</li>
+</ol>
+</section>
+<section id="sec-literature" class="level1">
+<h1>Literature and positioning</h1>
+<p>The multidimensional Itô formula and the covariance factorization <span class="math inline">\(\Sigma\Sigma^\mathsf T\)</span> are standard. We use them componentwise for complex maps, treating <span class="math inline">\(\mathbb C\)</span> as <span class="math inline">\(\mathbb R^2\)</span>; accessible derivations appear in Goodman’s stochastic-calculus notes and the broad survey by Pitman and Yor <span class="citation" data-cites="goodman2007ito pitmanyor2018guide">(<a href="#ref-goodman2007ito" role="doc-biblioref">Goodman 2007</a>; <a href="#ref-pitmanyor2018guide" role="doc-biblioref">Pitman and Yor 2018</a>)</span>.</p>
+<p>The distinction between stochastic exponentials and stochastic logarithms is important near zeros. Larsson and Ruf formulate these transforms on stochastic intervals and make explicit why continuous hitting of zero matters <span class="citation" data-cites="larssonruf2019">(<a href="#ref-larssonruf2019" role="doc-biblioref">Larsson and Ruf 2019</a>)</span>. Brownian local time, occupation density, and Tanaka’s formula are standard tools for the nonsmooth absolute-value map <span class="citation" data-cites="mortersperes2010 biskup2025localtime">(<a href="#ref-mortersperes2010" role="doc-biblioref">Mörters and Peres 2010</a>; <a href="#ref-biskup2025localtime" role="doc-biblioref">Biskup 2025</a>)</span>.</p>
+<p>Planar Brownian motion supplies a necessary control, not an alternative description of the scalar model. Its radial Bessel behavior, nonhitting of a fixed point when started elsewhere, and winding process belong to a genuinely two-dimensional theory <span class="citation" data-cites="pitmanyor2018guide pitmanyor1986">(<a href="#ref-pitmanyor2018guide" role="doc-biblioref">Pitman and Yor 2018</a>, <a href="#ref-pitmanyor1986" role="doc-biblioref">1986</a>)</span>. The numerical strong-convergence experiment follows the shared-Brownian-path methodology used in expositions of Euler–Maruyama <span class="citation" data-cites="higham2001">(<a href="#ref-higham2001" role="doc-biblioref">Higham 2001</a>)</span>.</p>
+<p>The particular synthesis developed below—designing a recoverable log-polar embedding, stating its noise-rank obstruction, and relating it to exact complex random-walk steps—is derived directly from these standard tools. The paper is therefore best read as an expository computational mathematics note.</p>
+</section>
+<section id="sec-preliminaries" class="level1">
+<h1>Preliminaries and notation</h1>
+<p>We identify <span class="math inline">\(z=x+iy\in\mathbb C\)</span> with <span class="math inline">\((x,y)\in\mathbb R^2\)</span>. For a complex continuous semimartingale <span class="math inline">\(Z=U+iV\)</span>, define</p>
+<p><span id="eq-bilinear-bracket"><span class="math display">\[
+[Z,Z]=[U,U]-[V,V]+2i[U,V]
+\tag{4}\]</span></span></p>
+<p>and</p>
+<p><span id="eq-hermitian-bracket"><span class="math display">\[
+[Z,\overline Z]=[U,U]+[V,V].
+\tag{5}\]</span></span></p>
+<p>The first is complex bilinear and can exhibit phase cancellation. The second is Hermitian, real, and nonnegative.</p>
+<p>The angle <span class="math inline">\(\Theta\)</span> in this paper is an <em>unwrapped</em> continuous lift, not merely an element of <span class="math inline">\(\mathbb R/(2\pi\mathbb Z)\)</span>. This distinction matters when discussing recovery from phase.</p>
+<div id="tbl-notation" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-notation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Core notation.
+</figcaption>
+<div aria-describedby="tbl-notation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Symbol</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(X_t\)</span></td>
+<td style="text-align: left;">scalar arithmetic Brownian motion</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(W_t\)</span></td>
+<td style="text-align: left;">one standard real Brownian driver</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\mu,\sigma\)</span></td>
+<td style="text-align: left;">scalar drift and volatility, with <span class="math inline">\(\sigma&gt;0\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(Z_t\)</span></td>
+<td style="text-align: left;">complex embedding</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(R_t=\lvert Z_t\rvert\)</span></td>
+<td style="text-align: left;">stochastic radius</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\Theta_t\)</span></td>
+<td style="text-align: left;">unwrapped stochastic angle</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(A_t=\log R_t\)</span></td>
+<td style="text-align: left;">log-radius</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(c=\alpha+i\beta\)</span></td>
+<td style="text-align: left;">complex embedding parameter</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\([Y_1,Y_2]_t\)</span></td>
+<td style="text-align: left;">quadratic covariation</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\tau_0\)</span></td>
+<td style="text-align: left;">first hitting time of zero by a scalar process</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(L_t^0(X)\)</span></td>
+<td style="text-align: left;">symmetric local time of <span class="math inline">\(X\)</span> at zero</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Three levels of equality will be kept separate:</p>
+<ul>
+<li>a <strong>pathwise identity</strong>, such as <a href="#eq-central-map" class="quarto-xref">Eq.&nbsp;2</a>;</li>
+<li>an <strong>Itô differential identity</strong>, determined by finite variation and quadratic covariation; and</li>
+<li>a <strong>mnemonic</strong>, such as <span class="math inline">\((dW)^2=dt\)</span>, which must not be read as an ordinary finite-increment algebraic equation.</li>
+</ul>
+</section>
+<section id="sec-problem" class="level1">
+<h1>Problem formulation</h1>
+<p>The word <em>representation</em> can mean several different things.</p>
+<div id="tbl-representation" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-representation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Four meanings of representation.
+</figcaption>
+<div aria-describedby="tbl-representation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Meaning</th>
+<th style="text-align: left;">Requirement</th>
+<th style="text-align: left;">What it preserves</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Deterministic image</td>
+<td style="text-align: left;"><span class="math inline">\(Z_t=F(X_t)\)</span></td>
+<td style="text-align: left;">a chosen geometric view</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">State-injective embedding</td>
+<td style="text-align: left;"><span class="math inline">\(F\)</span> is injective</td>
+<td style="text-align: left;">pointwise scalar state</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pathwise recovery</td>
+<td style="text-align: left;">the lifted <span class="math inline">\(Z\)</span>-path determines <span class="math inline">\(X\)</span></td>
+<td style="text-align: left;">path information</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Planar-model equality</td>
+<td style="text-align: left;">the local law and covariance match a target in <span class="math inline">\(\mathbb R^2\)</span></td>
+<td style="text-align: left;">full planar stochastic model</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div id="fig-representation-taxonomy" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Four boxes progress from deterministic image to state injection, pathwise recovery, and planar model equality. An arrow marks the one-driver logarithmic spiral through the first three and states that it fails the rank-two target.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-representation-taxonomy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/raster/f16_representation_taxonomy.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: The logarithmic spiral satisfies deterministic image, state-injective embedding, and pathwise recovery, but it cannot equal a full-rank planar Brownian model."><img src="figures/raster/f16_representation_taxonomy.png" class="img-fluid figure-img" style="width:100.0%" alt="Four boxes progress from deterministic image to state injection, pathwise recovery, and planar model equality. An arrow marks the one-driver logarithmic spiral through the first three and states that it fails the rank-two target."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-representation-taxonomy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: The logarithmic spiral satisfies deterministic image, state-injective embedding, and pathwise recovery, but it cannot equal a full-rank planar Brownian model.
+</figcaption>
+</figure>
+</div>
+<p>The desired object must satisfy the first three notions while retaining one Brownian driver. The fourth is neither required nor possible for a rank-two target. <a href="#fig-representation-taxonomy" class="quarto-xref">Figure&nbsp;2</a> makes this hierarchy explicit.</p>
+<p>Write general log-polar coordinates as</p>
+<p><span id="eq-general-log-polar"><span class="math display">\[
+A_t=a(X_t),\qquad \Theta_t=b(X_t),\qquad
+Z_t=e^{A_t+i\Theta_t}.
+\tag{6}\]</span></span></p>
+<p>For <span class="math inline">\(C^2\)</span> functions <span class="math inline">\(a,b\)</span>, scalar Itô calculus already guarantees that the two coordinates share one driver:</p>
+<p><span id="eq-general-polar-ito"><span class="math display">\[
+\begin{aligned}
+dA_t
+&amp;=\left(\mu a'(X_t)+\tfrac12\sigma^2a''(X_t)\right)dt
+  +\sigma a'(X_t)dW_t,\\
+d\Theta_t
+&amp;=\left(\mu b'(X_t)+\tfrac12\sigma^2b''(X_t)\right)dt
+  +\sigma b'(X_t)dW_t.
+\end{aligned}
+\tag{7}\]</span></span></p>
+<p>Thus the design problem becomes deterministic: choose <span class="math inline">\(a\)</span> invertible for state recovery and choose both derivatives nonzero for stochastic radius and angle.</p>
+</section>
+<section id="sec-construction" class="level1">
+<h1>The logarithmic-spiral construction</h1>
+<p>The simplest globally smooth choice is affine:</p>
+<p><span id="eq-affine-log-polar"><span class="math display">\[
+a(x)=\log R_0+\alpha(x-X_0),\qquad
+b(x)=\Theta_0+\beta(x-X_0).
+\tag{8}\]</span></span></p>
+<p>Substitution in <a href="#eq-general-log-polar" class="quarto-xref">Eq.&nbsp;6</a> gives <a href="#eq-central-map" class="quarto-xref">Eq.&nbsp;2</a>.</p>
+<div id="thm-embedding" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 1 (Faithful one-driver embedding)</strong></span> Let <span class="math inline">\(X\)</span> satisfy <a href="#eq-scalar-sde" class="quarto-xref">Eq.&nbsp;1</a>, let <span class="math inline">\(Z_0\ne0\)</span>, and let <span class="math inline">\(c=\alpha+i\beta\)</span> with <span class="math inline">\(\alpha\ne0\)</span>. Then the process in <a href="#eq-central-map" class="quarto-xref">Eq.&nbsp;2</a> is nonvanishing and state-injective. Specifically,</p>
+<p><span id="eq-inverse-radius"><span class="math display">\[
+\boxed{
+X_t=X_0+\frac1\alpha\log\frac{|Z_t|}{|Z_0|}.
+}
+\tag{9}\]</span></span></p>
+<p>Consequently, after completion in the usual way, <span class="math inline">\(\sigma(Z_s:0\le s\le t)=\sigma(X_s:0\le s\le t)\)</span> for each <span class="math inline">\(t\)</span>.</p>
+</div>
+<p>The proof is immediate from <span class="math inline">\(|Z_t|=R_0e^{\alpha(X_t-X_0)}\)</span>. The formula also shows why the lifted angle is not needed for recovery when <span class="math inline">\(\alpha\ne0\)</span>.</p>
+<p>Eliminating <span class="math inline">\(X_t-X_0\)</span> from <a href="#eq-polar-coordinates" class="quarto-xref">Eq.&nbsp;3</a> gives</p>
+<p><span id="eq-spiral-relation"><span class="math display">\[
+\boxed{
+\Theta_t-\Theta_0
+=\frac{\beta}{\alpha}\log\frac{R_t}{R_0}.
+}
+\tag{10}\]</span></span></p>
+<p>Thus the two visible polar coordinates are exactly coupled.</p>
+<div id="fig-linked-path" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Four stacked time-series panels show X, log R over R0, R, and unwrapped angle. All features occur at the same times, illustrating the shared scalar driver.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-linked-path-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/raster/f02_linked_path.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;3: The scalar path, log-radius, radius, and unwrapped angle share every reversal because they are deterministic functions of one state."><img src="figures/raster/f02_linked_path.png" class="img-fluid figure-img" style="width:92.0%" alt="Four stacked time-series panels show X, log R over R0, R, and unwrapped angle. All features occur at the same times, illustrating the shared scalar driver."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-linked-path-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: The scalar path, log-radius, radius, and unwrapped angle share every reversal because they are deterministic functions of one state.
+</figcaption>
+</figure>
+</div>
+<div id="fig-complex-spiral" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A gray logarithmic spiral supports colored sample points ordered by time. The process moves back and forth along the same curve rather than diffusing across planar area.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-complex-spiral-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/raster/f03_complex_spiral.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Figure&nbsp;4: A time-colored sample path lies on and repeatedly retraces one deterministic logarithmic spiral."><img src="figures/raster/f03_complex_spiral.png" class="img-fluid figure-img" style="width:72.0%" alt="A gray logarithmic spiral supports colored sample points ordered by time. The process moves back and forth along the same curve rather than diffusing across planar area."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-complex-spiral-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: A time-colored sample path lies on and repeatedly retraces one deterministic logarithmic spiral.
+</figcaption>
+</figure>
+</div>
+<p>The parameter cases are:</p>
+<div id="tbl-parameter-cases" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-parameter-cases-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: Parameter classification.
+</figcaption>
+<div aria-describedby="tbl-parameter-cases-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Parameters</th>
+<th style="text-align: left;">Geometry</th>
+<th style="text-align: left;">Stochastic information</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\alpha=0,\ \beta\ne0\)</span></td>
+<td style="text-align: left;">circle</td>
+<td style="text-align: left;">radius loses the state; lifted phase can retain it</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\alpha\ne0,\ \beta=0\)</span></td>
+<td style="text-align: left;">ray</td>
+<td style="text-align: left;">radius alone is injective</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\alpha\beta\ne0\)</span></td>
+<td style="text-align: left;">logarithmic spiral</td>
+<td style="text-align: left;">radius and angle fluctuate, rank one</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\alpha=\beta=0\)</span></td>
+<td style="text-align: left;">one point</td>
+<td style="text-align: left;">all state information is lost</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div id="fig-parameter-gallery" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A four-panel gallery shows the geometric support for pure rotation, pure radial scaling, expanding spiral, and contracting spiral parameter choices.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-parameter-gallery-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/raster/f05_parameter_gallery.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Figure&nbsp;5: Changing alpha and beta produces a circle, a ray, an expanding spiral, or a contracting spiral."><img src="figures/raster/f05_parameter_gallery.png" class="img-fluid figure-img" style="width:82.0%" alt="A four-panel gallery shows the geometric support for pure rotation, pure radial scaling, expanding spiral, and contracting spiral parameter choices."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-parameter-gallery-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Changing alpha and beta produces a circle, a ray, an expanding spiral, or a contracting spiral.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="sec-ito" class="level1">
+<h1>Itô dynamics and the exact random walk</h1>
+<p>Let <span class="math inline">\(F(x)=Z_0e^{c(x-X_0)}\)</span>. Since <span class="math inline">\(F'=cF\)</span> and <span class="math inline">\(F''=c^2F\)</span>, scalar Itô calculus gives</p>
+<p><span id="eq-complex-sde"><span class="math display">\[
+\boxed{
+\frac{dZ_t}{Z_t}
+=\left(c\mu+\frac12c^2\sigma^2\right)dt
++c\sigma\,dW_t.
+}
+\tag{11}\]</span></span></p>
+<p>Equivalently,</p>
+<p><span id="eq-linear-complex-sde"><span class="math display">\[
+dZ_t=\lambda Z_t\,dt+\nu Z_t\,dW_t,\qquad
+\lambda=c\mu+\tfrac12c^2\sigma^2,\quad \nu=c\sigma.
+\tag{12}\]</span></span></p>
+<p>The differential <span class="math inline">\(dZ_t/Z_t\)</span> in <a href="#eq-complex-sde" class="quarto-xref">Eq.&nbsp;11</a> is the stochastic logarithm differential of <span class="math inline">\(Z\)</span> <span class="citation" data-cites="larssonruf2019">(<a href="#ref-larssonruf2019" role="doc-biblioref">Larsson and Ruf 2019</a>)</span>.</p>
+<p>There is an independent polar derivation. From <a href="#eq-polar-coordinates" class="quarto-xref">Eq.&nbsp;3</a>,</p>
+<p><span id="eq-linear-polar-sde"><span class="math display">\[
+dA_t=\alpha\mu\,dt+\alpha\sigma\,dW_t,\qquad
+d\Theta_t=\beta\mu\,dt+\beta\sigma\,dW_t.
+\tag{13}\]</span></span></p>
+<p>For <span class="math inline">\(Z=e^{A+i\Theta}\)</span>, two-dimensional Itô calculus yields</p>
+<p><span id="eq-polar-reconstruction"><span class="math display">\[
+\frac{dZ}{Z}
+=dA+i\,d\Theta
++\frac12\left(d[A,A]-d[\Theta,\Theta]\right)
++i\,d[A,\Theta].
+\tag{14}\]</span></span></p>
+<p>Using</p>
+<p><span id="eq-polar-brackets"><span class="math display">\[
+d[A,A]=\alpha^2\sigma^2dt,\quad
+d[\Theta,\Theta]=\beta^2\sigma^2dt,\quad
+d[A,\Theta]=\alpha\beta\sigma^2dt
+\tag{15}\]</span></span></p>
+<p>reduces <a href="#eq-polar-reconstruction" class="quarto-xref">Eq.&nbsp;14</a> exactly to <a href="#eq-complex-sde" class="quarto-xref">Eq.&nbsp;11</a>. The mixed covariation is essential; omitting it loses the imaginary Itô correction.</p>
+<p>Because <a href="#eq-central-map" class="quarto-xref">Eq.&nbsp;2</a> is pathwise, a grid increment has the exact update</p>
+<p><span id="eq-exact-step"><span class="math display">\[
+\boxed{
+Z_{n+1}=Z_n\exp\!\left(c\,\Delta X_n\right),\qquad
+\Delta X_n=\mu\,\Delta t+\sigma\,\Delta W_n.
+}
+\tag{16}\]</span></span></p>
+<div id="fig-exact-step" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A complex-plane vector Z n is radially scaled by exp alpha Delta X and rotated by beta Delta X to reach Z n plus 1.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-exact-step-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/raster/f09_exact_multiplicative_step.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Figure&nbsp;6: One scalar increment first appears as radial scaling and then as angular rotation; together they equal the exact complex factor."><img src="figures/raster/f09_exact_multiplicative_step.png" class="img-fluid figure-img" style="width:70.0%" alt="A complex-plane vector Z n is radially scaled by exp alpha Delta X and rotated by beta Delta X to reach Z n plus 1."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-exact-step-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: One scalar increment first appears as radial scaling and then as angular rotation; together they equal the exact complex factor.
+</figcaption>
+</figure>
+</div>
+<p><a href="#eq-exact-step" class="quarto-xref">Eq.&nbsp;16</a> is not Euler–Maruyama. It is exact at every grid point because the exponential factors telescope.</p>
+<p>The diffusion coefficient in <a href="#eq-complex-sde" class="quarto-xref">Eq.&nbsp;11</a> is <span class="math inline">\(c\sigma Z_t\)</span>, a single complex vector. It determines one instantaneous direction in <span class="math inline">\(\mathbb R^2\)</span>, even though the direction rotates with the state.</p>
+<div id="fig-local-direction" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A logarithmic spiral has one red tangent arrow at each of several points. The arrows rotate along the curve but only one direction exists at any given point.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-local-direction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/raster/f06_local_noise_direction.png" class="lightbox" data-gallery="quarto-lightbox-gallery-7" title="Figure&nbsp;7: Red arrows show the single diffusion direction tangent to the supporting spiral at several states."><img src="figures/raster/f06_local_noise_direction.png" class="img-fluid figure-img" style="width:70.0%" alt="A logarithmic spiral has one red tangent arrow at each of several points. The arrows rotate along the curve but only one direction exists at any given point."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-local-direction-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: Red arrows show the single diffusion direction tangent to the supporting spiral at several states.
+</figcaption>
+</figure>
+</div>
+<p>The complex brackets follow immediately from the diffusion term:</p>
+<p><span id="eq-complex-brackets"><span class="math display">\[
+\boxed{
+d[Z,Z]_t=c^2\sigma^2Z_t^2\,dt,\qquad
+d[Z,\overline Z]_t=|c|^2\sigma^2|Z_t|^2\,dt.
+}
+\tag{17}\]</span></span></p>
+<div id="fig-complex-qv" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A log-log plot shows decreasing pathwise errors for the bilinear bracket Z Z and the Hermitian bracket Z conjugate Z across seven step sizes.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-complex-qv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/raster/f18_complex_quadratic_variation.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="Figure&nbsp;8: Discrete bilinear and Hermitian bracket sums approach their different Itô-integral targets as the grid is refined."><img src="figures/raster/f18_complex_quadratic_variation.png" class="img-fluid figure-img" style="width:70.0%" alt="A log-log plot shows decreasing pathwise errors for the bilinear bracket Z Z and the Hermitian bracket Z conjugate Z across seven step sizes."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-complex-qv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: Discrete bilinear and Hermitian bracket sums approach their different Itô-integral targets as the grid is refined.
+</figcaption>
+</figure>
+</div>
+<p>The pathwise convergence in <a href="#fig-complex-qv" class="quarto-xref">Figure&nbsp;8</a> is irregular, as expected for one sample path, but both finest-grid errors are substantially below their coarsest-grid values.</p>
+<p>Finally, <span class="math inline">\(Y_t=X_t-X_0\sim N(\mu t,\sigma^2t)\)</span>, so</p>
+<p><span id="eq-radial-moments"><span class="math display">\[
+\mathbb E[R_t^p]
+=R_0^p\exp\!\left(
+p\alpha\mu t+\tfrac12p^2\alpha^2\sigma^2t
+\right)
+\tag{18}\]</span></span></p>
+<p>and, for integers <span class="math inline">\(n\)</span>,</p>
+<p><span id="eq-complex-moments"><span class="math display">\[
+\mathbb E\!\left[\left(\frac{Z_t}{Z_0}\right)^n\right]
+=\exp\!\left(
+nc\mu t+\tfrac12n^2c^2\sigma^2t
+\right).
+\tag{19}\]</span></span></p>
+</section>
+<section id="sec-rank" class="level1">
+<h1>Noise dimension and covariance rank</h1>
+<p>The log-polar covariance density from <a href="#eq-linear-polar-sde" class="quarto-xref">Eq.&nbsp;13</a> is</p>
+<p><span id="eq-polar-covariance"><span class="math display">\[
+K
+=\sigma^2
+\begin{pmatrix}
+\alpha^2&amp;\alpha\beta\\
+\alpha\beta&amp;\beta^2
+\end{pmatrix}
+=\sigma^2
+\begin{pmatrix}\alpha\\\beta\end{pmatrix}
+\begin{pmatrix}\alpha&amp;\beta\end{pmatrix}.
+\tag{20}\]</span></span></p>
+<p>Its eigenvalues are <span class="math inline">\(0\)</span> and <span class="math inline">\(\sigma^2(\alpha^2+\beta^2)\)</span>. Both coordinates fluctuate, but their local correlation has absolute value one when <span class="math inline">\(\alpha\beta\ne0\)</span>.</p>
+<div id="thm-rank" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 2 (Rank-one theorem for scalar complex images)</strong></span> Let</p>
+<p><span class="math display">\[
+dX_t=b_t\,dt+s_t\,dW_t
+\]</span></p>
+<p>be a scalar Itô process and let <span class="math inline">\(F=(F_1,F_2):\mathbb R\to\mathbb R^2\)</span> be <span class="math inline">\(C^2\)</span>. Then the instantaneous Cartesian covariance density of <span class="math inline">\(F(X_t)\)</span> is</p>
+<p><span id="eq-general-rank-covariance"><span class="math display">\[
+C_t=s_t^2F'(X_t)F'(X_t)^\mathsf T,
+\tag{21}\]</span></span></p>
+<p>and therefore</p>
+<p><span id="eq-rank-bound"><span class="math display">\[
+\operatorname{rank}C_t\le1.
+\tag{22}\]</span></span></p>
+</div>
+<p><strong>Proof.</strong> Componentwise Itô calculus gives</p>
+<p><span class="math display">\[
+dF_j(X_t)
+=\left(b_tF_j'(X_t)+\tfrac12s_t^2F_j''(X_t)\right)dt
++s_tF_j'(X_t)dW_t.
+\]</span></p>
+<p>The two-dimensional diffusion matrix has the single column <span class="math inline">\(s_tF'(X_t)\)</span>. Its covariance is the outer product in <a href="#eq-general-rank-covariance" class="quarto-xref">Eq.&nbsp;21</a>, whose rank is at most one. <span class="math inline">\(\square\)</span></p>
+<p>The same conclusion holds for any adapted two-dimensional Itô process driven by one scalar Brownian motion:</p>
+<p><span id="eq-stronger-rank"><span class="math display">\[
+dY_t=q_t\,dt+v_t\,dW_t
+\quad\Longrightarrow\quad
+\frac{d[Y,Y]_t}{dt}=v_tv_t^\mathsf T.
+\tag{23}\]</span></span></p>
+<p>Path dependence and state dependence can rotate <span class="math inline">\(v_t\)</span>, but cannot create a second simultaneous noise direction.</p>
+<p>For comparison only, isotropic planar Brownian motion</p>
+<p><span id="eq-planar-control"><span class="math display">\[
+d\widetilde Z_t=\sigma(dW_t^1+i\,dW_t^2)
+\tag{24}\]</span></span></p>
+<p>has Cartesian covariance <span class="math inline">\(\sigma^2I_2\)</span>, of rank two. At a fixed nonzero radius <span class="math inline">\(r\)</span>, its log-polar covariance is <span class="math inline">\((\sigma^2/r^2)I_2\)</span>. The numerical control below uses <span class="math inline">\(r=1.30\)</span>, so its theoretical log-polar eigenvalues are <span class="math inline">\(\sigma^2/r^2=0.4225/1.69=0.25\)</span>. This is a distinct stochastic model with two independent Brownian drivers <span class="citation" data-cites="pitmanyor2018guide">(<a href="#ref-pitmanyor2018guide" role="doc-biblioref">Pitman and Yor 2018</a>)</span>.</p>
+<div id="fig-eigenspectrum" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Two bar charts compare covariance eigenvalues. The one-driver chart has one zero and one positive bar. The two-driver chart has two nearly equal positive bars.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-eigenspectrum-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/raster/f07_covariance_eigenspectrum.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="Figure&nbsp;9: The empirical one-driver covariance has one numerical-zero eigenvalue, while the two-driver control has two positive eigenvalues."><img src="figures/raster/f07_covariance_eigenspectrum.png" class="img-fluid figure-img" style="width:78.0%" alt="Two bar charts compare covariance eigenvalues. The one-driver chart has one zero and one positive bar. The two-driver chart has two nearly equal positive bars."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-eigenspectrum-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9: The empirical one-driver covariance has one numerical-zero eigenvalue, while the two-driver control has two positive eigenvalues.
+</figcaption>
+</figure>
+</div>
+<div id="fig-covariance-geometry" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Two scatter plots show a thin line of one-driver increments and a circular cloud of two-driver increments, with the corresponding degenerate and full-rank covariance outlines.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-covariance-geometry-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/raster/f08_covariance_geometry.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="Figure&nbsp;10: Normalized one-driver increments collapse to a line, while two-driver control increments occupy a two-dimensional cloud."><img src="figures/raster/f08_covariance_geometry.png" class="img-fluid figure-img" style="width:92.0%" alt="Two scatter plots show a thin line of one-driver increments and a circular cloud of two-driver increments, with the corresponding degenerate and full-rank covariance outlines."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-covariance-geometry-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10: Normalized one-driver increments collapse to a line, while two-driver control increments occupy a two-dimensional cloud.
+</figcaption>
+</figure>
+</div>
+<p>This distinction concerns the local covariance, not the long-time visual support alone. A one-driver diffusion can trace a curved subset of the plane, and a state-dependent one-driver diffusion can even have two-dimensional support over time. At each instant, however, its continuous martingale increment still lies in one direction.</p>
+</section>
+<section id="sec-zero" class="level1">
+<h1>Scalar polar coordinates and zero crossings</h1>
+<p>A literal embedding of the signed scalar state is</p>
+<p><span id="eq-real-axis"><span class="math display">\[
+Z_t^{\mathrm{axis}}=X_t+i0.
+\tag{25}\]</span></span></p>
+<p>Away from zero, <span class="math inline">\(R_t=|X_t|\)</span> and <span class="math inline">\(\Theta_t=0\)</span> for <span class="math inline">\(X_t&gt;0\)</span>, <span class="math inline">\(\Theta_t=\pi\)</span> for <span class="math inline">\(X_t&lt;0\)</span>. Let</p>
+<p><span class="math display">\[
+\tau_0=\inf\{t\ge0:X_t=0\}.
+\]</span></p>
+<p>On <span class="math inline">\(t&lt;\tau_0\)</span>, scalar Itô calculus gives the localized identity</p>
+<p><span id="eq-local-log"><span class="math display">\[
+d\log|X_t|
+=\left(\frac{\mu}{X_t}-\frac{\sigma^2}{2X_t^2}\right)dt
++\frac{\sigma}{X_t}\,dW_t.
+\tag{26}\]</span></span></p>
+<p>This is exact on the stochastic interval before the zero, consistent with the general need to stop logarithms at continuous zeros <span class="citation" data-cites="larssonruf2019">(<a href="#ref-larssonruf2019" role="doc-biblioref">Larsson and Ruf 2019</a>)</span>. It is not a global formula through sign changes.</p>
+<p>The correct global formula for the radius is Tanaka’s formula:</p>
+<p><span id="eq-tanaka"><span class="math display">\[
+\boxed{
+|X_t|
+=|X_0|
++\int_0^t\operatorname{sgn}(X_s)\,dX_s
++L_t^0(X).
+}
+\tag{27}\]</span></span></p>
+<p>Here <span class="math inline">\(L_t^0(X)\)</span> is symmetric local time at zero <span class="citation" data-cites="mortersperes2010 biskup2025localtime">(<a href="#ref-mortersperes2010" role="doc-biblioref">Mörters and Peres 2010</a>; <a href="#ref-biskup2025localtime" role="doc-biblioref">Biskup 2025</a>)</span>. With constant volatility,</p>
+<p><span id="eq-occupation-density"><span class="math display">\[
+L_t^0(X)
+=\lim_{\varepsilon\downarrow0}
+\frac{1}{2\varepsilon}
+\int_0^t\mathbf 1_{\{|X_s|&lt;\varepsilon\}}\,d[X,X]_s
+=\lim_{\varepsilon\downarrow0}
+\frac{\sigma^2}{2\varepsilon}
+\int_0^t\mathbf 1_{\{|X_s|&lt;\varepsilon\}}\,ds
+\tag{28}\]</span></span></p>
+<p>in the standard sense.</p>
+<div id="fig-zero-crossings" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The top panel plots a Brownian path with marked sign changes at zero. The bottom panel plots its absolute value, showing reflection at the origin.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-zero-crossings-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/raster/f13_zero_crossing_anatomy.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" title="Figure&nbsp;11: A signed Brownian path crosses zero while its absolute value reflects, creating the nonsmooth point that invalidates a global ordinary logarithm."><img src="figures/raster/f13_zero_crossing_anatomy.png" class="img-fluid figure-img" style="width:88.0%" alt="The top panel plots a Brownian path with marked sign changes at zero. The bottom panel plots its absolute value, showing reflection at the origin."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zero-crossings-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11: A signed Brownian path crosses zero while its absolute value reflects, creating the nonsmooth point that invalidates a global ordinary logarithm.
+</figcaption>
+</figure>
+</div>
+<div id="fig-tanaka" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Four curves compare absolute Brownian motion, the stochastic sign integral, accumulated local time, and their Tanaka reconstruction. The reconstruction overlays the absolute path.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tanaka-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/raster/f14_tanaka_decomposition.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12" title="Figure&nbsp;12: The reflected path equals the stochastic sign integral plus the accumulated discrete local-time residual."><img src="figures/raster/f14_tanaka_decomposition.png" class="img-fluid figure-img" style="width:88.0%" alt="Four curves compare absolute Brownian motion, the stochastic sign integral, accumulated local time, and their Tanaka reconstruction. The reconstruction overlays the absolute path."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tanaka-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12: The reflected path equals the stochastic sign integral plus the accumulated discrete local-time residual.
+</figcaption>
+</figure>
+</div>
+<div id="fig-occupation" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The left panel shows nested horizontal bands around zero on a Brownian path. The right panel shows decreasing absolute mean bias of an occupation-density local-time estimator.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-occupation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/raster/f15_occupation_density.png" class="lightbox" data-gallery="quarto-lightbox-gallery-13" title="Figure&nbsp;13: Shrinking occupation bands concentrate around zero, and the occupation-density bias decreases under joint grid and bandwidth refinement."><img src="figures/raster/f15_occupation_density.png" class="img-fluid figure-img" style="width:92.0%" alt="The left panel shows nested horizontal bands around zero on a Brownian path. The right panel shows decreasing absolute mean bias of an occupation-density local-time estimator."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-occupation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;13: Shrinking occupation bands concentrate around zero, and the occupation-density bias decreases under joint grid and bandwidth refinement.
+</figcaption>
+</figure>
+</div>
+<p>The logarithmic-spiral embedding avoids this singularity because <span class="math inline">\(|Z_t|=R_0e^{\alpha(X_t-X_0)}&gt;0\)</span> for every finite <span class="math inline">\(X_t\)</span>. It should not be confused with the literal polar coordinates of <span class="math inline">\(X_t+i0\)</span>; the two representations answer different geometric questions.</p>
+</section>
+<section id="sec-methods" class="level1">
+<h1>Numerical methods</h1>
+<p>The executable supplement is <code>notebooks/phase3_discovery.ipynb</code>. It was generated by <code>notebooks/build_phase3_discovery.py</code> and executed from a clean kernel in the <code>phase3-paper</code> conda environment.</p>
+<p>The principal parameters were</p>
+<p><span id="eq-numerical-parameters"><span class="math display">\[
+\mu=0.20,\quad \sigma=0.65,\quad
+\alpha=0.45,\quad\beta=1.10,\quad
+X_0=-0.30,\quad R_0=1.20,\quad
+\Theta_0=0.40,\quad T=1.25.
+\tag{29}\]</span></span></p>
+<p>The master seed was <code>20260723</code>; independent experiments used deterministic offsets from that seed.</p>
+<p>The experiments were:</p>
+<ol type="1">
+<li>exact Gaussian simulation of a 4096-step arithmetic Brownian path;</li>
+<li>pathwise comparison of the direct map, cumulative exact products, inverse radius, and spiral constraint;</li>
+<li>200,000 independent terminal draws for radial and complex moments;</li>
+<li>250,000 local increments for rank-one and rank-two covariance estimates;</li>
+<li>10,000 Brownian paths coupled across six Euler–Maruyama resolutions;</li>
+<li>discrete bilinear and Hermitian bracket sums on seven nested grids;</li>
+<li>a pathwise discrete Tanaka identity; and</li>
+<li>6,000-path local-time estimates on four grids.</li>
+</ol>
+<p>For the exact discrete Tanaka check we used</p>
+<p><span id="eq-discrete-tanaka-increment"><span class="math display">\[
+\ell_n
+=|W_{n+1}|-|W_n|-\operatorname{sgn}(W_n)\Delta W_n.
+\tag{30}\]</span></span></p>
+<p>The sum of <span class="math inline">\(\ell_n\)</span> closes the discrete identity algebraically. The separate occupation estimator used</p>
+<p><span id="eq-occupation-estimator"><span class="math display">\[
+\widehat L_{T,\varepsilon,h}^0
+=\frac1{2\varepsilon}
+\sum_n\mathbf1_{\{|W_n|&lt;\varepsilon\}}h,
+\qquad \varepsilon=0.5h^{1/4}.
+\tag{31}\]</span></span></p>
+<p>The analytic derivations are the proofs. Monte Carlo estimates test the code, scale of uncertainty, and visual consequences.</p>
+</section>
+<section id="sec-results" class="level1">
+<h1>Numerical results</h1>
+<section id="pathwise-identities" class="level2">
+<h2 class="anchored" data-anchor-id="pathwise-identities">Pathwise identities</h2>
+<p>The maximum errors along the 4096-step path were:</p>
+<div id="tbl-exactness" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-exactness-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: Pathwise exactness checks; the residuals are floating-point roundoff.
+</figcaption>
+<div aria-describedby="tbl-exactness-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Identity</th>
+<th style="text-align: right;">Maximum absolute error</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">cumulative exact product versus direct <span class="math inline">\(Z_t\)</span></td>
+<td style="text-align: right;"><span class="math inline">\(6.273\times10^{-15}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(X_t\)</span> versus inverse-radius recovery</td>
+<td style="text-align: right;"><span class="math inline">\(1.110\times10^{-15}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">logarithmic-spiral constraint</td>
+<td style="text-align: right;"><span class="math inline">\(5.274\times10^{-16}\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The space-time view in <a href="#fig-space-time" class="quarto-xref">Figure&nbsp;14</a> is intentionally three-dimensional only to display temporal ordering. It must not be read as evidence of a second planar noise direction.</p>
+<div id="fig-space-time" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A three-dimensional curve plots real Z, imaginary Z, and time. It shows repeated motion along a spiral as time increases.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-space-time-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/raster/f04_space_time_trajectory.png" class="lightbox" data-gallery="quarto-lightbox-gallery-14" title="Figure&nbsp;14: Adding time as the third axis separates repeated visits along the spiral without changing the one-driver interpretation."><img src="figures/raster/f04_space_time_trajectory.png" class="img-fluid figure-img" style="width:75.0%" alt="A three-dimensional curve plots real Z, imaginary Z, and time. It shows repeated motion along a spiral as time increases."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-space-time-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14: Adding time as the third axis separates repeated visits along the spiral without changing the one-driver interpretation.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="distribution-and-moment-checks" class="level2">
+<h2 class="anchored" data-anchor-id="distribution-and-moment-checks">Distribution and moment checks</h2>
+<p>The radial samples agree with the lognormal law implied by <a href="#eq-radial-moments" class="quarto-xref">Eq.&nbsp;18</a>.</p>
+<div id="fig-distributions" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Two histograms show terminal radius with an exact lognormal curve and terminal log-radius with an exact Gaussian curve; the overlays closely agree.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-distributions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/raster/f10_distribution_checks.png" class="lightbox" data-gallery="quarto-lightbox-gallery-15" title="Figure&nbsp;15: Monte Carlo histograms of radius and log-radius overlay their exact lognormal and Gaussian densities."><img src="figures/raster/f10_distribution_checks.png" class="img-fluid figure-img" style="width:88.0%" alt="Two histograms show terminal radius with an exact lognormal curve and terminal log-radius with an exact Gaussian curve; the overlays closely agree."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-distributions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15: Monte Carlo histograms of radius and log-radius overlay their exact lognormal and Gaussian densities.
+</figcaption>
+</figure>
+</div>
+<div id="tbl-moments" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-moments-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5: Monte Carlo moment validation with 200,000 terminal draws.
+</figcaption>
+<div aria-describedby="tbl-moments-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Quantity</th>
+<th style="text-align: left;">Component</th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;">Exact</th>
+<th style="text-align: right;">Standard error</th>
+<th style="text-align: right;"><span class="math inline">\(z\)</span>-score</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\mathbb E[R_T]\)</span></td>
+<td style="text-align: left;">real</td>
+<td style="text-align: right;">1.415923</td>
+<td style="text-align: right;">1.416649</td>
+<td style="text-align: right;">0.001063</td>
+<td style="text-align: right;">-0.683</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\mathbb E[R_T^2]\)</span></td>
+<td style="text-align: left;">real</td>
+<td style="text-align: right;">2.230873</td>
+<td style="text-align: right;">2.233419</td>
+<td style="text-align: right;">0.003636</td>
+<td style="text-align: right;">-0.700</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\mathbb E[Z_T/Z_0]\)</span></td>
+<td style="text-align: left;">real</td>
+<td style="text-align: right;">0.737468</td>
+<td style="text-align: right;">0.737199</td>
+<td style="text-align: right;">0.001063</td>
+<td style="text-align: right;">0.253</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\mathbb E[Z_T/Z_0]\)</span></td>
+<td style="text-align: left;">imaginary</td>
+<td style="text-align: right;">0.437494</td>
+<td style="text-align: right;">0.438321</td>
+<td style="text-align: right;">0.001715</td>
+<td style="text-align: right;">-0.482</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\mathbb E[(Z_T/Z_0)^2]\)</span></td>
+<td style="text-align: left;">real</td>
+<td style="text-align: right;">-0.009798</td>
+<td style="text-align: right;">-0.010754</td>
+<td style="text-align: right;">0.003038</td>
+<td style="text-align: right;">0.315</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\mathbb E[(Z_T/Z_0)^2]\)</span></td>
+<td style="text-align: left;">imaginary</td>
+<td style="text-align: right;">0.431580</td>
+<td style="text-align: right;">0.431934</td>
+<td style="text-align: right;">0.002867</td>
+<td style="text-align: right;">-0.124</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div id="fig-complex-moments" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A complex-plane plot shows first and second empirical moments with horizontal and vertical two-standard-error bars beside exact cross markers.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-complex-moments-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/raster/f11_complex_moments.png" class="lightbox" data-gallery="quarto-lightbox-gallery-16" title="Figure&nbsp;16: Empirical complex moments with two-standard-error bars coincide with their exact targets in the complex plane."><img src="figures/raster/f11_complex_moments.png" class="img-fluid figure-img" style="width:68.0%" alt="A complex-plane plot shows first and second empirical moments with horizontal and vertical two-standard-error bars beside exact cross markers."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-complex-moments-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;16: Empirical complex moments with two-standard-error bars coincide with their exact targets in the complex plane.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="covariance-rank" class="level2">
+<h2 class="anchored" data-anchor-id="covariance-rank">Covariance rank</h2>
+<div id="tbl-covariance-results" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-covariance-results-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;6: Empirical log-polar covariance eigenspectra. The tiny negative value is roundoff from a theoretically positive-semidefinite rank-one matrix.
+</figcaption>
+<div aria-describedby="tbl-covariance-results-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Model</th>
+<th style="text-align: right;">Small eigenvalue</th>
+<th style="text-align: right;">Large eigenvalue</th>
+<th style="text-align: right;">Relative matrix error</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">one-driver log-polar embedding</td>
+<td style="text-align: right;"><span class="math inline">\(-1.39\times10^{-16}\)</span></td>
+<td style="text-align: right;">0.595978</td>
+<td style="text-align: right;">0.00135</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">two-driver log-polar control (<span class="math inline">\(r=1.30\)</span>)</td>
+<td style="text-align: right;">0.249766</td>
+<td style="text-align: right;">0.250352</td>
+<td style="text-align: right;">0.00120</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>These values numerically expose the exact rank distinction already proved in <a href="#thm-rank" class="quarto-xref">Theorem&nbsp;2</a>. The experiment is a check of implementation, not an independent proof.</p>
+</section>
+<section id="strong-convergence" class="level2">
+<h2 class="anchored" data-anchor-id="strong-convergence">Strong convergence</h2>
+<div id="tbl-convergence" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-convergence-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;7: Coupled Euler–Maruyama strong errors.
+</figcaption>
+<div aria-describedby="tbl-convergence-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: right;">Steps <span class="math inline">\(N\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(h\)</span></th>
+<th style="text-align: right;">Mean terminal error</th>
+<th style="text-align: right;">Standard error</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">0.078125</td>
+<td style="text-align: right;">0.150392</td>
+<td style="text-align: right;">0.001469</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">0.0390625</td>
+<td style="text-align: right;">0.106417</td>
+<td style="text-align: right;">0.000972</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">64</td>
+<td style="text-align: right;">0.0195313</td>
+<td style="text-align: right;">0.075794</td>
+<td style="text-align: right;">0.000690</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">128</td>
+<td style="text-align: right;">0.00976563</td>
+<td style="text-align: right;">0.052824</td>
+<td style="text-align: right;">0.000455</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">256</td>
+<td style="text-align: right;">0.00488281</td>
+<td style="text-align: right;">0.037456</td>
+<td style="text-align: right;">0.000311</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">512</td>
+<td style="text-align: right;">0.00244141</td>
+<td style="text-align: right;">0.026537</td>
+<td style="text-align: right;">0.000229</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The fitted log-log slope was <span class="math inline">\(0.5015\)</span>, consistent with strong order <span class="math inline">\(1/2\)</span> <span class="citation" data-cites="higham2001">(<a href="#ref-higham2001" role="doc-biblioref">Higham 2001</a>)</span>.</p>
+<div id="fig-strong-convergence" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A log-log graph plots mean Euler--Maruyama terminal error with uncertainty bars and a dashed h to the one-half reference line. The fitted slope is about 0.502.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-strong-convergence-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/raster/f12_strong_convergence.png" class="lightbox" data-gallery="quarto-lightbox-gallery-17" title="Figure&nbsp;17: The shared-path Euler–Maruyama errors follow the half-order reference line."><img src="figures/raster/f12_strong_convergence.png" class="img-fluid figure-img" style="width:70.0%" alt="A log-log graph plots mean Euler--Maruyama terminal error with uncertainty bars and a dashed h to the one-half reference line. The fitted slope is about 0.502."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-strong-convergence-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17: The shared-path Euler–Maruyama errors follow the half-order reference line.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="local-time" class="level2">
+<h2 class="anchored" data-anchor-id="local-time">Local time</h2>
+<p>For standard Brownian motion over <span class="math inline">\(T=1.25\)</span>,</p>
+<p><span class="math display">\[
+\mathbb E[L_T^0]=\sqrt{\frac{2T}{\pi}}=0.892062.
+\]</span></p>
+<div id="tbl-local-time" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-local-time-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;8: Discrete Tanaka and occupation-density results over 6,000 paths.
+</figcaption>
+<div aria-describedby="tbl-local-time-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 16%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Steps <span class="math inline">\(N\)</span></th>
+<th style="text-align: right;"><span class="math inline">\(\varepsilon\)</span></th>
+<th style="text-align: right;">Discrete mean</th>
+<th style="text-align: right;">Occupation mean</th>
+<th style="text-align: right;">Occupation absolute error</th>
+<th style="text-align: right;">Identity max error</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">128</td>
+<td style="text-align: right;">0.157179</td>
+<td style="text-align: right;">0.895332</td>
+<td style="text-align: right;">0.832549</td>
+<td style="text-align: right;">0.059513</td>
+<td style="text-align: right;"><span class="math inline">\(2.82\times10^{-15}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">512</td>
+<td style="text-align: right;">0.111142</td>
+<td style="text-align: right;">0.882717</td>
+<td style="text-align: right;">0.834180</td>
+<td style="text-align: right;">0.057882</td>
+<td style="text-align: right;"><span class="math inline">\(7.11\times10^{-15}\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2048</td>
+<td style="text-align: right;">0.078590</td>
+<td style="text-align: right;">0.884203</td>
+<td style="text-align: right;">0.845796</td>
+<td style="text-align: right;">0.046266</td>
+<td style="text-align: right;"><span class="math inline">\(1.07\times10^{-14}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8192</td>
+<td style="text-align: right;">0.055571</td>
+<td style="text-align: right;">0.893896</td>
+<td style="text-align: right;">0.868905</td>
+<td style="text-align: right;">0.023157</td>
+<td style="text-align: right;"><span class="math inline">\(2.00\times10^{-14}\)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The discrete identity closes to roundoff on every grid. The occupation estimator has visible finite-bandwidth bias, which decreases but converges more slowly. This is why exact grid hits are not used as a local-time estimator.</p>
+</section>
+</section>
+<section id="sec-discussion" class="level1">
+<h1>Discussion</h1>
+<p>The construction resolves the apparent tension between a stochastic radius and a scalar Brownian driver. A random radius does not imply two-dimensional noise. In <a href="#eq-polar-coordinates" class="quarto-xref">Eq.&nbsp;3</a>, both log-radius and angle are random because both depend on <span class="math inline">\(X_t\)</span>. They are nevertheless perfectly locally coupled, as <a href="#eq-spiral-relation" class="quarto-xref">Eq.&nbsp;10</a> and <a href="#eq-polar-covariance" class="quarto-xref">Eq.&nbsp;20</a> show.</p>
+<p>The embedding preserves more than a visual trace. For <span class="math inline">\(\alpha\ne0\)</span>, <a href="#eq-inverse-radius" class="quarto-xref">Eq.&nbsp;9</a> reconstructs the scalar state at every time, so the complex and scalar processes generate the same information. Yet it preserves less than a full planar model: no deterministic or adapted transformation driven by one scalar Brownian motion can match a positive-definite instantaneous two-dimensional covariance.</p>
+<p>This distinction clarifies the roles of <span class="math inline">\(i\)</span> and quadratic variation:</p>
+<ul>
+<li>multiplication by <span class="math inline">\(i\)</span> rotates a complex vector by <span class="math inline">\(90^\circ\)</span>;</li>
+<li>the imaginary part of <span class="math inline">\(c\)</span> converts a scalar displacement into phase;</li>
+<li><span class="math inline">\(i^2=-1\)</span> is exact complex algebra;</li>
+<li><span class="math inline">\([W,W]_t=t\)</span> is a pathwise limit of squared increments; and</li>
+<li>the Itô drift correction in <a href="#eq-complex-sde" class="quarto-xref">Eq.&nbsp;11</a> comes from the second derivative and quadratic variation, not from treating <span class="math inline">\(dW\)</span> as an ordinary square root of <span class="math inline">\(dt\)</span>.</li>
+</ul>
+<div id="fig-claim-hierarchy" class="quarto-float quarto-figure quarto-figure-center anchored" alt="A matrix marks the embedding, inverse, Itô SDE, rank theorem, and Tanaka identity as exact; log absolute X as localized; occupation estimation as asymptotic; Monte Carlo as numerical; and finite differential algebra as heuristic only.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-claim-hierarchy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/raster/f17_claim_hierarchy.png" class="lightbox" data-gallery="quarto-lightbox-gallery-18" title="Figure&nbsp;18: The notebook classifies each major statement as exact, localized, asymptotic, numerical, or heuristic."><img src="figures/raster/f17_claim_hierarchy.png" class="img-fluid figure-img" style="width:88.0%" alt="A matrix marks the embedding, inverse, Itô SDE, rank theorem, and Tanaka identity as exact; log absolute X as localized; occupation estimation as asymptotic; Monte Carlo as numerical; and finite differential algebra as heuristic only."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-claim-hierarchy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18: The notebook classifies each major statement as exact, localized, asymptotic, numerical, or heuristic.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-claim-hierarchy" class="quarto-xref">Figure&nbsp;18</a> is a compact guard against overinterpretation. In particular, the finite-increment statement <span class="math inline">\((\Delta W)^2=\Delta t\)</span> is false pathwise. Only aggregated squared increments converge to elapsed time.</p>
+</section>
+<section id="sec-limitations" class="level1">
+<h1>Limitations</h1>
+<p>The construction has clear boundaries.</p>
+<ol type="1">
+<li>It is a deterministic embedding of a scalar process, not a universal model of planar stochastic motion.</li>
+<li>When <span class="math inline">\(\alpha=0\)</span>, radius no longer provides pointwise recovery. A continuously lifted phase can preserve the scalar path, but the wrapped complex state need not be injective.</li>
+<li>The literal real-axis polar form is singular at zero; localization and Tanaka local time are structural necessities, not numerical nuisances.</li>
+<li>The covariance theorem concerns instantaneous continuous-martingale rank. It does not assert that every one-driver process has one-dimensional long-time support.</li>
+<li>The occupation-density estimator converges slowly because grid and bandwidth limits interact.</li>
+<li>Monte Carlo results validate implementation and scale; they do not prove the analytic identities.</li>
+<li>No claim of historical novelty is made for the logarithmic-spiral map or the rank-one outer-product argument.</li>
+</ol>
+</section>
+<section id="sec-conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>A scalar arithmetic Brownian motion has the faithful complex form</p>
+<p><span class="math display">\[
+Z_t=Z_0e^{(\alpha+i\beta)(X_t-X_0)},\qquad \alpha\ne0,
+\]</span></p>
+<p>with both stochastic radius and stochastic angle. Its induced Itô dynamics are</p>
+<p><span class="math display">\[
+\frac{dZ_t}{Z_t}
+=\left[
+(\alpha+i\beta)\mu
++\frac12(\alpha+i\beta)^2\sigma^2
+\right]dt
++(\alpha+i\beta)\sigma\,dW_t,
+\]</span></p>
+<p>and its exact random-walk step is</p>
+<p><span class="math display">\[
+Z_{n+1}
+=Z_n\exp\!\left[
+(\alpha+i\beta)
+(\mu\Delta t+\sigma\Delta W_n)
+\right].
+\]</span></p>
+<p>The radius reconstructs <span class="math inline">\(X_t\)</span>; the angle supplies a geometric rotation; and the shared Brownian increment forces rank-one local covariance. A genuine planar Brownian motion remains a different, rank-two, two-driver model. At scalar zero crossings, the ordinary polar logarithm must give way to localization and Tanaka local time.</p>
+<p>The bridge between complex numbers and Itô calculus is therefore precise but limited: complex exponentials organize stochastic scale and rotation, while quadratic variation—not the algebraic identity <span class="math inline">\(i^2=-1\)</span>—produces the Itô correction.</p>
+</section>
+<section id="sec-appendix-ito" class="level1">
+<h1>Appendix A. Expanded Itô algebra</h1>
+<p>Starting from <a href="#eq-polar-reconstruction" class="quarto-xref">Eq.&nbsp;14</a> and <a href="#eq-linear-polar-sde" class="quarto-xref">Eq.&nbsp;13</a>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\frac{dZ}{Z}
+&amp;=\alpha\mu\,dt+\alpha\sigma\,dW
+  +i\beta\mu\,dt+i\beta\sigma\,dW\\
+&amp;\quad+\frac12(\alpha^2-\beta^2)\sigma^2dt
+  +i\alpha\beta\sigma^2dt\\
+&amp;=\left[
+(\alpha+i\beta)\mu
++\frac12(\alpha^2-\beta^2+2i\alpha\beta)\sigma^2
+\right]dt\\
+&amp;\quad+(\alpha+i\beta)\sigma\,dW\\
+&amp;=\left(c\mu+\frac12c^2\sigma^2\right)dt+c\sigma\,dW.
+\end{aligned}
+\]</span></p>
+<p>The symbolic notebook independently simplifies the difference between the direct and polar drifts to zero.</p>
+</section>
+<section id="sec-appendix-moments" class="level1">
+<h1>Appendix B. Exact moment derivation</h1>
+<p>For any complex <span class="math inline">\(q\)</span>, the entire Gaussian moment-generating function gives</p>
+<p><span class="math display">\[
+\mathbb E[e^{qY_t}]
+=\exp\!\left(q\mu t+\tfrac12q^2\sigma^2t\right),
+\qquad Y_t=X_t-X_0.
+\]</span></p>
+<p>Taking <span class="math inline">\(q=p\alpha\)</span> and multiplying by <span class="math inline">\(R_0^p\)</span> gives <a href="#eq-radial-moments" class="quarto-xref">Eq.&nbsp;18</a>. Taking <span class="math inline">\(q=nc\)</span> gives <a href="#eq-complex-moments" class="quarto-xref">Eq.&nbsp;19</a>. No complex branch choice appears because the random variable is defined by the entire exponential function, not by applying a logarithm to sampled <span class="math inline">\(Z_t\)</span>.</p>
+</section>
+<section id="sec-reproducibility" class="level1">
+<h1>Appendix C. Reproducibility manifest</h1>
+<p>The preserved execution used:</p>
+<div id="tbl-software" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-software-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;9: Software used for the executed notebook and manuscript.
+</figcaption>
+<div aria-describedby="tbl-software-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Component</th>
+<th style="text-align: left;">Version</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Python</td>
+<td style="text-align: left;">3.12.13</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">NumPy</td>
+<td style="text-align: left;">2.5.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SciPy</td>
+<td style="text-align: left;">1.18.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">pandas</td>
+<td style="text-align: left;">3.0.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Matplotlib</td>
+<td style="text-align: left;">3.11.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Seaborn</td>
+<td style="text-align: left;">0.13.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SymPy</td>
+<td style="text-align: left;">1.14.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">nbformat</td>
+<td style="text-align: left;">5.10.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Quarto</td>
+<td style="text-align: left;">1.9.38</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TinyTeX</td>
+<td style="text-align: left;">2026</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>From the repository root, regenerate and execute the notebook with:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> run <span class="at">-n</span> phase3-paper python <span class="dt">\</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  paper/notebooks/build_phase3_discovery.py</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> run <span class="at">-n</span> phase3-paper jupyter nbconvert <span class="dt">\</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--to</span> notebook <span class="at">--execute</span> <span class="at">--inplace</span> <span class="dt">\</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--ExecutePreprocessor.timeout</span><span class="op">=</span>900 <span class="dt">\</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  paper/notebooks/phase3_discovery.ipynb</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Then render the paper:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render paper <span class="at">--to</span> pdf</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The notebook writes all figure sources to <code>paper/figures/</code>, all numerical tables to <code>paper/tables/</code>, and a machine-readable summary to <code>paper/tables/numerical_summary.json</code>.</p>
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-biskup2025localtime" class="csl-entry" role="listitem">
+Biskup, Marek. 2025. <em>Brownian Local Time</em>. MATH 275D Notes, Chapter 29, University of California, Los Angeles. <a href="https://www.math.ucla.edu/~biskup/275d.1.25f/PDFs/ch29.pdf">https://www.math.ucla.edu/~biskup/275d.1.25f/PDFs/ch29.pdf</a>.
+</div>
+<div id="ref-goodman2007ito" class="csl-entry" role="listitem">
+Goodman, Jonathan. 2007. <em>Stochastic Calculus Notes: Lecture 8</em>. Courant Institute of Mathematical Sciences, New York University. <a href="https://math.nyu.edu/~goodman/teaching/StochCalc2007/notes/l8.pdf">https://math.nyu.edu/~goodman/teaching/StochCalc2007/notes/l8.pdf</a>.
+</div>
+<div id="ref-higham2001" class="csl-entry" role="listitem">
+Higham, Desmond J. 2001. <span>“An Algorithmic Introduction to Numerical Simulation of Stochastic Differential Equations.”</span> <em>SIAM Review</em> 43 (3): 525–46. <a href="https://doi.org/10.1137/S0036144500378302">https://doi.org/10.1137/S0036144500378302</a>.
+</div>
+<div id="ref-larssonruf2019" class="csl-entry" role="listitem">
+Larsson, Martin, and Johannes Ruf. 2019. <span>“Stochastic Exponentials and Logarithms on Stochastic Intervals—a Survey.”</span> <em>Journal of Mathematical Analysis and Applications</em> 476 (1): 2–12. <a href="https://doi.org/10.1016/j.jmaa.2018.11.040">https://doi.org/10.1016/j.jmaa.2018.11.040</a>.
+</div>
+<div id="ref-mortersperes2010" class="csl-entry" role="listitem">
+Mörters, Peter, and Yuval Peres. 2010. <em>Brownian Motion</em>. Cambridge Series in Statistical and Probabilistic Mathematics 30. Cambridge University Press. <a href="https://doi.org/10.1017/CBO9780511750489">https://doi.org/10.1017/CBO9780511750489</a>.
+</div>
+<div id="ref-pitmanyor1986" class="csl-entry" role="listitem">
+Pitman, Jim, and Marc Yor. 1986. <span>“Asymptotic Laws of Planar Brownian Motion.”</span> <em>The Annals of Probability</em> 14 (3): 733–79. <a href="https://www.jstor.org/stable/2244132">https://www.jstor.org/stable/2244132</a>.
+</div>
+<div id="ref-pitmanyor2018guide" class="csl-entry" role="listitem">
+Pitman, Jim, and Marc Yor. 2018. <em>A Guide to Brownian Motion and Related Stochastic Processes</em>. <a href="https://arxiv.org/abs/1802.09679">https://arxiv.org/abs/1802.09679</a>.
+</div>
+</div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>

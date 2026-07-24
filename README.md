@@ -81,6 +81,25 @@ stochastic radius:
 10. [`.agent/reviews/TASK-003-opencode-glm52-review.md`](.agent/reviews/TASK-003-opencode-glm52-review.md)
     — independent GLM 5.2 review after implementation.
 
+## Phase 3 technical paper
+
+The Phase 3 result is also available as a research-paper-style treatment with
+an executed discovery notebook and reproducible PDF/HTML renders:
+
+1. [`PHASE_3_TECHNICAL_PAPER_PLAN.md`](PHASE_3_TECHNICAL_PAPER_PLAN.md) —
+   paper scope, section architecture, visualization plan, and acceptance
+   criteria.
+2. [`paper/index.qmd`](paper/index.qmd) — canonical Quarto manuscript.
+3. [`paper/notebooks/phase3_discovery.ipynb`](paper/notebooks/phase3_discovery.ipynb)
+   — executed computational narrative showing how the construction was found
+   and tested.
+4. [`paper/output/phase3-one-driver-complex-embedding.pdf`](paper/output/phase3-one-driver-complex-embedding.pdf)
+   — final 23-page PDF.
+5. [`paper/output/phase3-one-driver-complex-embedding.html`](paper/output/phase3-one-driver-complex-embedding.html)
+   — browser-readable companion.
+6. [`.agent/reviews/TASK-004-opencode-glm52-review.md`](.agent/reviews/TASK-004-opencode-glm52-review.md)
+   — independent GLM 5.2 mathematical and numerical review.
+
 ## Main formula
 
 If
