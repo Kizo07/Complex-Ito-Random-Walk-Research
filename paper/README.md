@@ -1,6 +1,6 @@
 # Technical Papers
 
-This directory contains two independent Quarto manuscript projects. Each
+This directory contains three independent Quarto manuscript projects. Each
 project owns its notebook, figures, tables, bibliography, styles, filters, and
 rendered outputs.
 
@@ -41,5 +41,27 @@ Render from the repository root:
 quarto render paper/phase4
 ```
 
-The two projects are deliberately self-contained. Rendering one does not
-modify the source, cache, figures, tables, or output directory of the other.
+## One-Phase Euler Coordinates
+
+**One-Phase Euler Coordinates for Affine Brownian Factors: Exact
+Classification, Pricing Conjugacy, and Numerical Consequences**
+
+- canonical manuscript:
+  [`one-phase-euler/index.qmd`](one-phase-euler/index.qmd)
+- research record:
+  [`one-phase-euler/RESEARCH_NOTES.md`](one-phase-euler/RESEARCH_NOTES.md)
+- reproducible notebook:
+  [`one-phase-euler/notebooks/one_phase_euler_finance.ipynb`](one-phase-euler/notebooks/one_phase_euler_finance.ipynb)
+- PDF:
+  [`one-phase-euler/output/one-phase-euler-affine-brownian-factors.pdf`](one-phase-euler/output/one-phase-euler-affine-brownian-factors.pdf)
+- HTML:
+  [`one-phase-euler/output/one-phase-euler-affine-brownian-factors.html`](one-phase-euler/output/one-phase-euler-affine-brownian-factors.html)
+
+Render from the repository root:
+
+```bash
+quarto render paper/one-phase-euler
+```
+
+All three projects are deliberately isolated: rendering one does not modify
+the sources, caches, figures, tables, or outputs of either other project.

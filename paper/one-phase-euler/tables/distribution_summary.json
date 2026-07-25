@@ -1,0 +1,11 @@
+{
+  "density_mass": 0.9999999999999999,
+  "density_quadrature_error": 6.565675536075472e-10,
+  "pit_ks_pvalue": 0.7259888617047745,
+  "pit_ks_statistic": 0.0017267202035672335,
+  "semigroup_absolute_error": 1.1102230246251565e-16,
+  "semigroup_composed": 0.36948956892833706,
+  "semigroup_direct": 0.36948956892833695,
+  "semigroup_quadrature_error": 1.1696687839363678e-10,
+  "signed_sigma": -0.9
+}

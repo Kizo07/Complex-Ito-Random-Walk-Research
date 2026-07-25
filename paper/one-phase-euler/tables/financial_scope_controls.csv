@@ -1,0 +1,7 @@
+control,metric,value,interpretation
+European samplewise equality,maximum absolute payoff difference,1.38777878078e-17,lossless reparameterization leaves each sample unchanged
+European estimator variance,direct minus phase sample variance,6.77626357803e-21,the chart alone supplies no variance reduction
+pinned Brownian bridges,standard deviation of path average,0.00426749518514,one terminal phase does not determine path history
+pinned Brownian bridges,maximum terminal phase spread,2.77555756156e-16,all bridges share the same endpoint up to roundoff
+two-factor Gaussian terminal law,smallest covariance eigenvalue,0.65386772768,positive second eigenvalue certifies two-dimensional support
+two-factor Gaussian terminal law,covariance determinant,0.878563095014,nonsingular covariance precludes smooth one-phase compression

@@ -2,10 +2,54 @@
 
 ## Active work
 
-`TASK-007` is complete under the user's Codex-direct exception. Its approved
-plan was `PHASE_5_COMPREHENSIVE_ONE_PHASE_EULER_RESEARCH_PLAN.md`. Work remains
+`TASK-008` is complete under the user's Codex-direct exception. The academic
+paper, reproducible finance notebook, rendered publication artifacts, source
+audit, verification ledger, and independent review are complete. Work remains
 local; commit, push, pull request, merge, publication, and release were not
 authorized for this task.
+
+## TASK-008 outcome
+
+The new paper is **One-Phase Euler Coordinates for Affine Brownian Factors:
+Exact Classification, Pricing Conjugacy, and Numerical Consequences**. It
+proves that, for \(Z_t=Z_0+at+bW_t\) with \(Z_0b\ne0\), a lossless
+time-independent genuine one-phase Euler representation exists exactly when
+\(a/b\in\mathbb R\) and \(b/Z_0\notin\mathbb R\). It develops the exact phase
+diffusion, kernel, generator, boundary classification, rigidity and group
+structure, then proves Bachelier pricing, PDE, Greek, and hedge conjugacy.
+
+Primary artifacts:
+
+- `docs/superpowers/specs/2026-07-25-one-phase-euler-financial-paper-design.md`;
+- `docs/superpowers/plans/2026-07-25-one-phase-euler-financial-paper.md`;
+- `paper/one-phase-euler/index.qmd`;
+- `paper/one-phase-euler/RESEARCH_NOTES.md`;
+- `paper/one-phase-euler/notebooks/one_phase_euler_finance.ipynb`;
+- `paper/one-phase-euler/output/one-phase-euler-affine-brownian-factors.pdf`;
+- `paper/one-phase-euler/output/one-phase-euler-affine-brownian-factors.html`;
+- `phase5_finance.py` and `tests/test_phase5_finance.py`;
+- `.agent/evidence/TASK-008-verification.md`; and
+- `.agent/reviews/TASK-008-opencode-glm52-review.md`.
+
+Verification:
+
+- 39/39 full-project tests pass.
+- Two clean-kernel notebook executions had 22 sequential code cells, zero
+  errors, and byte-identical 44-file structured-evidence bundles.
+- The final artifact set has 22 raster and 22 vector figures.
+- The PDF has 47 letter-size pages, embedded fonts, and no unresolved
+  citations or cross-references.
+- The HTML has 22 accessible figures, 52 bibliography entries, and no missing
+  source or broken internal fragment.
+- OpenCode `zai-coding-plan/glm-5.2` found no critical or major defect; both
+  minor findings were resolved.
+- Review usage ID: `61d151d7-1472-4571-a4dc-ed1089a0ecb0`.
+- Scorecard evaluation ID: `92e9a611-3108-40b5-b12d-5488204e79a8`.
+
+## TASK-007 completed context
+
+`TASK-007` is complete under the user's Codex-direct exception. Its approved
+plan was `PHASE_5_COMPREHENSIVE_ONE_PHASE_EULER_RESEARCH_PLAN.md`.
 
 ## TASK-007 outcome
 

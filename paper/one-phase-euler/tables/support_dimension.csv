@@ -1,0 +1,4 @@
+case,eigenvalue_1,eigenvalue_2,determinant,empirical_rank_tol_1e-8
+radial line,0,0.341113334134,0,1
+eligible collinear line,0,0.712959672058,0,1
+random-time noncollinear,0.0530840898969,0.696149661735,0.0369544712252,2

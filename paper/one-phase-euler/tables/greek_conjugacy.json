@@ -1,0 +1,7 @@
+{
+  "central_difference_step": 7.5e-05,
+  "max_delta_absolute_error": 1.7563087206795558e-08,
+  "max_gamma_absolute_error": 5.806385084961008e-07,
+  "rms_delta_absolute_error": 7.209031405996224e-09,
+  "rms_gamma_absolute_error": 1.5815927463992738e-07
+}

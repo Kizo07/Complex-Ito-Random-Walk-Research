@@ -1,0 +1,3 @@
+estimator,estimate,sample_variance,standard_error,absolute_bias_vs_analytic
+direct arithmetic Brownian,0.363588299584,0.320662659809,0.00110599772674,0.00236298747849
+phase then exact inverse,0.363588299584,0.320662659809,0.00110599772674,0.00236298747849

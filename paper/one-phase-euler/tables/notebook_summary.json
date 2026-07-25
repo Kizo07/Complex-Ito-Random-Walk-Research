@@ -1,0 +1,11 @@
+{
+  "bridge_path_average_standard_deviation": 0.004267495185143631,
+  "expected_figures_per_format": 22,
+  "max_delta_error": 1.7563087206795558e-08,
+  "max_gamma_error": 5.806385084961008e-07,
+  "max_pricing_conjugacy_error": 2.7755575615628914e-17,
+  "max_pricing_pde_residual": 8.122450385894542e-10,
+  "minimum_figure_bytes": 13972,
+  "missing_figure_files": 0,
+  "two_factor_covariance_rank": 2
+}

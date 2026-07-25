@@ -1,0 +1,2420 @@
+---
+title: "One-Phase Euler Coordinates for Affine Brownian Factors"
+subtitle: "Exact classification, phase diffusion, and conjugate normal-model pricing"
+author:
+  - name: "Complex–Itô Random-Walk Research Project"
+date: 2026-07-25
+date-format: long
+abstract: |
+  We classify the nondegenerate affine complex Brownian processes
+  $Z_t=Z_0+at+bW_t$ that admit an exact, lossless, time-independent Euler
+  representation $Z_t=Z_0r(\theta_t)e^{i\theta_t}$ in which the genuine
+  polar phase $\theta_t$ is the only stochastic state coordinate. For
+  $Z_0b\ne0$, such a representation exists if and only if
+  $a/b\in\mathbb R$ and $b/Z_0\notin\mathbb R$. The first condition fixes all
+  temporal supports to one affine line; the second makes its argument
+  injective by requiring that line to miss the polar origin. Writing
+  $a=\lambda b$ and $b/Z_0=\rho e^{i\phi}$, the representation and inverse
+  are
+  $r(\theta)=\sin\phi/\sin(\phi-\theta)$ and
+  $x(\theta)=\sin\theta/[\rho\sin(\phi-\theta)]$ on a unique open phase
+  interval of length $\pi$. The canonical financial chart is
+  $1+iX_t/c=\sec\theta_t e^{i\theta_t}$ with
+  $\theta_t=\arctan(X_t/c)$. We derive its Itô and Stratonovich equations,
+  generator, exact transition kernel, natural boundaries, and transported
+  additive group. A rigidity result shows that constant-coefficient additive
+  dynamics force a line, whereas compatible multiplicative dynamics force a
+  logarithmic spiral. Under a pricing measure, the chart conjugates the
+  Bachelier generator, option values, Greeks, and hedges without changing the
+  financial model. Reproducible experiments verify reconstruction, strong
+  convergence, transition and pricing PDEs, and exact Bachelier prices and
+  Greeks. Matched controls show that the chart creates neither an additional
+  stochastic dimension nor automatic Monte Carlo variance reduction,
+  holomorphic structure, path compression, or universal numerical
+  acceleration. The result is therefore an exact geometric coordinate and a
+  classification theorem, not a replacement for Itô calculus or a new
+  pricing model.
+keywords:
+  - affine Brownian motion
+  - Bachelier model
+  - stochastic coordinate transformation
+  - Euler form
+  - arctangent compactification
+  - transition density
+  - option Greeks
+  - stochastic dimension
+  - logarithmic spiral
+  - geometric numerical integration
+output-file: one-phase-euler-affine-brownian-factors
+---
+
+**Mathematics Subject Classification (2020):** 60H10, 60J60, 91G20,
+91G60, 65C30.
+
+**JEL classification:** C02, C63, G12, G13.
+
+# Introduction {#sec-introduction}
+
+Euler's identity
+
+$$
+e^{i\theta}=\cos\theta+i\sin\theta
+$$
+
+turns phase into planar rotation, while the Itô table records the quadratic
+variation of Brownian motion through $d[W,W]_t=dt$. Their superficial
+resemblance—each contains a consequential square—often motivates an attempt
+to combine drift and Brownian noise into one complex exponential. The
+motivation is geometrically natural, but the two squares have different
+meanings. The identity $i^2=-1$ is algebraic. Brownian quadratic variation is
+a limiting path property. A valid bridge between them must pass through
+Itô's formula, support geometry, and an invertible state map.
+
+This paper asks a precise version of that question. Given a real standard
+Brownian motion $W$ and
+
+$$
+Z_t=Z_0+at+bW_t,\qquad Z_0,a,b\in\mathbb C,
+$$ {#eq-affine-process}
+
+when can the complete process be written
+
+$$
+Z_t=Z_0r(\theta_t)e^{i\theta_t}
+$$ {#eq-requested-form}
+
+with a deterministic, time-independent radius $r$ and one real stochastic
+phase $\theta$ that is both the genuine polar argument and a lossless state
+coordinate? The requirement is substantially stronger than merely encoding a
+real variable by some measurable real number. It asks the polar angle itself
+to carry the random state while the modulus is a deterministic function of
+that angle.
+
+The central result is an exact classification. In the nondegenerate case
+$Z_0b\ne0$, @eq-requested-form exists if and only if
+
+$$
+\boxed{
+\frac{a}{b}\in\mathbb R,
+\qquad
+\frac{b}{Z_0}\notin\mathbb R.
+}
+$$ {#eq-classification-preview}
+
+The first condition says that drift and diffusion are real-collinear, so all
+fixed-time supports coincide with one affine line. The second says that the
+line misses the origin, making its continuous argument strictly monotone. If
+
+$$
+a=\lambda b,\qquad
+\frac b{Z_0}=\rho e^{i\phi},\qquad
+x_t=\lambda t+W_t,
+$$
+
+then the exact formula is
+
+$$
+\boxed{
+Z_t
+=
+Z_0\frac{\sin\phi}{\sin(\phi-\theta_t)}e^{i\theta_t},
+\qquad
+\theta_t=\arg\!\left(1+\rho e^{i\phi}x_t\right).
+}
+$$ {#eq-general-preview}
+
+The inverse is explicit and the admissible phase interval has length $\pi$.
+Thus an additive affine process can acquire a genuine, lossless stochastic
+phase, but it cannot execute unrestricted winding.
+
+The canonical form is especially transparent. For an arithmetic Brownian
+factor $X$ and scale $c>0$,
+
+$$
+\boxed{
+1+i\frac{X_t}{c}
+=\sec\theta_t\,e^{i\theta_t},
+\qquad
+\theta_t=\arctan\!\left(\frac{X_t}{c}\right),
+\qquad
+X_t=c\tan\theta_t.
+}
+$$ {#eq-canonical-preview}
+
+The state formula contains one stochastic variable, $\theta_t$. Time still
+indexes the process and Brownian randomness still drives its law; neither can
+be removed from a nontrivial stochastic model. The point is state
+factorization, not the disappearance of stochasticity.
+
+![The canonical secant polar graph, its affine-line image, and the radius divergence at the inaccessible phase endpoints.](figures/vector/f01_secant_geometry.pdf){#fig-secant-geometry fig-alt="Left: the secant Euler curve lies on a vertical affine line and selected radius vectors point to it. Right: secant radius versus phase on an open half-turn, diverging near both endpoints." width=100%}
+
+@fig-secant-geometry reveals the principal geometric fact. Although
+$\sec\theta$ and $e^{i\theta}$ look radial and rotational separately, their
+product is
+
+$$
+\sec\theta e^{i\theta}=1+i\tan\theta,
+$$
+
+a straight line. The representation changes coordinates and traversal speed;
+it does not turn rank-one additive Brownian motion into planar Brownian
+motion.
+
+## Contributions
+
+The paper makes five contributions.
+
+1. It distinguishes measurable scalar factorization from a genuine,
+   continuous, lossless Euler phase and proves the complete affine
+   classification @eq-classification-preview, including a randomized-time
+   necessity argument that respects almost-sure quantifiers.
+2. It derives the general phase radius, inverse, domain, Itô and Stratonovich
+   dynamics, generator, transition density, semigroup, exact step, and
+   boundary classification.
+3. It proves a local rigidity dictionary: constant additive complex noise
+   forces a straight line, whereas compatible constant multiplicative noise
+   forces a logarithmic spiral. It also identifies the transported group law
+   of the phase chart.
+4. It develops a financial interpretation in which the complex state is an
+   auxiliary coordinate for a real Bachelier factor. Pricing, Greeks,
+   hedging, and the pricing PDE are conjugate under the chart.
+5. It subjects every broad implication to matched numerical controls. Those
+   controls separate exact coordinate benefits from unsupported claims of
+   added dimension, winding, variance reduction, path compression,
+   holomorphic calculus, or universal acceleration.
+
+The arctangent transform, stochastic changes of variables, Bachelier pricing,
+compactification of unbounded domains, stochastic exponentials, and complex
+linear SDEs are established subjects. The contribution is the classification
+and the integrated stochastic-financial analysis, not the invention of those
+ingredients.
+
+## Organization
+
+@sec-literature positions the result. @sec-setup fixes the probability,
+geometric, and financial assumptions. @sec-factorization isolates measurable
+factorization and support geometry. @sec-classification proves the affine
+theorem and handles exceptional cases. @sec-canonical develops the canonical
+secant chart, followed by its stochastic theory in @sec-phase-theory.
+@sec-rigidity compares additive lines, multiplicative spirals, and transported
+groups. @sec-finance establishes pricing conjugacy and @sec-numerics reports
+the reproducible evidence. @sec-vector and @sec-complex-analysis delimit the
+vector and complex-analytic implications. @sec-research-agenda gives
+qualified applications and open problems. Technical derivations and
+reproducibility details appear in the appendices.
+
+# Literature and novelty boundary {#sec-literature}
+
+## Brownian motion, random walks, and finance
+
+Bachelier's 1900 dissertation introduced a Gaussian diffusion model for
+speculative prices and an early option-pricing calculation
+[@bachelier1900]. Wiener's path-space construction provided a mathematical
+foundation for Brownian motion [@wiener1923], and Donsker's invariance
+principle later made the random-walk-to-Brownian limit precise
+[@donsker1951]. Modern Brownian-motion treatments supply the support, path,
+and quadratic-variation facts used below [@mortersperes2010]. We do not
+retroactively attribute modern semimartingale or risk-neutral machinery to
+Bachelier; those frameworks came later.
+
+Itô's foundational papers introduced stochastic integration and the
+second-order change-of-variables rule [@ito1944; @ito1951]. Girsanov
+established absolutely continuous measure changes for diffusion processes
+[@girsanov1960], and Kac connected Wiener functionals to parabolic equations
+[@kac1949]. Modern derivative valuation rests on no-arbitrage, replication,
+and martingale arguments developed in particular by Black and Scholes,
+Merton, and Harrison and Pliska [@blackscholes1973; @merton1973;
+@harrisonpliska1981].
+
+## Transformations and angular coordinates
+
+Nonlinear diffusion coordinates are classical. Lamperti transformations
+normalize scalar diffusion coefficients [@lamperti1964]. Doss and Sussmann
+relate suitable stochastic equations to pathwise ordinary equations
+[@doss1977; @sussmann1977], while Zvonkin uses a one-to-one phase-space
+transformation to remove irregular drift [@zvonkin1974]. Särkkä and Solin
+use an arctangent transform of Brownian motion as an exact nonlinear-SDE
+benchmark [@sarkkasolin2019]. These works rule out any novelty claim for
+applying $\arctan$ or Itô's formula to a scalar diffusion.
+
+Projecting a Gaussian vector onto an angle is also established in directional
+statistics [@pukkilarao1988; @wanggelfand2013]. The law studied here is
+different from a generic projected bivariate normal: its Gaussian support is
+one affine line, and its phase density follows from a one-dimensional
+monotone change of variables.
+
+Genuine planar Brownian winding requires two-dimensional motion and has
+asymptotic behavior absent from a one-line process [@spitzer1958;
+@pitmanyor1986]. Stereographic projection of Brownian motion likewise has a
+substantial prior theory [@carne1985]. Those literatures are comparisons, not
+derivations of the present phase.
+
+## Multiplicative and complex stochastic models
+
+Stochastic exponentials and logarithms are part of established semimartingale
+calculus [@doleansdade1970; @larssonruf2019]. Modern representation and
+multiplicative-compensation frameworks further systematize this theory
+[@cernyruf2022; @cernyruf2023]. Complex scalar linear equations and complex
+geometric Brownian motion appear explicitly in numerical-stability research
+[@buckwar2006; @perret2010]. Accordingly, the logarithmic-spiral comparator
+derived below is not a new complex GBM. Its role is to expose why unbounded
+lossless winding is compatible with multiplicative, but not additive,
+constant-coefficient dynamics.
+
+## Financial and computational precedents
+
+The normal model remains relevant when negative forwards or strikes are
+plausible. Schachermayer and Teichmann compare Bachelier and
+Black--Merton--Scholes asymptotics [@schachermayerteichmann2008], while Choi
+et al. survey normal-model pricing, volatility conversion, and risk
+management [@choi2022]. CME's 2020 clearing advisory documents a practical
+switch to Bachelier valuation for specified energy options after negative
+prices [@cme2020].
+
+Arctangent compactification is not new in financial PDEs. Duffie and Kan use
+an $\arctan$ coordinate in term-structure derivative calculations (p. 396)
+[@duffiekan1996], and in 't Hout and Snoeijer map $\mathbb R^d$ into a cube
+with componentwise arctangent coordinates [@inthoutsnoeijer2021].
+More broadly, mapped methods on unbounded domains have long been studied
+[@groschorszag1977; @boyd1987], with option-pricing localization and
+high-dimensional approximations requiring problem-specific error analysis
+[@contvoltchkova2005; @reisingerwittum2007].
+
+Higham provides standard SDE convergence methodology [@higham2001].
+Exact diffusion simulation has a more demanding algorithmic meaning than
+applying a known inverse map [@beskosroberts2005], and geometric or
+symmetry-adapted stochastic integrators constitute separate mature research
+directions [@malhamwiese2008; @devecchi2019]. Monte Carlo and low-discrepancy
+methods entered finance through work including Boyle and Paskov--Traub
+[@boyle1977; @paskovtraub1995]. Early-exercise, path-dependent, and
+high-dimensional problems need information beyond a terminal one-factor
+coordinate [@longstaffschwartz2001; @zhang2003].
+
+Finally, Wirtinger calculus is established for nonholomorphic complex
+objectives [@brandwood1983], and complex-step differentiation has specific
+analytic-extension hypotheses [@squiretrapp1998]. Complex methods already
+contribute to finance through characteristic functions and Fourier inversion,
+as in Heston and Carr--Madan [@heston1993; @carrmadan1999]. Those uses of
+complex analysis are conceptually distinct from the state chart developed
+here.
+
+## Claim boundary
+
+| Topic | Established status | Claim made here |
+|:--|:--|:--|
+| $\arctan(X/c)$ diffusion | Known smooth transform and numerical benchmark | Canonical representative of the classified affine family |
+| Euler and polar form | Elementary complex analysis | Exact coordinate language, not a new algebra |
+| Angular Gaussian laws | Established directional statistics | Explicit line-supported specialization |
+| Arctangent PDE compactification | Established numerical technique | Exact operator/pricing conjugacy and controlled benchmark |
+| Stochastic exponential and complex GBM | Established | Multiplicative rigidity comparator |
+| Bachelier valuation | Established | Financial verification and coordinate-invariance result |
+| Affine iff-classification | No directly matching theorem found in the reviewed literature | Central theorem with necessity and sufficiency proof |
+| Additive-line versus multiplicative-spiral rigidity | Components are classical | Unified coefficient-matching classification |
+| Automatic variance reduction or new holomorphic calculus | False in general | Negative results and explicit controls |
+
+: Novelty and non-novelty boundary. {#tbl-novelty-boundary}
+
+# Probabilistic, geometric, and financial setup {#sec-setup}
+
+## Probability space and complex brackets
+
+Let $(\Omega,\mathcal F,(\mathcal F_t)_{t\ge0},\mathbb P)$ satisfy the usual
+conditions, and let $W$ be a one-dimensional standard real Brownian motion.
+For a partition $\Pi=\{0=t_0<\cdots<t_n=t\}$,
+
+$$
+\sum_{j=0}^{n-1}(W_{t_{j+1}}-W_{t_j})^2
+\longrightarrow t
+$$
+
+in probability as the mesh tends to zero. Differentially,
+
+$$
+d[W,W]_t=dt.
+$$ {#eq-brownian-qv}
+
+For a finite interval of length $h$,
+$\Delta W=\sqrt h\,\xi$ with $\xi\sim N(0,1)$, so
+$(\Delta W)^2=h\xi^2$, not $h$ pathwise. Hence @eq-brownian-qv is not the
+ordinary algebraic identity $i^2=-1$.
+
+Identify $\mathbb C$ with $\mathbb R^2$. If $Z=X+iY$ is a continuous
+complex semimartingale, retain both
+
+$$
+[Z,Z]=[X]-[Y]+2i[X,Y],
+\qquad
+[Z,\overline Z]=[X]+[Y].
+$$ {#eq-complex-brackets}
+
+For $dZ=b\,dW$,
+
+$$
+d[Z,Z]_t=b^2dt,\qquad
+d[Z,\overline Z]_t=|b|^2dt.
+$$
+
+The complex coefficient records a scale and a planar direction. It does not
+create a second Brownian driver.
+
+## Genuine one-phase representation
+
+::: {#def-one-phase}
+## Genuine lossless one-phase representation
+
+Let $I\subset\mathbb R$ be an interval. A process $Z$ has a genuine,
+lossless, time-independent one-phase Euler representation relative to
+$Z_0\ne0$ if there are:
+
+1. a deterministic Borel function $r:I\to(0,\infty)$;
+2. a real adapted process $\theta$ taking values in $I$; and
+3. a deterministic inverse recovering the scalar affine state from
+   $\theta_t$,
+
+such that
+
+$$
+Z_t=Z_0r(\theta_t)e^{i\theta_t}
+$$
+
+pathwise, $\theta_t$ is a continuous genuine argument lift of $Z_t/Z_0$,
+and the same $r$ works for all deterministic times in a nontrivial interval.
+When an SDE is derived directly, the state maps are additionally assumed
+$C^2$.
+:::
+
+“Genuine” excludes arbitrary state labels called angles: modulo $2\pi$,
+$\theta$ must equal the geometric argument. “Lossless” excludes wrapped
+encodings that forget a winding integer or radial state. “Time-independent”
+excludes a moving polar graph $r(t,\theta)$. Equalities below are identified
+as pathwise, almost sure, distributional, or numerical as needed.
+
+The smoothness distinction is essential. A Borel factor may define a random
+variable but cannot automatically be inserted into Itô's formula. Conversely,
+a smooth one-to-one state chart is both measurable and analytically useful.
+
+## Financial interpretation
+
+Financial claims are made under a separate pricing setup. Let $\mathbb Q$ be
+an equivalent martingale measure associated with a chosen numeraire. Let
+$X$ be a real factor with
+
+$$
+dX_t=\mu_{\mathbb Q}(t,X_t)\,dt+\sigma(t,X_t)\,dW_t^{\mathbb Q},
+$$
+
+and assume existence, integrability, and payoff conditions sufficient for the
+stated conditional expectations and PDEs. When $X=F$ is a forward under its
+forward measure, $\mu_{\mathbb Q}=0$ in the elementary normal model. The
+complex variable
+
+$$
+\mathcal Z=1+iX/c
+$$
+
+is an auxiliary coordinate, not a traded asset and not a claim that market
+prices are intrinsically complex. Discount factors, numeraires, and
+self-financing strategies retain their ordinary real financial meaning.
+
+# Measurable factorization and support geometry {#sec-factorization}
+
+Before imposing polar geometry, one should ask whether a complex state can
+factor through a scalar at all.
+
+::: {#thm-measurable-factorization}
+## Measurable phase-radius criterion
+
+Let $E$ be a standard Borel space, let
+$f:E\to\mathbb C\setminus\{0\}$ be Borel, and let
+$\vartheta:E\to\mathbb R$ be a Borel genuine argument lift. A Borel function
+$r$ satisfies
+
+$$
+f(s)=r(\vartheta(s))e^{i\vartheta(s)}
+$$
+
+if and only if $|f|$ is measurable with respect to
+$\sigma(\vartheta)$.
+:::
+
+**Proof.** Necessity follows from $|f|=r\circ\vartheta$. Conversely, the
+Doob--Dynkin factorization principle gives a Borel $r$ with
+$|f|=r\circ\vartheta$; combining this with the genuine-argument identity
+proves the claim [@kallenberg2002]. $\square$
+
+A convenient fiber condition is
+
+$$
+\vartheta(s_1)=\vartheta(s_2)
+\quad\Longrightarrow\quad
+|f(s_1)|=|f(s_2)|.
+$$ {#eq-fiber-condition}
+
+If $\vartheta$ is Borel and injective, its inverse on its image is Borel, so
+@eq-fiber-condition is sufficient for a lossless representation. Injectivity
+is not required for radius factorization alone, but it is required when the
+original scalar state must be recovered.
+
+## Polar graphs are planar-null
+
+::: {#lem-polar-graph-null}
+## Borel polar graphs have zero planar measure
+
+For Borel $r:\mathbb R\to[0,\infty)$, the set
+
+$$
+C_r=\{r(\theta)e^{i\theta}:\theta\in\mathbb R\}
+$$
+
+has two-dimensional Lebesgue measure zero.
+:::
+
+**Proof.** The Borel image is analytic and Lebesgue measurable. For a fixed
+geometric angle $\psi\in[0,2\pi)$, the positive ray at $\psi$ meets $C_r$
+only in the countable set
+
+$$
+\{r(\psi+2\pi k)e^{i\psi}:k\in\mathbb Z\}.
+$$
+
+The radial section therefore has one-dimensional measure zero. Polar
+Fubini integration gives
+
+$$
+\lambda_2(C_r)
+=
+\int_0^{2\pi}\int_0^\infty
+\mathbf 1_{C_r}(qe^{i\psi})q\,dq\,d\psi
+=0.
+\qquad\square
+$$
+
+This elementary lemma is the key obstruction when a family of fixed-time
+support lines sweeps a two-dimensional region.
+
+## The three support geometries
+
+For @eq-affine-process with $b\ne0$, fixed-time support is
+
+$$
+\operatorname{supp}(Z_t)=Z_0+at+b\mathbb R.
+$$ {#eq-fixed-time-support}
+
+There are three qualitatively different cases.
+
+1. If $a/b\in\mathbb R$ and $b/Z_0\notin\mathbb R$, all supports coincide
+   with a nonradial affine line missing the origin. Its angle is monotone and
+   lossless.
+2. If $a/b\in\mathbb R$ and $b/Z_0\in\mathbb R$, the fixed line passes
+   through the origin. Its geometric angle supplies only two ray directions
+   for a continuum of Gaussian radii.
+3. If $a/b\notin\mathbb R$, the support line moves transversely with time.
+   Randomizing time produces a planar law, which cannot live on one Borel
+   polar graph.
+
+![Radial, eligible collinear, and randomized-time noncollinear support geometries.](figures/vector/f03_support_obstructions.pdf){#fig-support-obstructions fig-alt="Three scatter plots: a radial line with two directions, an eligible fixed affine line, and a noncollinear drift-diffusion process whose randomized-time law fills a planar region." width=100%}
+
+The covariance-rank contrast in @fig-support-obstructions is illustrative,
+not the proof. In the reproducible experiment, the radial and eligible lines
+had empirical rank one, while the randomized-time noncollinear law had
+positive small eigenvalue $0.0531$ and determinant $0.0370$.
+
+![Conditional radial spread as angular bins are refined for an eligible line and a noncollinear randomized-time law.](figures/vector/f04_angle_bin_factorization.pdf){#fig-angle-factorization fig-alt="Log-log plot of median conditional radial spread against angular-bin count. The spread tends toward zero for the eligible line but remains large for the noncollinear process." width=78%}
+
+@fig-angle-factorization provides a second diagnostic. As angular bins are
+refined, conditional radial dispersion decays for a line on which radius is a
+function of angle; it remains substantial for a planar distribution. The
+diagnostic visualizes @eq-fiber-condition and does not replace
+@lem-polar-graph-null.
+
+# Exact affine classification {#sec-classification}
+
+Normalize the process by $Z_0$:
+
+$$
+\zeta_t:=\frac{Z_t}{Z_0}
+=1+\alpha t+cW_t,
+\qquad
+\alpha=\frac a{Z_0},\quad c=\frac b{Z_0}.
+$$ {#eq-normalized-affine}
+
+::: {#thm-affine-classification}
+## Lossless time-independent affine classification
+
+Assume $Z_0b\ne0$ and require Definition @def-one-phase on every deterministic
+time in a nontrivial interval. Then
+
+$$
+Z_t=Z_0r(\theta_t)e^{i\theta_t}
+$$
+
+exists if and only if
+
+$$
+\boxed{
+\frac ab\in\mathbb R
+\quad\text{and}\quad
+\frac b{Z_0}\notin\mathbb R.
+}
+$$ {#eq-affine-iff}
+
+Equivalently,
+
+$$
+\operatorname{Im}(a\overline b)=0,
+\qquad
+\operatorname{Im}(b\overline{Z_0})\ne0.
+$$
+:::
+
+## Sufficiency and explicit construction
+
+Assume $a=\lambda b$ with $\lambda\in\mathbb R$, and write
+
+$$
+c=\frac b{Z_0}=\rho e^{i\phi},
+\qquad
+\rho>0,\qquad
+\sin\phi\ne0.
+$$
+
+Then
+
+$$
+\zeta_t=1+cx_t,\qquad x_t=\lambda t+W_t.
+$$ {#eq-affine-scalar-state}
+
+The line $L=\{1+cx:x\in\mathbb R\}$ misses the origin. Its continuous
+argument $\theta(x)$, anchored by $\theta(0)=0$, satisfies
+
+$$
+\frac{d\theta}{dx}
+=\operatorname{Im}\frac{c}{1+cx}
+=\frac{\operatorname{Im}c}{|1+cx|^2},
+$$ {#eq-angle-derivative}
+
+which has fixed nonzero sign. Hence $\theta$ is strictly monotone and
+lossless.
+
+Write $1+\rho e^{i\phi}x=re^{i\theta}$. Multiplication by $e^{-i\phi}$
+and comparison of imaginary parts give
+
+$$
+r\sin(\theta-\phi)=-\sin\phi.
+$$
+
+Therefore
+
+$$
+\boxed{
+r(\theta)=\frac{\sin\phi}{\sin(\phi-\theta)},
+\qquad
+x(\theta)
+=\frac{\sin\theta}{\rho\sin(\phi-\theta)}.
+}
+$$ {#eq-general-radius-inverse}
+
+Substitution into @eq-affine-scalar-state proves the representation and its
+inverse.
+
+## Necessity of drift-diffusion collinearity
+
+Suppose instead that $\operatorname{Im}(a\overline b)\ne0$. Choose an
+independent random time $\tau$ uniformly distributed on
+$[t_0,t_1]\subset(0,\infty)$. The pair $(\tau,W_\tau)$ has density
+
+$$
+f_{\tau,W_\tau}(t,w)
+=
+\frac{\mathbf 1_{[t_0,t_1]}(t)}{t_1-t_0}
+\frac{1}{\sqrt{2\pi t}}
+\exp\!\left(-\frac{w^2}{2t}\right).
+$$ {#eq-random-time-density}
+
+The real-affine map
+
+$$
+(t,w)\longmapsto Z_0+at+bw
+$$
+
+has nonzero real determinant, equal up to orientation to
+$\operatorname{Im}(a\overline b)$. Thus $Z_\tau$ is absolutely continuous
+with respect to planar Lebesgue measure.
+
+If one time-independent polar graph represented $Z_t$ almost surely for
+every deterministic $t\in[t_0,t_1]$, Fubini's theorem would give
+$\mathbb P(Z_\tau\in Z_0C_r)=1$. By @lem-polar-graph-null and planar absolute
+continuity, the same probability must be zero, a contradiction. Therefore
+$a/b\in\mathbb R$.
+
+Randomizing time is not cosmetic. It closes the quantifier gap in an informal
+argument that an uncountable family of support lines “fills an area”; an
+uncountable union of null events cannot otherwise be handled by countable
+probability arguments.
+
+## Necessity that the fixed line miss the origin
+
+Under $a/b\in\mathbb R$, all supports coincide with
+$L=Z_0+b\mathbb R$. If $b/Z_0\in\mathbb R$, the normalized line passes
+through the origin. Every nonzero point then has geometric argument
+$0$ or $\pi$ modulo $2\pi$. Any genuine unwrapped phase belongs to the
+countable set
+
+$$
+\{2\pi k:k\in\mathbb Z\}
+\cup
+\{\pi+2\pi k:k\in\mathbb Z\}.
+$$
+
+A single-valued $r$ maps this set to only countably many points. At every
+$t>0$, however, $Z_t$ has a nonatomic Gaussian law along the entire line.
+That law cannot be countably supported. Hence $b/Z_0\notin\mathbb R$.
+Together with the construction above, this proves
+@thm-affine-classification. $\square$
+
+## Phase domain and uniqueness
+
+The exact phase interval is
+
+$$
+\boxed{
+I_\phi=
+\begin{cases}
+(\phi-\pi,\phi),&\sin\phi>0,\\[3pt]
+(\phi,\phi+\pi),&\sin\phi<0.
+\end{cases}
+}
+$$ {#eq-general-phase-domain}
+
+It is the unique open interval of length $\pi$ containing zero on which
+@eq-general-radius-inverse has positive radius. The map
+$x\mapsto\theta$ is a bijection from $\mathbb R$ to $I_\phi$, and
+
+$$
+|x(\theta)|\to\infty,\qquad r(\theta)\to\infty
+$$
+
+at its endpoints. A continuous genuine argument lift is unique after
+$\theta(0)=0$ is fixed. Discontinuous additions of state-dependent multiples
+of $2\pi$ are artificial encodings and do not define the continuous
+diffusion coordinate studied here.
+
+![Six eligible oblique affine lines and their positive phase-radius branches.](figures/vector/f02_general_affine_geometry.pdf){#fig-general-affine fig-alt="Left: several normalized affine lines that miss the origin. Right: corresponding positive radius functions over open phase intervals of length pi, shown on a logarithmic scale." width=100%}
+
+The random-parameter reconstruction in @fig-general-affine reached maximum
+scalar inverse error below $3.3\times10^{-13}$ and maximum complex error
+below $6.0\times10^{-13}$ across six eligible lines. These are floating-point
+checks of an already proved identity.
+
+## Degenerate and exceptional cases
+
+The assumptions in @thm-affine-classification are substantive.
+
+- If $b=0$, the process is deterministic. A stochastic phase is unnecessary;
+  a time-independent polar graph may or may not contain the deterministic
+  trajectory, depending on $a$ and the interval.
+- If $Z_0=0$, the normalization in @eq-requested-form is undefined. One may
+  choose another nonzero reference point, but that is a different
+  representation problem.
+- If $a=0$ and $b/Z_0\notin\mathbb R$, the theorem remains valid with
+  $\lambda=0$.
+- If the line passes through the origin, a local polar chart can exist on one
+  ray before a crossing, but it is not a global, lossless representation of
+  the full Gaussian support.
+- If $a/b\notin\mathbb R$, a time-dependent radius can represent each
+  nonsingular fixed-time support line. It uses $(t,\theta)$ rather than one
+  time-independent phase and fails when the moving line crosses the origin.
+
+![Time-dependent polar reconstruction for moving support lines and the singular origin-crossing time.](figures/vector/f13_moving_line_fallback.pdf){#fig-moving-line fig-alt="Several time-indexed affine support lines reconstructed with time-dependent polar radii, with a highlighted time at which the line crosses the origin and the chart becomes singular." width=88%}
+
+@fig-moving-line illustrates the last exception. It is a useful fallback, but
+it does not satisfy the one-phase problem posed in Definition
+@def-one-phase.
+
+# Canonical secant and constant-radius charts {#sec-canonical}
+
+## Arithmetic Brownian factor as one Euler phase
+
+Let
+
+$$
+dX_t=\mu\,dt+\sigma\,dW_t,\qquad X_0\in\mathbb R,
+$$ {#eq-arithmetic-brownian}
+
+and set $Y_t=X_t-X_0$. For any scale $c>0$, define the auxiliary complex
+state
+
+$$
+\mathcal Z_t
+=Z_0\left(1+i\frac{Y_t}{c}\right).
+$$ {#eq-canonical-embedding}
+
+With
+
+$$
+\theta_t=\arctan(Y_t/c)
+\in\left(-\frac\pi2,\frac\pi2\right),
+$$ {#eq-canonical-phase}
+
+the exact pathwise representation is
+
+$$
+\boxed{
+\mathcal Z_t=Z_0\sec\theta_t\,e^{i\theta_t},
+\qquad
+X_t=X_0+c\tan\theta_t.
+}
+$$ {#eq-canonical-reconstruction}
+
+This is @eq-general-radius-inverse with
+$\rho=1/c$ and $\phi=\pi/2$. If it is desirable for the real Brownian
+factor to be the real rather than imaginary coordinate, one may instead use
+$\widetilde Z_t=ic+Y_t$ and
+$\widetilde\theta_t=-\arctan(Y_t/c)$. These embeddings differ by a rigid
+rotation and scale.
+
+Equation @eq-canonical-reconstruction answers the state-representation
+question in the requested form: neither $t$ nor $W_t$ appears separately on
+its right-hand side. They remain present in the law of $\theta$, as they must.
+The sigma-fields generated by the current states agree,
+
+$$
+\sigma(\theta_t)=\sigma(X_t),
+$$
+
+and the completed path filtrations agree because both transforms are
+continuous and invertible.
+
+## Geometry of the secant curve
+
+Let $F(\theta)=\sec\theta e^{i\theta}=1+i\tan\theta$. Then
+
+$$
+F'(\theta)=i\sec^2\theta,\qquad
+F''(\theta)=2i\sec^2\theta\tan\theta.
+$$
+
+The signed curvature,
+
+$$
+\kappa(\theta)
+=
+\frac{\operatorname{Im}\{\overline{F'(\theta)}F''(\theta)\}}
+{|F'(\theta)|^3},
+$$
+
+is identically zero. Thus the algebraic factors “radius” and “rotation”
+conspire to trace a line. The stochastic phase is genuine—it is the angle of
+the point relative to the origin—but it is confined to one open half-turn.
+
+The scale $c$ does not change the information carried by the chart. It
+controls where physical values are allocated in phase:
+
+$$
+\frac{d\theta}{dx}=\frac{c}{c^2+x^2}.
+$$
+
+Small $c$ allocates more angular resolution near zero and compresses tails
+more aggressively; large $c$ is closer to linear on a wider physical region.
+This tuning later affects PDE resolution and conditioning.
+
+## Cayley constant-radius alternative
+
+A constant radius is possible after changing the represented state. Define
+
+$$
+U_t
+=
+\frac{1+iY_t/c}{1-iY_t/c}
+=e^{i\Theta_t},
+\qquad
+\Theta_t=2\arctan(Y_t/c)\in(-\pi,\pi).
+$$ {#eq-cayley-transform}
+
+Because the denominator is the complex conjugate of the numerator,
+$|U_t|=1$, and
+
+$$
+Y_t=c\tan(\Theta_t/2).
+$$
+
+The point $U=-1$ represents infinity and is inaccessible at every finite
+time. This construction keeps constant radius and losslessness on
+$S^1\setminus\{-1\}$, but it represents a nonlinear transform of
+@eq-canonical-embedding, not the original additive complex state.
+
+![Cayley compactification, exact unit-modulus preservation, and the state-dependent angular diffusion near the missing point.](figures/vector/f09_cayley_compactification.pdf){#fig-cayley fig-alt="Panels showing the Cayley map of the real line onto a punctured unit circle, exact modulus preservation compared with an unconstrained numerical control, and angular diffusion decaying near the missing point." width=100%}
+
+The executed experiment in @fig-cayley found maximum exact modulus defect
+$4.44\times10^{-16}$ and inverse error $1.78\times10^{-15}$, whereas an
+unconstrained complex Euler control accumulated modulus error $0.252$. That
+is a structure-preservation benefit for the transformed state. It does not
+make $\Theta$ standard Brownian motion on the circle: its angular diffusion
+is state dependent and vanishes near the missing point.
+
+# Phase diffusion, generator, kernel, and boundaries {#sec-phase-theory}
+
+## Canonical Itô and Stratonovich equations
+
+For $f(x)=\arctan(x/c)$,
+
+$$
+f'(x)=\frac{c}{c^2+x^2},
+\qquad
+f''(x)=-\frac{2cx}{(c^2+x^2)^2}.
+$$
+
+Applying Itô's formula to @eq-arithmetic-brownian and substituting
+$X-X_0=c\tan\theta$ gives
+
+$$
+\boxed{
+d\theta_t
+=
+\left[
+\frac{\mu}{c}\cos^2\theta_t
+-
+\frac{\sigma^2}{c^2}
+\sin\theta_t\cos^3\theta_t
+\right]dt
++
+\frac{\sigma}{c}\cos^2\theta_t\,dW_t.
+}
+$$ {#eq-canonical-phase-sde}
+
+$$
+A(\theta)
+=
+\frac{\mu}{c}\cos^2\theta
+-
+\frac{\sigma^2}{c^2}\sin\theta\cos^3\theta,
+\qquad
+B(\theta)=\frac{\sigma}{c}\cos^2\theta.
+$$ {#eq-phase-coefficients}
+
+Its Stratonovich form is simpler:
+
+$$
+\boxed{
+d\theta_t
+=
+\frac{\mu}{c}\cos^2\theta_t\,dt
++
+\frac{\sigma}{c}\cos^2\theta_t\circ dW_t.
+}
+$$ {#eq-phase-stratonovich}
+
+The Itô correction is not optional. Since
+$\frac12BB'=-(\sigma^2/c^2)\sin\theta\cos^3\theta$, converting
+@eq-phase-stratonovich to Itô produces exactly the second term in
+@eq-phase-coefficients.
+
+Conversely, apply Itô's formula to
+$F(\theta)=1+i\tan\theta$ under @eq-canonical-phase-sde. The nonlinear drift
+from $F'\,d\theta$ cancels the
+$\frac12F''\,d[\theta,\theta]$ term, leaving
+
+$$
+d\{Z_0F(\theta_t)\}
+=\frac{iZ_0}{c}\left(\mu\,dt+\sigma\,dW_t\right),
+$$ {#eq-two-way-ito}
+
+which reconstructs @eq-canonical-embedding. This two-way calculation is the
+precise connection between Brownian quadratic variation and the complex
+curve: quadratic variation produces a geometric drift correction through
+$F''$. It is not identified with $i^2$.
+
+## General affine phase equation
+
+For the eligible general line, define
+
+$$
+g(\theta)
+:=
+\frac{\rho\sin^2(\phi-\theta)}{\sin\phi}.
+$$ {#eq-general-g}
+
+By @eq-angle-derivative and @eq-general-radius-inverse,
+$d\theta/dx=g(\theta)$ and
+
+$$
+g'(\theta)
+=
+-\frac{2\rho\sin(\phi-\theta)\cos(\phi-\theta)}
+{\sin\phi}.
+$$
+
+Since $dx_t=\lambda\,dt+dW_t$,
+
+$$
+\boxed{
+d\theta_t
+=
+\left[
+\lambda g(\theta_t)
++\frac12g(\theta_t)g'(\theta_t)
+\right]dt
++g(\theta_t)dW_t,
+}
+$$ {#eq-general-phase-sde}
+
+or, in Stratonovich form,
+
+$$
+d\theta_t
+=\lambda g(\theta_t)dt+g(\theta_t)\circ dW_t.
+$$
+
+The sign of $g$ records orientation. A scalar diffusion coefficient need not
+be declared positive; reversing $W$ reverses its sign without changing the
+law.
+
+## Generator and phase-first specification
+
+The canonical generator is
+
+$$
+\boxed{
+\mathcal L_\theta h
+=A(\theta)h'(\theta)
++\frac12B(\theta)^2h''(\theta),
+}
+$$ {#eq-phase-generator}
+
+with $A,B$ from @eq-phase-coefficients. The martingale problem for
+@eq-phase-generator on $(-\pi/2,\pi/2)$ defines the phase law without naming
+$t$ or $W_t$ as state coordinates. Equivalently, its Markov transition
+kernel specifies the law. This is the rigorous interpretation of
+“$\theta_t$ is the only stochastic state variable”: the process remains
+time-indexed and random, but its Markov state is one scalar.
+
+## Exact transition density and semigroup
+
+::: {#thm-phase-kernel}
+## Canonical transition kernel
+
+For $\sigma\ne0$, $u,v\in(-\pi/2,\pi/2)$, and $h>0$, the transition density
+of @eq-canonical-phase-sde is
+
+$$
+\boxed{
+p_h(v\mid u)
+=
+\frac{c\sec^2v}{|\sigma|\sqrt{2\pi h}}
+\exp\!\left[
+-\frac{
+\left(c\tan v-c\tan u-\mu h\right)^2
+}{2\sigma^2h}
+\right].
+}
+$$ {#eq-phase-kernel}
+:::
+
+**Proof.** Conditional on $\theta_s=u$,
+
+$$
+X_{s+h}-X_0
+=c\tan u+\mu h+\sigma\sqrt h\,\xi,
+\qquad \xi\sim N(0,1).
+$$
+
+The inverse $v=\arctan((X-X_0)/c)$ has Jacobian
+$dX/dv=c\sec^2v$, giving @eq-phase-kernel. $\square$
+
+The exact step is therefore
+
+$$
+\boxed{
+\theta_{s+h}
+=
+\arctan\!\left(
+\tan\theta_s+\frac{\mu h}{c}
++\frac{\sigma\sqrt h}{c}\xi
+\right).
+}
+$$ {#eq-exact-phase-step}
+
+For the general line, using the inverse $x(\theta)$ in
+@eq-general-radius-inverse,
+
+$$
+p_h(v\mid u)
+=
+\frac{|x'(v)|}{\sqrt{2\pi h}}
+\exp\!\left[
+-\frac{(x(v)-x(u)-\lambda h)^2}{2h}
+\right],
+$$ {#eq-general-phase-kernel}
+
+where
+
+$$
+|x'(v)|
+=\frac{|\sin\phi|}{\rho\sin^2(\phi-v)}.
+$$
+
+Normalization follows by substituting $y=x(v)$. The
+Chapman--Kolmogorov identity follows from Gaussian convolution under the same
+substitution. Thus the “new” phase kernel is exactly the known Gaussian
+kernel pushed through a diffeomorphism; it is not a newly solved diffusion.
+
+![Transition-density normalization, probability-integral-transform diagnostics, and semigroup consistency.](figures/vector/f07_transition_diagnostics.pdf){#fig-transition-diagnostics fig-alt="Panels comparing the analytic phase transition density with simulated data, a probability-integral-transform diagnostic, and direct versus composed semigroup values." width=100%}
+
+In @fig-transition-diagnostics, numerical quadrature returned mass
+$0.9999999999999999$, direct and composed semigroup values differed by
+$1.11\times10^{-16}$, and the probability-integral-transform KS statistic
+was $0.00173$ with $p=0.726$. A separate finite-difference forward-equation
+check had relative RMS residual $6.90\times10^{-5}$.
+
+## Natural phase boundaries
+
+The endpoints $\pm\pi/2$ correspond under $x=c\tan\theta$ to
+$\pm\infty$. For every finite $T$,
+
+$$
+\sup_{0\le t\le T}|X_t|
+\le
+|X_0|+|\mu|T+|\sigma|
+\sup_{0\le t\le T}|W_t|
+<\infty
+\quad\text{a.s.}
+$$
+
+Therefore neither phase endpoint is reached from the interior in finite
+time. Nor is either an entrance: for any compact $K\subset\mathbb R$ and
+$t>0$,
+
+$$
+\mathbb P_x(X_t\in K)\longrightarrow0
+\qquad\text{as }x\to\pm\infty.
+$$
+
+The Gaussian transition laws escape every compact set and have no probability
+limit on $\mathbb R$ from which a Feller entrance law can be defined. In the
+standard one-dimensional classification, both endpoints are natural
+[@feller1954]. Smooth monotone conjugacy preserves the classification, so
+
+$$
+\boxed{
+-\frac\pi2\text{ and }\frac\pi2
+\text{ are inaccessible natural boundaries.}
+}
+$$ {#eq-natural-boundaries}
+
+The same statement holds for the endpoints of $I_\phi$. No reflecting or
+absorbing boundary condition should be imposed on the exact diffusion.
+
+![Strong convergence of independent nonlinear phase schemes and exact phase behavior near the natural boundaries.](figures/vector/f05_phase_sde_convergence.pdf){#fig-phase-convergence fig-alt="Log-log strong-error plots for Euler–Maruyama, Milstein, and Stratonovich–Heun against their exact transformed-Gaussian reference, together with fitted slopes." width=85%}
+
+![Boundary stress comparison between exact transformed steps and unconstrained Euler steps.](figures/vector/f06_boundary_stress.pdf){#fig-boundary-stress fig-alt="Boundary-violation rates over four step sizes. Exact transformed steps remain inside the open phase interval, while unconstrained Euler steps leave it frequently at coarse resolution." width=85%}
+
+The numerical implications of @eq-natural-boundaries are visible in
+@fig-boundary-stress. Exact transformed steps remain in the interval by
+construction. With $c=0.25$, $\sigma=1$, and $120{,}000$ samples,
+unconstrained one-step Euler violation rates fell from $0.435$ at
+$h=0.25$ to $0.0271$ at $h=0.03125$. Bounded coordinates do not make a
+naive discretization automatically boundary preserving.
+
+![Small-time generator estimates, forward-equation residual, and endpoint-tail diagnostics.](figures/vector/f08_generator_and_endpoint_checks.pdf){#fig-generator-endpoints fig-alt="Panels showing empirical small-time drift and variance approaching theoretical generator coefficients, a Fokker–Planck residual diagnostic, and exact endpoint-tail probabilities with Monte Carlo detection limits." width=100%}
+
+Zero observed rare endpoint events are not interpreted as zero probability.
+The notebook reports exact Gaussian tail probabilities and binomial upper
+confidence bounds together, as shown in @fig-generator-endpoints.
+
+# Additive and multiplicative rigidity {#sec-rigidity}
+
+## Dynamics induced by a phase curve
+
+Let
+
+$$
+F(\theta)=r(\theta)e^{i\theta},
+\qquad r\in C^2(I;(0,\infty)),
+$$
+
+and let
+
+$$
+d\theta_t=m(\theta_t)\,dt+s(\theta_t)\,dW_t.
+$$
+
+For $Z_t=Z_0F(\theta_t)$, Itô's formula gives
+
+$$
+\boxed{
+dZ_t
+=
+Z_0\left(F'm+\frac12F''s^2\right)(\theta_t)dt
++Z_0F'(\theta_t)s(\theta_t)dW_t.
+}
+$$ {#eq-general-curve-ito}
+
+The diffusion coefficient already imposes a strong curve constraint; matching
+the drift supplies a second, independent compatibility equation.
+
+::: {#thm-additive-rigidity}
+## Local additive rigidity
+
+Assume $F'\ne0$ and $s\ne0$. The curve-valued process in
+@eq-general-curve-ito satisfies
+
+$$
+dZ_t=a\,dt+b\,dW_t,\qquad b\ne0,
+$$
+
+if and only if
+
+$$
+F'(\theta)s(\theta)=\frac b{Z_0},
+\qquad
+\frac ab\in\mathbb R,
+\qquad
+m(\theta)=\frac ab\,s(\theta)+\frac12s(\theta)s'(\theta).
+$$ {#eq-additive-rigidity}
+
+The image of $F$ lies on a straight line. Every nonradial genuine polar
+member has local radius
+
+$$
+r(\theta)=\frac{C}{\sin(\delta-\theta)}
+$$
+
+on an interval where the expression is positive.
+:::
+
+**Proof.** Diffusion matching yields
+$F's=b/Z_0$. Differentiation gives
+$F''=-(b/Z_0)s'/s^2$. Drift matching then reduces to
+
+$$
+\frac ab=\frac ms-\frac12s'\in\mathbb R,
+$$
+
+which is @eq-additive-rigidity. Because $s$ is real, $F'$ always has the
+fixed complex direction $b/Z_0$, so $F(I)$ is a line. Writing
+$F'=e^{i\theta}(r'+ir)$ and fixing the tangent argument $\delta$ gives
+$r'/r=\cot(\delta-\theta)$; integration yields the stated radius.
+$\square$
+
+The global origin and losslessness restrictions in
+@thm-affine-classification remain necessary. Local tangent matching alone
+does not resolve them.
+
+::: {#thm-multiplicative-rigidity}
+## Local multiplicative rigidity
+
+Suppose instead that
+
+$$
+dZ_t=A Z_t\,dt+B Z_t\,dW_t,\qquad B=\sigma+i\beta\ne0.
+$$
+
+A genuine phase with $s\ne0$ exists if and only if
+
+$$
+\boxed{
+\beta\ne0,\qquad
+s(\theta)\equiv\beta,\qquad
+r(\theta)=r_0e^{k\theta},\qquad
+k=\frac{\sigma}{\beta},
+}
+$$ {#eq-multiplicative-shape}
+
+and $m(\theta)\equiv m_0\in\mathbb R$ satisfies
+
+$$
+\boxed{
+A=(k+i)m_0+\frac12(k+i)^2\beta^2.
+}
+$$ {#eq-multiplicative-drift}
+
+Equivalently,
+
+$$
+A-\frac12B^2\in B\mathbb R.
+$$ {#eq-log-collinearity}
+:::
+
+**Proof.** Diffusion matching gives $(F'/F)s=B$. Since
+
+$$
+\frac{F'}F=\frac{r'}r+i,
+$$
+
+imaginary parts force $s=\beta\ne0$, and real parts give
+$r'/r=\sigma/\beta=k$. Thus $r=r_0e^{k\theta}$. Substituting
+$F'/F=k+i$ and $F''/F=(k+i)^2$ into the drift equation forces constant
+$m_0$ and @eq-multiplicative-drift. The equivalent logarithmic condition
+follows from $B=(k+i)\beta$. $\square$
+
+The line and spiral dictionary is therefore:
+
+| Constant-coefficient law | Forced curve | Drift compatibility |
+|:--|:--|:--|
+| $dZ=a\,dt+b\,dW$ | Straight affine line; secant-type polar radius | $a/b\in\mathbb R$ and @eq-additive-rigidity |
+| $dZ/Z=A\,dt+B\,dW$ | Logarithmic spiral $r=r_0e^{(\operatorname{Re}B/\operatorname{Im}B)\theta}$ | $A-\tfrac12B^2\in B\mathbb R$ |
+
+: Additive and multiplicative rigidity. {#tbl-rigidity}
+
+![Residual checks distinguishing additive lines, multiplicative logarithmic spirals, and a generic polar curve.](figures/vector/f12_rigidity_families.pdf){#fig-rigidity-families fig-alt="Coefficient residuals for three curve families. The line has zero additive residual, the logarithmic spiral has zero multiplicative residual, and a generic quadratic-radius curve satisfies neither." width=88%}
+
+The numerical residuals in @fig-rigidity-families are controls:
+$4.90\times10^{-17}$ for the line/additive match and
+$1.09\times10^{-16}$ for the spiral/multiplicative match. They illustrate,
+but do not prove, the coefficient-matching theorems.
+
+## Winding requires a multiplicative model
+
+For
+
+$$
+Z_t=Z_0\exp(\kappa t+BW_t),
+\qquad B=\sigma+i\beta,
+$$ {#eq-complex-log-affine}
+
+condition @eq-log-collinearity says
+$\kappa=\gamma B$ for some $\gamma\in\mathbb R$. When $\beta\ne0$,
+
+$$
+\theta_t=\beta(\gamma t+W_t),
+\qquad
+\boxed{
+Z_t
+=Z_0\exp\!\left(\frac{\sigma}{\beta}\theta_t\right)e^{i\theta_t}.
+}
+$$ {#eq-spiral-phase}
+
+Unlike the additive secant phase, $\theta$ ranges over the real line and can
+wind indefinitely. The price is a change in the stochastic model from
+additive affine dynamics to a compatible multiplicative exponential.
+
+![Additive half-turn geometry versus compatible multiplicative logarithmic-spiral winding.](figures/vector/f11_additive_vs_spiral.pdf){#fig-additive-spiral fig-alt="Side-by-side paths: an additive secant phase remains within one open half-turn, while a compatible multiplicative process winds along a logarithmic spiral with phase on the full real line." width=100%}
+
+The simulated spiral in @fig-additive-spiral spanned $21.49$ radians
+($3.42$ turns), while the additive phase span remained $2.72<\pi$.
+This is a model distinction, not evidence that one representation is a
+rewriting of the other.
+
+## Transported state group
+
+The canonical chart
+
+$$
+\Phi_c(x)=\arctan(x/c)
+$$
+
+transports real addition to
+
+$$
+\boxed{
+\theta_1\oplus\theta_2
+=
+\arctan(\tan\theta_1+\tan\theta_2).
+}
+$$ {#eq-transported-addition}
+
+Thus
+
+$$
+\left((-\pi/2,\pi/2),\oplus\right)
+\cong(\mathbb R,+).
+$$
+
+The operation is associative and commutative, has identity zero and inverse
+$-\theta$, and exactly combines scalar increments inside the bounded chart.
+It is not ordinary angular addition. Indeed,
+
+$$
+(1+ix/c)(1+iy/c)
+=1+i(x+y)/c-xy/c^2,
+$$
+
+so the secant embedding does not turn addition into ordinary complex
+multiplication.
+
+![The transported secant and Cayley group laws compared with ordinary angular addition.](figures/vector/f10_transported_group.pdf){#fig-transported-group fig-alt="Plots of the nonlinear transported addition laws in secant and Cayley coordinates, with diagnostics showing exact associativity and a nonzero discrepancy from ordinary angle addition." width=100%}
+
+The notebook verified the tangent-addition identity to
+$3.11\times10^{-15}$ and associativity to $1.67\times10^{-15}$, while the
+RMS discrepancy from ordinary angular addition was $0.288$. The group
+structure comes from conjugated real addition.
+
+There is no continuous injective homomorphism from $(\mathbb R,+)$ into
+$(S^1,\cdot)$. Every continuous one-parameter subgroup of $S^1$ is
+$x\mapsto e^{i\kappa x}$; it is constant if $\kappa=0$ and periodic
+otherwise. Consequently, constant radius, lossless recovery of an
+unrestricted real state, and ordinary complex multiplication cannot all hold.
+The Cayley chart retains constant radius and losslessness but uses a
+transported group law. The logarithmic spiral retains losslessness and
+ordinary multiplicative composition by allowing the radius to vary.
+
+# Risk-neutral pricing conjugacy {#sec-finance}
+
+## Normal factors and the auxiliary complex coordinate
+
+Consider a real forward $F$ under its $T$-forward measure
+$\mathbb Q^T$:
+
+$$
+dF_t=\sigma_N\,dW_t^{\mathbb Q^T},
+\qquad 0\le t\le T,
+$$ {#eq-normal-forward}
+
+where $\sigma_N\ge0$ is constant for the basic Bachelier model. Let
+$D(t,T)$ be the deterministic discount factor. The normal model permits
+negative levels, which is a limitation for some assets and an intended
+feature in other markets [@choi2022].
+
+For a chosen coordinate scale $c>0$, set
+
+$$
+\theta_t=\arctan(F_t/c),
+\qquad
+\mathcal Z_t=1+iF_t/c
+=\sec\theta_t e^{i\theta_t}.
+$$ {#eq-financial-phase}
+
+The factor $F$ remains the priced real state. The complex $\mathcal Z$ is
+neither a numeraire nor a tradeable security. It is a lossless chart, and
+
+$$
+F_t=c\tan\theta_t.
+$$
+
+If the physical-measure factor has drift and an equivalent Girsanov change
+removes or changes that drift, the diffusion direction is unchanged
+[@girsanov1960]. The canonical chart remains eligible. More generally, an
+affine complex model satisfying @eq-affine-iff retains its fixed diffusion
+line under equivalent changes whose drift remains in the same real span.
+
+## Conditional-expectation invariance
+
+Let $g:\mathbb R\to\mathbb R$ be Borel and integrable under the conditional
+law, and let the short rate $r:[0,T]\to\mathbb R$ be deterministic (or work
+in numeraire units, where the discount term is absent). For a real Markov
+factor
+
+$$
+dX_t=\mu_{\mathbb Q}\,dt+\sigma\,dW_t^{\mathbb Q},
+$$
+
+define
+
+$$
+V(t,x)
+=
+\mathbb E^{\mathbb Q}\!\left[
+\exp\!\left(-\int_t^T r(s)\,ds\right)
+g(X_T)
+\mid X_t=x
+\right].
+$$ {#eq-scalar-value}
+
+Set
+
+$$
+v(t,\theta)=V(t,c\tan\theta).
+$$ {#eq-phase-value}
+
+Because $x\leftrightarrow\theta$ is deterministic and bijective,
+
+$$
+\boxed{
+V(t,X_t)=v(t,\theta_t)
+}
+$$ {#eq-value-invariance}
+
+pathwise. This equality is stronger than equality in distribution: every
+state and every payoff sample is the same after exact inversion.
+
+::: {#thm-pricing-conjugacy}
+## Generator and pricing-PDE conjugacy
+
+Suppose $V\in C^{1,2}$ solves
+
+$$
+V_t+\mu_{\mathbb Q}V_x+\frac12\sigma^2V_{xx}-r(t)V=0,
+\qquad
+V(T,x)=g(x).
+$$ {#eq-scalar-pricing-pde}
+
+Then $v$ in @eq-phase-value solves
+
+$$
+\boxed{
+v_t+A(\theta)v_\theta
++\frac12B(\theta)^2v_{\theta\theta}
+-r(t)v=0,
+}
+$$ {#eq-phase-pricing-pde}
+
+with
+
+$$
+A(\theta)
+=\frac{\mu_{\mathbb Q}}{c}\cos^2\theta
+-\frac{\sigma^2}{c^2}\sin\theta\cos^3\theta,
+\qquad
+B(\theta)=\frac{\sigma}{c}\cos^2\theta,
+$$
+
+and terminal condition
+
+$$
+v(T,\theta)=g(c\tan\theta).
+$$
+:::
+
+**Proof.** One route applies Feynman--Kac/Kac reasoning to the phase
+generator @eq-phase-generator [@kac1949]. Directly, from
+$x=c\tan\theta$,
+
+$$
+v_\theta=V_xc\sec^2\theta,
+$$ {#eq-phase-first-chain}
+
+and
+
+$$
+v_{\theta\theta}
+=V_{xx}c^2\sec^4\theta
++2V_xc\tan\theta\sec^2\theta.
+$$ {#eq-phase-second-chain}
+
+Substitution of @eq-phase-first-chain and @eq-phase-second-chain into
+$Av_\theta+\frac12B^2v_{\theta\theta}$ cancels the two first-derivative Itô
+terms and gives
+
+$$
+Av_\theta+\frac12B^2v_{\theta\theta}
+=\mu_{\mathbb Q}V_x+\frac12\sigma^2V_{xx}.
+$$ {#eq-generator-conjugacy}
+
+Equation @eq-phase-pricing-pde follows from
+@eq-scalar-pricing-pde. $\square$
+
+This is operator conjugacy. It preserves the spectrum and semigroup in the
+appropriate transformed function spaces, but a particular discretized matrix
+can have different resolution and conditioning.
+
+## Bachelier European calls
+
+For time to maturity $\tau=T-t$, normal volatility $\sigma_N$, forward $F$,
+and strike $K$, let
+
+$$
+s=\sigma_N\sqrt\tau,\qquad d=\frac{F-K}{s}.
+$$
+
+For $s>0$, the discounted Bachelier call is
+
+$$
+\boxed{
+C_B(t,F)
+=
+D(t,T)\left[(F-K)\Phi(d)+s\varphi(d)\right].
+}
+$$ {#eq-bachelier-call}
+
+At $s=0$, it is $D(t,T)(F-K)^+$. In phase coordinates,
+
+$$
+\boxed{
+c_B(t,\theta)
+=
+D(t,T)
+\left[
+(c\tan\theta-K)\Phi(d_\theta)
++s\varphi(d_\theta)
+\right],
+}
+$$ {#eq-phase-bachelier}
+
+where
+
+$$
+d_\theta=\frac{c\tan\theta-K}{s}.
+$$
+
+Equation @eq-phase-bachelier is a composition of the established Bachelier
+formula, not a new option-pricing formula.
+
+![Bachelier call prices in the scalar and phase coordinates, and the value surface over phase and maturity.](figures/vector/f19_bachelier_coordinate_pricing.pdf){#fig-bachelier-phase fig-alt="Left: direct and phase-coordinate Bachelier call curves coincide over negative and positive forwards. Right: the normal call value surface is plotted on the bounded phase interval across maturities." width=100%}
+
+The benchmark behind @fig-bachelier-phase used $c=0.05$, $K=0.025$,
+$\sigma_N=0.0125$, $\tau=1.25$, and $D=0.97$. Across $401$ forward values
+from $-0.04$ to $0.10$, the maximum absolute difference between
+@eq-bachelier-call and @eq-phase-bachelier was
+$2.78\times10^{-17}$. The calculation includes negative forwards and both
+in- and out-of-the-money regimes.
+
+## Delta, gamma, and hedge conversion
+
+For the scalar normal call,
+
+$$
+\Delta_F
+=\frac{\partial C_B}{\partial F}
+=D(t,T)\Phi(d),
+\qquad
+\Gamma_F
+=\frac{\partial^2C_B}{\partial F^2}
+=D(t,T)\frac{\varphi(d)}{s}.
+$$ {#eq-bachelier-greeks}
+
+For a general value $v(t,\theta)=V(t,c\tan\theta)$, inverse chain rules give
+
+$$
+\boxed{
+V_x
+=\frac{\cos^2\theta}{c}v_\theta,
+}
+$$ {#eq-delta-transform}
+
+and
+
+$$
+\boxed{
+V_{xx}
+=
+\frac{
+\cos^4\theta\,v_{\theta\theta}
+-2\sin\theta\cos^3\theta\,v_\theta
+}{c^2}.
+}
+$$ {#eq-gamma-transform}
+
+The second term in @eq-gamma-transform is a Hessian correction. Omitting it
+is the deterministic analogue of omitting the Itô correction in a transformed
+generator.
+
+![Bachelier delta and gamma recovered from finite-difference phase derivatives.](figures/vector/f20_greek_conjugacy.pdf){#fig-greek-conjugacy fig-alt="Two plots comparing analytic scalar Bachelier delta and gamma with the same Greeks reconstructed from finite-difference derivatives in phase. The paired curves overlap." width=100%}
+
+In @fig-greek-conjugacy, phase derivatives were computed by centered
+differences with step $7.5\times10^{-5}$ and converted by
+@eq-delta-transform and @eq-gamma-transform. Against independent analytic
+Greeks, the maximum absolute errors were $1.76\times10^{-8}$ for delta and
+$5.81\times10^{-7}$ for gamma.
+
+A self-financing hedge is coordinate invariant when the Jacobian is handled
+correctly. If the hedge ratio is $V_x$, using $v_\theta$ directly would be
+wrong by the factor $d\theta/dx=\cos^2\theta/c$. The auxiliary complex
+coordinate does not create another hedge instrument or complete an otherwise
+incomplete market.
+
+## Pricing-PDE verification
+
+Under the driftless normal forward model and with discounting factored out,
+the forward-maturity equation is
+
+$$
+V_\tau=\frac12\sigma_N^2V_{FF}.
+$$ {#eq-bachelier-forward-pde}
+
+The phase equation is
+
+$$
+v_\tau
+=A(\theta)v_\theta
++\frac12B(\theta)^2v_{\theta\theta},
+$$ {#eq-bachelier-phase-pde}
+
+where
+
+$$
+A(\theta)
+=-\frac{\sigma_N^2}{c^2}\sin\theta\cos^3\theta,
+\qquad
+B(\theta)=\frac{\sigma_N}{c}\cos^2\theta.
+$$
+
+![Finite-difference verification of Bachelier pricing-PDE conjugacy.](figures/vector/f21_bachelier_pde_conjugacy.pdf){#fig-bachelier-pde fig-alt="Left: heat map of the absolute residual between the maturity derivative and the transformed phase generator. Right: both operator values overlap across the forward range at a representative maturity." width=100%}
+
+Independent centered differences in phase and maturity were evaluated at
+$2{,}869$ grid points in @fig-bachelier-pde. The maximum absolute residual
+was $8.12\times10^{-10}$ and the RMS residual was
+$5.51\times10^{-11}$. The maximum relative residual was about
+$2.05\times10^{-3}$ only after dividing by operator values as small as
+$10^{-8}$; absolute residuals are the stable primary metric.
+
+## Payoff regularity and compactified boundaries
+
+The coordinate change does not smooth a payoff kink. A call kink at $x=K$
+is moved to
+
+$$
+\theta_K=\arctan(K/c).
+$$
+
+For payoffs with polynomial growth, the transformed terminal condition may
+diverge as $\theta\to\pm\pi/2$ because $c\tan\theta\to\pm\infty$. Natural
+boundaries remove the need for a probabilistic reflecting or absorbing
+condition, but a numerical method on a truncated phase grid still needs
+consistent asymptotic treatment. The concentration of grid points and the
+degeneracy $B(\theta)\to0$ can help or hurt depending on the payoff, basis,
+scale, and solver.
+
+# Numerical methodology and evidence {#sec-numerics}
+
+## Reproducible design
+
+The computational record is an executed Jupyter notebook generated by a
+plain Python builder. It imports a tested mathematical module rather than
+redefining the core transforms in disconnected cells. The environment records
+Python 3.12, NumPy 2.5.1, SciPy 1.18.0, pandas 3.0.3, Matplotlib 3.11.1, and
+nbformat 5.10.4. The primary and replication seed families are
+$20260725$ and $20360725$.
+
+Comparisons use shared random streams when samplewise equality or strong error
+is under study. Monte Carlo standard errors are retained. Every publication
+figure is saved as vector PDF and raster PNG, and every numerical assertion is
+saved as CSV or JSON. The notebook terminates unless all $22$ figures exist in
+both formats and its accuracy gates pass.
+
+The experiments are organized by evidentiary role:
+
+- deterministic grids check exact reconstruction and inverse formulas;
+- independently advanced nonlinear schemes check phase SDE coefficients;
+- quadrature, simulation, and finite differences check the kernel, generator,
+  semigroup, forward equation, and pricing PDE;
+- matched scalar/phase streams test estimator invariance; and
+- negative controls test dimension, path dependence, complex derivatives,
+  winding, and numerical conditioning.
+
+Simulation supports and stress-tests proofs; it does not establish a theorem
+or a novelty claim.
+
+## Nonlinear SDE convergence
+
+Euler--Maruyama, Milstein, and Stratonovich--Heun were advanced directly from
+@eq-canonical-phase-sde or @eq-phase-stratonovich. The exact arctangent update
+was used only as a shared-path endpoint reference. With $\mu=0.3$,
+$\sigma=0.8$, $c=1.25$, $T=1$, $4{,}000$ paths, and step counts
+$32,\ldots,512$, the fitted strong slopes were:
+
+| Method | Base-seed slope | Replication slope | Base RMSE at 512 steps | Replication RMSE |
+|:--|--:|--:|--:|--:|
+| Euler--Maruyama | 0.493 | 0.510 | $5.65\times10^{-3}$ | $5.45\times10^{-3}$ |
+| Milstein | 1.006 | 1.011 | $3.46\times10^{-4}$ | $3.51\times10^{-4}$ |
+| Stratonovich--Heun | 1.001 | 1.000 | $2.69\times10^{-4}$ | $2.71\times10^{-4}$ |
+
+: Shared-path strong-convergence estimates. {#tbl-strong-convergence}
+
+The expected orders $1/2$ and $1$ appear in two independent seed families,
+as visualized in @fig-phase-convergence. This is a non-circular check of the
+derived coefficients. The exact step remains merely the known Gaussian step
+conjugated by a known inverse; it is not a general exact-simulation algorithm
+in the sense of [@beskosroberts2005].
+
+## Heat-equation compactification benchmark
+
+To isolate numerical effects from financial payoff singularities, the
+notebook also solved
+
+$$
+\partial_tu=\frac12\partial_{xx}u,
+\qquad
+u(0,x)=e^{-x^2},
+$$ {#eq-heat-benchmark}
+
+at $T=0.35$, with physical truncation $[-8,8]$. Direct-$x$ and
+$x=c\tan\theta$ grids used matched total point counts, and errors were
+compared on the common region $|x|\le4$.
+
+| Coordinate | $c$ | Points | Maximum error | RMS error | Condition proxy |
+|:--|--:|--:|--:|--:|--:|
+| direct $x$ | — | 161 | $4.65\times10^{-4}$ | $1.78\times10^{-4}$ | 1.70 |
+| phase | 0.5 | 161 | $1.99\times10^{-4}$ | $6.04\times10^{-5}$ | 78.8 |
+| phase | 1.0 | 161 | $5.98\times10^{-5}$ | $2.28\times10^{-5}$ | 22.1 |
+| phase | 2.0 | 161 | $4.07\times10^{-5}$ | $2.55\times10^{-5}$ | 7.30 |
+
+: Matched-grid compactification benchmark on $|x|\le4$. {#tbl-pde-benchmark}
+
+![Accuracy and conditioning trade-offs for direct and arctangent-compactified heat-equation grids.](figures/vector/f16_pde_compactification.pdf){#fig-pde-compactification fig-alt="Three panels compare maximum central-region error, a matrix-condition proxy, and numerical solutions for direct and phase grids across several resolutions and map scales." width=100%}
+
+At $161$ points, the best mapped maximum error in
+@tbl-pde-benchmark was about $11.4$ times smaller than the direct-grid error,
+but even the best-conditioned mapped case had a condition proxy about
+$4.3$ times larger. At $c=0.5$, conditioning deteriorated far more. The
+qualified conclusion agrees with the mapped-domain literature
+[@groschorszag1977; @boyd1987]: compactification can reallocate resolution,
+but its value is scale-, solution-, discretization-, and metric-dependent.
+
+## Monte Carlo and quasi-Monte Carlo invariance
+
+For any terminal payoff $g$,
+
+$$
+g(X_T)=g(c\tan\theta_T)
+$$ {#eq-payoff-sample-invariance}
+
+sample by sample. Consequently, if the same random stream is used,
+
+$$
+\widehat V_X=\widehat V_\theta,
+\qquad
+\widehat{\operatorname{Var}}_X
+=\widehat{\operatorname{Var}}_\theta.
+$$ {#eq-estimator-invariance}
+
+![Ordinary Monte Carlo, scrambled Sobol, and importance-sampling comparisons under the exact phase round trip.](figures/vector/f17_monte_carlo_equivalence.pdf){#fig-mc-equivalence fig-alt="Three panels show identical direct and phase sample variance for ordinary Monte Carlo, coincident quasi-Monte Carlo errors, and identical importance-sampling variance." width=100%}
+
+In @fig-mc-equivalence, the direct and phase Bachelier-payoff estimators both
+returned $0.363588299584$, sample variance $0.320662659809$, and standard
+error $0.00110599773$. State and payoff discrepancies were at most
+$1.78\times10^{-15}$. Scrambled Sobol estimates and an importance-sampled
+rare-event estimate also agreed. The phase route retains one random dimension
+and adds an arctangent/tangent round trip. Variance reduction could arise only
+from another algorithmic change—such as a new proposal, control variate,
+smoothing, stratification, or basis—not from exact relabeling alone.
+
+## Path dependence and multifactor controls
+
+A terminal phase is sufficient for a terminal one-factor payoff because it
+determines $X_T$. It is not sufficient for a generic path functional.
+To make the distinction exact, the notebook simulated $28{,}000$ Brownian
+bridges pinned at the same terminal forward. Their terminal phase spread was
+$2.78\times10^{-16}$, yet their time-average forward had standard deviation
+$0.00427$ and $1\%$--$99\%$ quantiles $0.0101$ and $0.0300$.
+
+A second control simulated a nonsingular correlated two-factor Gaussian law.
+Its smallest covariance eigenvalue was $0.654$, its determinant was $0.879$,
+and its rank was two. No smooth one-dimensional phase chart can be a
+diffeomorphism onto an open two-dimensional support.
+
+![Financial scope controls for European payoff invariance, pinned-path dependence, and two-factor support.](figures/vector/f22_financial_scope_controls.pdf){#fig-financial-controls fig-alt="Left: direct and phase European payoff samples lie on the diagonal. Center: pinned Brownian bridges share a terminal phase but have dispersed path averages. Right: a correlated two-factor Gaussian cloud has planar support." width=100%}
+
+@fig-financial-controls separates three claims:
+
+| Claim | Result |
+|:--|:--|
+| Exact phase changes a European payoff sample | Refuted; maximum difference $1.39\times10^{-17}$ |
+| Terminal phase determines a path average | Refuted by pinned bridges |
+| One smooth phase losslessly represents a nonsingular two-factor law | Refuted by covariance rank two |
+
+: Financial scope controls. {#tbl-financial-controls}
+
+The full phase *path* is equivalent to the full scalar path. The negative
+result concerns replacing path history by the terminal phase alone.
+
+# Stochastic dimension and vector geometry {#sec-vector}
+
+## Tangent, normal, and instantaneous covariance
+
+For a $C^2$ phase curve $F:I\to\mathbb C$, the complex derivative
+$F'(\theta)$ is a tangent vector under
+$\mathbb C\simeq\mathbb R^2$, and $iF'(\theta)$ is its quarter-turned normal.
+If
+
+$$
+d\theta_t=m(\theta_t)dt+s(\theta_t)dW_t,
+$$
+
+then the real Cartesian diffusion vector of
+$Z_t=Z_0F(\theta_t)$ is
+
+$$
+q(\theta)
+=
+s(\theta)
+\begin{pmatrix}
+\operatorname{Re}\{Z_0F'(\theta)\}\\
+\operatorname{Im}\{Z_0F'(\theta)\}
+\end{pmatrix}.
+$$
+
+Its instantaneous covariance density is the outer product
+
+$$
+\boxed{
+\Sigma(\theta)=q(\theta)q(\theta)^\mathsf T,
+\qquad
+\operatorname{rank}\Sigma(\theta)\le1.
+}
+$$ {#eq-rank-one-covariance}
+
+Multiplication by $i$ rotates $q$ but does not supply an independent
+increment. To obtain independent tangential and normal Brownian forcing, the
+model needs another driver or an explicitly higher-rank diffusion matrix.
+
+![Curve tangents and normals, instantaneous rank-one covariance, and higher-dimensional negative controls.](figures/vector/f14_vector_geometry_and_controls.pdf){#fig-vector-controls fig-alt="Panels show tangent and normal vectors on the phase curve, the eigenvalues of its rank-one covariance, and rank-two planar Brownian and hypoelliptic terminal covariance controls." width=100%}
+
+## Four notions of dimension
+
+The phrase “one-dimensional noise” can refer to different objects. It is
+important to distinguish:
+
+1. the number of Brownian drivers;
+2. the rank of the instantaneous diffusion covariance;
+3. the dimension of the fixed-time support; and
+4. the dimension of a sufficient Markov state.
+
+For the affine process classified here, all four relevant state notions are
+one-dimensional. This is not a universal implication of having one driver.
+For example,
+
+$$
+dX_t=dW_t,\qquad dY_t=X_t\,dt
+$$ {#eq-integrated-brownian}
+
+has one Brownian driver and instantaneous covariance rank one, but
+
+$$
+\operatorname{Cov}(X_1,Y_1)
+=
+\begin{pmatrix}
+1&1/2\\
+1/2&1/3
+\end{pmatrix},
+\qquad
+\det=\frac1{12}>0.
+$$ {#eq-hypoelliptic-covariance}
+
+The drift propagates noise into a second state direction. This elementary
+hypoelliptic example reflects the broader support and bracket phenomena
+studied by Stroock--Varadhan and Hörmander [@stroockvaradhan1972;
+@hormander1967]. The notebook's empirical covariance was within
+$8.55\times10^{-3}$ of @eq-hypoelliptic-covariance and had rank two, as did a
+planar Brownian control.
+
+Thus neither shortcut is valid:
+
+$$
+\text{one driver}\not\Rightarrow
+\text{one-dimensional terminal support},
+$$
+
+and
+
+$$
+\text{complex notation}\not\Rightarrow
+\text{two stochastic dimensions}.
+$$
+
+## What vector geometry does contribute
+
+The complex chart provides concise tangent-normal bookkeeping. In more
+general curve-valued models it can organize projections, curvature drift,
+constraint error, and invariant-preserving updates. In the present additive
+case, however, the secant curve has zero curvature and all tangents are
+parallel. The geometry explains the model's rank-one structure; it does not
+enlarge it.
+
+The rigidity theorems convert coefficient matching into geometry:
+
+- constant additive noise requires constant tangent direction, hence a line;
+- constant multiplicative noise requires constant logarithmic tangent
+  $F'/F$, hence a logarithmic spiral; and
+- a general polar curve induces state-dependent complex coefficients.
+
+This is a useful coordinate interface to existing vector stochastic calculus,
+not a new vector calculus.
+
+# Complex differentiation and analytic implications {#sec-complex-analysis}
+
+## A curve determines only tangential derivatives
+
+A complex derivative at an interior point of an open subset of $\mathbb C$
+requires compatible limits from all directions. Data restricted to the
+one-dimensional state curve determine only a tangential derivative.
+
+On the canonical line $\{1+iy:y\in\mathbb R\}$, consider
+
+$$
+H_0(z)=0,\qquad
+H_1(z)=\operatorname{Re}z-1.
+$$
+
+Both functions vanish on the entire state line, yet their normal derivatives
+are $0$ and $1$. Hence the stochastic state data do not select a unique
+off-curve extension, much less a unique holomorphic extension.
+
+## Wirtinger calculus
+
+For a real-differentiable $H(z,\bar z)$, define
+
+$$
+H_z=\frac12(H_x-iH_y),
+\qquad
+H_{\bar z}=\frac12(H_x+iH_y).
+$$
+
+Along $z=F(\theta)$,
+
+$$
+\frac{d}{d\theta}
+H(F(\theta),\overline{F(\theta)})
+=
+H_zF'(\theta)+H_{\bar z}\overline{F'(\theta)}.
+$$ {#eq-wirtinger-pullback}
+
+This compactly packages two real derivatives [@brandwood1983]. It becomes
+holomorphic calculus only when $H_{\bar z}=0$ on an open domain. The
+notebook checked @eq-wirtinger-pullback for $H(z,\bar z)=|z|^2$ to
+$3.55\times10^{-15}$, while the two extensions above agreed exactly on the
+curve and retained different normal derivatives.
+
+## Complex-step differentiation and transform methods
+
+For a real function with a suitable analytic extension,
+
+$$
+f'(x)\approx\frac{\operatorname{Im}f(x+ih)}h
+$$
+
+can avoid subtractive cancellation [@squiretrapp1998]. That advantage comes
+from the analytic extension and the complex-step algorithm. The phase chart
+does not supply off-curve values or guarantee analyticity of a payoff.
+
+Similarly, complex methods in models such as Heston and in Fourier pricing
+derive their power from characteristic functions, contour choices, damping,
+and transform inversion [@heston1993; @carrmadan1999]. Writing a real
+Bachelier state as $\sec\theta e^{i\theta}$ neither replaces nor automatically
+improves those methods.
+
+![Off-curve derivative nonuniqueness, Wirtinger pullback, and the separate complex-step benchmark.](figures/vector/f15_complex_derivative_limits.pdf){#fig-complex-derivative-limits fig-alt="Panels show two extensions agreeing on the state curve but differing normally, numerical verification of a Wirtinger pullback identity, and complex-step versus finite-difference error for an analytic function." width=100%}
+
+@fig-complex-derivative-limits summarizes the boundary: complex notation is
+valuable for organization and for methods whose own analytic assumptions
+hold; Euler form alone creates no holomorphic derivative.
+
+# Computational implications and research agenda {#sec-research-agenda}
+
+## What is analytically gained
+
+The phase chart supplies exact formulas for an already solvable affine
+diffusion:
+
+- a bounded state coordinate and explicit inverse;
+- an autonomous nonlinear SDE;
+- an exact transition density and update;
+- natural-boundary behavior;
+- a conjugate generator and pricing PDE;
+- exact transformed Bachelier values and Greeks; and
+- group and rigidity interpretations.
+
+This package can simplify reasoning when a bounded chart, polar geometry, or
+state-dependent grid is desirable. It also creates a demanding but exactly
+solvable benchmark for nonlinear SDE schemes.
+
+It does **not** turn a previously unsolved stochastic problem into a closed
+form. Every canonical analytic formula is inherited from arithmetic Brownian
+motion through a diffeomorphism. An invertible coordinate change preserves
+information and exact option values. Any computational improvement must enter
+through the interaction between the coordinate and an additional numerical
+choice.
+
+## Qualified opportunities
+
+### Adaptive and spectral PDE methods
+
+The map scale $c$ provides a principled way to concentrate resolution near a
+region of financial interest while retaining an unbounded physical domain.
+Rational spectral bases induced by related maps have established theory
+[@boyd1987]. A useful next result would optimize $c$ jointly with payoff
+regularity, tail asymptotics, grid order, and a conditioning constraint,
+rather than report a single favorable error.
+
+### Structure-preserving phase integration
+
+Exact transformed steps preserve the natural interval, and exact Cayley steps
+preserve unit modulus. For models without an exact inverse, geometric and
+symmetry-adapted schemes may exploit the same invariants
+[@malhamwiese2008; @devecchi2019]. A rigorous extension would compare weak
+and strong error at matched computational cost while measuring constraint
+defect separately.
+
+### Financial normal-model calculations
+
+The phase can be useful when normal factors range over wide positive and
+negative values and a bounded PDE coordinate is operationally convenient.
+It does not change calibration targets or risk measures. Empirical work would
+need to compare stability of calibration, extrapolation, and Greeks under
+specified market data, boundary conventions, and regularization.
+
+### Higher-dimensional geometry
+
+Multifactor extensions should retain their actual dimension. Candidate
+coordinates include products of one-dimensional charts, projective or
+spherical charts with multiple phases, and manifold methods whose diffusion
+rank is explicit. Hörmander brackets and support must be analyzed rather than
+inferred from driver count. A single phase should be used only after a
+sufficient-statistic or invariant-manifold theorem proves losslessness.
+
+### Path-dependent claims
+
+The terminal phase cannot encode a Brownian bridge. For Asian, barrier, and
+early-exercise claims, legitimate approaches include augmenting the Markov
+state with running integrals or extrema, simulating the full phase path, or
+using regression and dynamic programming [@longstaffschwartz2001;
+@zhang2003]. The phase may still serve as one coordinate of that expanded
+state.
+
+### Beyond affine and log-affine rigidity
+
+For a prescribed smooth radius $r(\theta)$ and phase diffusion,
+@eq-general-curve-ito constructs a state-dependent complex SDE. A broader
+classification could ask which drift-diffusion families preserve selected
+curves or admit global polar charts across zeros. Such work belongs to
+stochastic differential geometry and should not be inferred from the affine
+line alone.
+
+## Decision map
+
+![Evidence-based decisions for the principal claims and negative controls.](figures/vector/f18_evidence_decisions.pdf){#fig-evidence-decisions fig-alt="A color-coded decision table marking exact affine representation and compatible spiral winding as supported, and rejecting circular Brownian, added stochastic dimension, generic variance reduction, holomorphic structure, and universal PDE improvement claims." width=100%}
+
+The decision map in @fig-evidence-decisions enforces a conservative
+interpretation. Exactness, lossless reconstruction, the affine
+classification, and conjugate pricing are supported. Automatic variance
+reduction, ordinary circular Brownian behavior, added dimension, universal
+conditioning improvement, and new complex analyticity are not.
+
+# Limitations {#sec-limitations}
+
+The scope of the results is deliberately narrow.
+
+1. **One real driver and constant affine coefficients.** The global iff
+   theorem concerns $Z_0+at+bW_t$. State-dependent coefficients, jumps,
+   multiple Brownian drivers, and random coefficients require new support and
+   regularity arguments.
+2. **Genuine polar phase.** Pathological measurable encodings of
+   higher-dimensional data into one real number are irrelevant to the smooth,
+   geometric, Itô-compatible problem.
+3. **Nonvanishing reference geometry.** The main normalization assumes
+   $Z_0\ne0$ and the eligible line misses the origin. Charts across zeros need
+   stopping times or multiple coordinate patches.
+4. **No unlimited additive winding.** The additive phase interval has length
+   $\pi$. Unlimited winding belongs to the compatible multiplicative spiral,
+   which is a different process.
+5. **Normal-model financial scope.** Arithmetic Brownian levels can become
+   negative. The model is not a universal equity-price model, and the complex
+   coordinate is not traded.
+6. **Classical smooth pricing.** The PDE derivation assumes sufficient
+   regularity. Viscosity, weak, or distributional formulations are needed for
+   nonsmooth coefficients and payoffs, although conditional-expectation
+   invariance remains immediate when integrable.
+7. **Finite numerical audit.** Convergence slopes, residuals, and
+   compactification errors are finite-resolution measurements. Only the
+   algebraic identities are exact to mathematical precision.
+8. **No universal computational advantage.** The heat-equation benchmark
+   shows a resolution-conditioning trade-off for one problem. It does not
+   establish superiority across payoffs, solvers, dimensions, or hardware.
+9. **No dimensional or analytic creation.** A coordinate diffeomorphism
+   cannot create independent noise, path history, market completeness, or an
+   off-curve analytic extension.
+
+# Conclusion {#sec-conclusion}
+
+For the nondegenerate affine complex Brownian process
+
+$$
+Z_t=Z_0+at+bW_t,
+$$
+
+a lossless, time-independent genuine Euler phase exists exactly when
+
+$$
+\frac ab\in\mathbb R,
+\qquad
+\frac b{Z_0}\notin\mathbb R.
+$$
+
+The first condition fixes the full temporal support to one affine line. The
+second makes the line's argument injective. With
+$a=\lambda b$ and $b/Z_0=\rho e^{i\phi}$, the unique continuous branch has
+
+$$
+Z_t
+=
+Z_0\frac{\sin\phi}{\sin(\phi-\theta_t)}e^{i\theta_t},
+\qquad
+x_t
+=\frac{\sin\theta_t}{\rho\sin(\phi-\theta_t)}.
+$$
+
+The canonical financial representative is
+
+$$
+1+iX_t/c
+=\sec\theta_t e^{i\theta_t},
+\qquad
+X_t=c\tan\theta_t.
+$$
+
+Its phase is an autonomous diffusion with explicit generator, transition
+kernel, exact step, and inaccessible natural boundaries. The chart conjugates
+the Bachelier pricing problem, including values, deltas, gammas, and hedges.
+It can concentrate numerical resolution and preserve transformed invariants,
+but exact samplewise inversion leaves Monte Carlo estimators unchanged.
+
+The rotational aspect of Euler form is therefore real but constrained. In the
+additive case, rotation and phase-dependent radius trace a straight line over
+one half-turn. Unlimited lossless winding is available only after moving to a
+compatible multiplicative logarithmic spiral. Complex notation clarifies
+tangents, normals, and coefficient squares; Itô quadratic variation supplies
+the second-order correction. Neither substitutes for the other.
+
+The useful outcome is not a claim that stochastic calculus has been reduced
+to complex algebra. It is a precise classification and a controlled
+coordinate framework: exact where the support geometry permits it, explicit
+about what financial quantities it preserves, and equally explicit about the
+dimensions, histories, and analytic structures it cannot create.
+
+# Appendix A: Additional proof details {.unnumbered #sec-appendix-proofs}
+
+## A.1 Simultaneous-time formulation {.unnumbered}
+
+The explicit construction in the sufficient case holds pathwise for every
+$t\ge0$ on the event where $W$ is continuous, which has probability one.
+For necessity, it is enough to assume the representation holds almost surely
+at each deterministic $t$ in $[t_0,t_1]$. Define
+
+$$
+H(t,\omega)
+=
+\mathbf 1\{
+Z_t(\omega)\notin Z_0C_r
+\}.
+$$
+
+Assuming standard joint measurability,
+$\mathbb E[H(t,\cdot)]=0$ for every $t$. Tonelli's theorem gives
+
+$$
+\int_{t_0}^{t_1}\mathbb E[H(t,\cdot)]dt=0,
+$$
+
+so an independent uniform $\tau$ satisfies
+$\mathbb P(Z_\tau\in Z_0C_r)=1$. This is the step used in the randomized-time
+contradiction.
+
+## A.2 Determinant of the affine time-state map {.unnumbered}
+
+Write $a=a_1+ia_2$ and $b=b_1+ib_2$. The real Jacobian of
+
+$$
+(t,w)\mapsto Z_0+at+bw
+$$
+
+is
+
+$$
+J=
+\begin{pmatrix}
+a_1&b_1\\
+a_2&b_2
+\end{pmatrix},
+\qquad
+\det J=a_1b_2-a_2b_1
+=-\operatorname{Im}(a\overline b).
+$$
+
+Thus $a/b\notin\mathbb R$ is exactly the condition for the randomized-time
+law to inherit a planar density.
+
+## A.3 Continuous-lift uniqueness {.unnumbered}
+
+The curve $x\mapsto1+cx$ is continuous and nonvanishing in the eligible
+case. Any two continuous argument lifts differ by a continuous
+$2\pi\mathbb Z$-valued function, hence by a constant multiple of $2\pi$.
+Anchoring both at $\theta(0)=0$ makes them equal. Strict monotonicity follows
+from @eq-angle-derivative, and eliminating $x$ forces the radius in
+@eq-general-radius-inverse.
+
+## A.4 General moving-line fallback {.unnumbered}
+
+At a fixed time $t$, write the normalized support as
+
+$$
+\ell_t(x)=q_t+cx,\qquad q_t=1+\alpha t.
+$$
+
+When $\operatorname{Im}(c\overline{q_t})\ne0$, this line misses the origin,
+its angle is monotone, and the same line-polar calculation gives a radius
+$R(t,\theta)$. At times satisfying
+
+$$
+\operatorname{Im}(c\overline{q_t})=0,
+$$
+
+the line passes through the origin and no single lossless genuine polar phase
+represents its full Gaussian support. The explicit dependence on $t$ is why
+this construction does not contradict @thm-affine-classification.
+
+# Appendix B: General affine stochastic theory {.unnumbered #sec-appendix-affine}
+
+For $x_t=\lambda t+W_t$, the inverse derivative is
+
+$$
+x'(\theta)
+=\frac{\sin\phi}{\rho\sin^2(\phi-\theta)},
+$$
+
+with sign determined by orientation. Therefore
+
+$$
+g(\theta)=\frac1{x'(\theta)}
+=\frac{\rho\sin^2(\phi-\theta)}{\sin\phi}.
+$$
+
+Differentiating $\theta(x)$ twice gives
+$\theta''(x)=g(\theta)g'(\theta)$, and Itô's formula yields
+@eq-general-phase-sde.
+
+The corresponding generator is
+
+$$
+\mathcal L_\phi h
+=
+\left(\lambda g+\frac12gg'\right)h'
++\frac12g^2h''.
+$$
+
+Under the substitution $y=x(\theta)$, this generator is conjugate to
+
+$$
+\mathcal L_xf=\lambda f'+\frac12f''.
+$$
+
+The transition density @eq-general-phase-kernel, its normalization, and the
+Chapman--Kolmogorov identity follow from the same conjugacy. Both endpoints
+of $I_\phi$ map to infinite scalar states and are natural.
+
+# Appendix C: Financial derivative identities {.unnumbered #sec-appendix-finance}
+
+## C.1 Bachelier expectation {.unnumbered}
+
+Under @eq-normal-forward,
+
+$$
+F_T=F_t+\sigma_N\sqrt\tau\,\xi,
+\qquad \xi\sim N(0,1).
+$$
+
+For $s=\sigma_N\sqrt\tau>0$,
+
+$$
+\mathbb E[(F_T-K)^+\mid F_t=F]
+=
+\int_{(K-F)/s}^\infty(F-K+sz)\varphi(z)\,dz.
+$$
+
+Using
+
+$$
+\int_a^\infty\varphi(z)\,dz=\Phi(-a),
+\qquad
+\int_a^\infty z\varphi(z)\,dz=\varphi(a),
+$$
+
+gives @eq-bachelier-call. Differentiation under the closed form yields
+@eq-bachelier-greeks.
+
+## C.2 Greek transformation {.unnumbered}
+
+Since
+
+$$
+\theta_x=\frac{\cos^2\theta}{c},
+$$
+
+the first derivative is
+
+$$
+V_x=v_\theta\theta_x
+=\frac{\cos^2\theta}{c}v_\theta.
+$$
+
+Differentiating again,
+
+$$
+\theta_{xx}
+=-\frac{2\sin\theta\cos^3\theta}{c^2},
+$$
+
+and therefore
+
+$$
+V_{xx}
+=v_{\theta\theta}\theta_x^2+v_\theta\theta_{xx},
+$$
+
+which is @eq-gamma-transform.
+
+## C.3 Generator cancellation {.unnumbered}
+
+Substituting @eq-phase-first-chain and @eq-phase-second-chain into the phase
+operator gives
+
+$$
+\begin{aligned}
+Av_\theta+\frac12B^2v_{\theta\theta}
+={}&
+\left(
+\frac{\mu_{\mathbb Q}}c\cos^2\theta
+-\frac{\sigma^2}{c^2}\sin\theta\cos^3\theta
+\right)
+V_xc\sec^2\theta\\
+&+
+\frac{\sigma^2}{2c^2}\cos^4\theta
+\left(
+V_{xx}c^2\sec^4\theta
++2V_xc\tan\theta\sec^2\theta
+\right)\\
+={}&
+\mu_{\mathbb Q}V_x+\frac12\sigma^2V_{xx}.
+\end{aligned}
+$$
+
+The two terms proportional to
+$\sigma^2V_x\sin\theta/\cos\theta$ cancel exactly.
+
+# Appendix D: Reproducibility and artifact manifest {.unnumbered #sec-reproducibility}
+
+The computational supplement consists of:
+
+- the deterministic builder
+  `notebooks/build_one_phase_euler_finance.py`;
+- the executed notebook
+  `notebooks/one_phase_euler_finance.ipynb`;
+- $22$ vector figures in `figures/vector`;
+- $22$ raster companions in `figures/raster`; and
+- $44$ structured evidence files in `tables`.
+
+The notebook records the following primary parameters:
+
+| Experiment | Parameters |
+|:--|:--|
+| Nonlinear SDE | $\mu=0.3$, $\sigma=0.8$, $c=1.25$, $T=1$, $4{,}000$ paths, $32$--$512$ steps |
+| Boundary stress | $c=0.25$, $\sigma=1$, $120{,}000$ samples per step size |
+| Distribution law | signed $\sigma=-0.9$ with independent PIT and quadrature checks |
+| Monte Carlo | $2^{18}$ samples, shared scalar/phase streams |
+| Bachelier pricing | $c=0.05$, $K=0.025$, $\sigma_N=0.0125$, $\tau=1.25$, $D=0.97$ |
+| Pricing PDE | $2{,}869$ interior phase-maturity evaluations |
+| Pinned paths | $28{,}000$ Brownian bridges with $80$ steps |
+| Two-factor control | $120{,}000$ correlated Gaussian samples |
+
+: Principal computational parameters. {#tbl-computational-parameters}
+
+The final notebook assertions require:
+
+$$
+\begin{gathered}
+\text{all 44 figure files present and nonempty},\\
+\max|C_{\mathrm{direct}}-C_{\mathrm{phase}}|<10^{-14},\\
+\max|\Delta_{\mathrm{direct}}-\Delta_{\mathrm{phase}}|<2\times10^{-6},\\
+\max|\Gamma_{\mathrm{direct}}-\Gamma_{\mathrm{phase}}|<2\times10^{-3},\\
+\max|\text{pricing-PDE residual}|<2\times10^{-4},
+\end{gathered}
+$$
+
+and rank two for the multifactor covariance control. The observed values were
+much smaller: $2.78\times10^{-17}$, $1.76\times10^{-8}$,
+$5.81\times10^{-7}$, and $8.12\times10^{-10}$, respectively.
+
+All results reported in the manuscript are read from the executed evidence
+files. The notebook is intended to be rerun from a clean kernel; the vector
+and raster manifests allow missing or stale figures to be detected
+independently of the prose.
+
+# References {.unnumbered}
