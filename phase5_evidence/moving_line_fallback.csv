@@ -1,0 +1,6 @@
+time,status,max_reconstruction_error
+0.2,chart valid,1.03673669915e-14
+0.7,chart valid,2.66934189013e-14
+0.95,chart valid,1.76164653738e-13
+1,support line crosses origin,
+1.2,chart valid,3.89382929754e-14

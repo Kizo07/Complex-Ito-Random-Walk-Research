@@ -1,0 +1,13 @@
+{
+  "bilinear_bracket_relative_error": 0.0018600483910582175,
+  "coefficient_error": 0.0,
+  "constant_modulus_error": 4.440892098500626e-16,
+  "figure_count": 18,
+  "hermitian_bracket_relative_error": 0.0018723122493216912,
+  "max_exactness_error": 6.661338147750939e-16,
+  "max_moment_standardized_residual": 1.3563577471871175,
+  "one_driver_eigenvalue_ratio": 5.538292448590374e-16,
+  "phase3_pathwise_error": 2.7336071744532853e-16,
+  "strong_convergence_slope": 0.562511466542004,
+  "two_driver_numerical_rank": 2
+}

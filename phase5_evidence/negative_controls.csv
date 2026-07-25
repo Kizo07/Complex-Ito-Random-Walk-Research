@@ -1,0 +1,10 @@
+claim_under_test,negative_control,outcome
+lossless phase for every affine process,random-time noncollinear support,fails: empirical support covariance has rank two
+ordinary polar angle stores a radial continuum,radial affine line,fails: continuum of radii has only two directions
+one Brownian driver always gives terminal rank one,integrated Brownian hypoelliptic system,fails: theoretical terminal covariance determinant is 1/12
+complex curve data determine a holomorphic derivative,two off-curve extensions agreeing on the state line,fails: normal derivatives are 0 and 1
+transported phase addition is ordinary angular addition,tangent/arctangent group comparison,fails: ordinary-angle RMS discrepancy is nonzero
+lossless phase lowers Monte Carlo variance,shared-stream terminal payoff,fails: estimators agree sample by sample
+bounded PDE coordinates guarantee conditioning,three arctangent map scales,fails: conditioning varies strongly with scale
+constant-radius Cayley dynamics are circular Brownian motion,state-dependent angular diffusion,fails: diffusion vanishes near the missing point
+moving-line phase works through origin crossing,noncollinear process at t=1,fails: support line crosses the origin

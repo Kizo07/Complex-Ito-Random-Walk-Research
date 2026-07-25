@@ -1,0 +1,3 @@
+terminal_estimator,normal_draws_per_sample,stored_stochastic_scalars,forward_transcendental_calls,inverse_transcendental_calls
+direct arithmetic Brownian,1,1,0,0
+phase then exact inverse,1,1,1,1

@@ -89,13 +89,14 @@ an executed discovery notebook and reproducible PDF/HTML renders:
 1. [`PHASE_3_TECHNICAL_PAPER_PLAN.md`](PHASE_3_TECHNICAL_PAPER_PLAN.md) —
    paper scope, section architecture, visualization plan, and acceptance
    criteria.
-2. [`paper/index.qmd`](paper/index.qmd) — canonical Quarto manuscript.
-3. [`paper/notebooks/phase3_discovery.ipynb`](paper/notebooks/phase3_discovery.ipynb)
+2. [`paper/phase3/index.qmd`](paper/phase3/index.qmd) — canonical Quarto
+   manuscript.
+3. [`paper/phase3/notebooks/phase3_discovery.ipynb`](paper/phase3/notebooks/phase3_discovery.ipynb)
    — executed computational narrative showing how the construction was found
    and tested.
-4. [`paper/output/phase3-one-driver-complex-embedding.pdf`](paper/output/phase3-one-driver-complex-embedding.pdf)
+4. [`paper/phase3/output/phase3-one-driver-complex-embedding.pdf`](paper/phase3/output/phase3-one-driver-complex-embedding.pdf)
    — final 23-page PDF.
-5. [`paper/output/phase3-one-driver-complex-embedding.html`](paper/output/phase3-one-driver-complex-embedding.html)
+5. [`paper/phase3/output/phase3-one-driver-complex-embedding.html`](paper/phase3/output/phase3-one-driver-complex-embedding.html)
    — browser-readable companion.
 6. [`.agent/reviews/TASK-004-opencode-glm52-review.md`](.agent/reviews/TASK-004-opencode-glm52-review.md)
    — independent GLM 5.2 mathematical and numerical review.
@@ -132,6 +133,68 @@ rotation:
    and interpretation.
 10. [`.agent/reviews/TASK-005-opencode-glm52-review.md`](.agent/reviews/TASK-005-opencode-glm52-review.md)
     — independent GLM 5.2 review after implementation.
+
+## Phase 4 technical paper
+
+The Phase 4 result is also developed as an independently renderable research
+paper with a primary-source audit, executed discovery notebook, and
+publication PDF/HTML:
+
+1. [`docs/superpowers/specs/2026-07-24-phase4-technical-paper-design.md`](docs/superpowers/specs/2026-07-24-phase4-technical-paper-design.md)
+   — approved paper design and contribution boundary.
+2. [`docs/superpowers/plans/2026-07-24-phase4-technical-paper.md`](docs/superpowers/plans/2026-07-24-phase4-technical-paper.md)
+   — implementation and verification plan.
+3. [`paper/phase4/RESEARCH_NOTES.md`](paper/phase4/RESEARCH_NOTES.md) —
+   primary-source, claim, and novelty audit.
+4. [`paper/phase4/index.qmd`](paper/phase4/index.qmd) — canonical Quarto
+   manuscript.
+5. [`paper/phase4/notebooks/phase4_discovery.ipynb`](paper/phase4/notebooks/phase4_discovery.ipynb)
+   — executed derivation, simulation, and visualization record.
+6. [`paper/phase4/output/phase4-native-complex-geometric-brownian-motion.pdf`](paper/phase4/output/phase4-native-complex-geometric-brownian-motion.pdf)
+   — letter-size technical paper.
+7. [`paper/phase4/output/phase4-native-complex-geometric-brownian-motion.html`](paper/phase4/output/phase4-native-complex-geometric-brownian-motion.html)
+   — browser-readable companion.
+8. [`.agent/reviews/TASK-006-opencode-glm52-review.md`](.agent/reviews/TASK-006-opencode-glm52-review.md)
+   — independent GLM 5.2 review after final verification.
+
+## Phase 5 reading order
+
+Phase 5 gives the exact answer to the requested one-stochastic-phase problem
+for additive complex Brownian motion. It classifies when the phase can be a
+time-independent, lossless state coordinate; derives its SDE, generator,
+kernel, boundaries, and transported group law; and tests whether the
+coordinate change creates new vector, complex-derivative, or numerical
+capabilities:
+
+1. [`PHASE_5_COMPREHENSIVE_ONE_PHASE_EULER_RESEARCH_PLAN.md`](PHASE_5_COMPREHENSIVE_ONE_PHASE_EULER_RESEARCH_PLAN.md)
+   — approved comprehensive plan and acceptance gates.
+2. [`PHASE_5_CANDIDATE_AUDIT.md`](PHASE_5_CANDIDATE_AUDIT.md) — detailed
+   audit of the secant, Cayley, wrapped, spiral, arbitrary-curve, and
+   moving-line candidates.
+3. [`PHASE_5_LITERATURE_REVIEW.md`](PHASE_5_LITERATURE_REVIEW.md) —
+   primary-source review and conservative novelty boundary.
+4. [`PHASE_5_MATHEMATICAL_FOUNDATIONS.md`](PHASE_5_MATHEMATICAL_FOUNDATIONS.md)
+   — measurable factorization, exact existence/impossibility theorem, phase
+   dynamics, transition law, and natural boundaries.
+5. [`PHASE_5_RIGIDITY_AND_GROUP_STRUCTURE.md`](PHASE_5_RIGIDITY_AND_GROUP_STRUCTURE.md)
+   — additive rigidity, transported addition, Cayley compactification, and
+   the compatible multiplicative logarithmic spiral.
+6. [`PHASE_5_VECTOR_AND_COMPLEX_CALCULUS_IMPLICATIONS.md`](PHASE_5_VECTOR_AND_COMPLEX_CALCULUS_IMPLICATIONS.md)
+   — what one phase preserves and why it does not create a second stochastic
+   dimension or holomorphic derivative theory.
+7. [`PHASE_5_NUMERICAL_IMPLICATIONS.md`](PHASE_5_NUMERICAL_IMPLICATIONS.md) —
+   matched SDE, PDE, Monte Carlo, QMC, rare-event, and derivative benchmarks.
+8. [`phase5_model.py`](phase5_model.py) and
+   [`tests/test_phase5_model.py`](tests/test_phase5_model.py) — tested
+   implementation of the exact maps and dynamics.
+9. [`notebooks/phase5_one_phase_euler.ipynb`](notebooks/phase5_one_phase_euler.ipynb)
+   — executed 19-section computational verification with 18 figures.
+10. [`PHASE_5_SIMULATION_RESULTS.md`](PHASE_5_SIMULATION_RESULTS.md) —
+    reproducibility record and measured results.
+11. [`PHASE_5_SYNTHESIS.md`](PHASE_5_SYNTHESIS.md) — concise final theorem,
+    formulas, implications, and limitations.
+12. [`.agent/reviews/TASK-007-opencode-glm52-review.md`](.agent/reviews/TASK-007-opencode-glm52-review.md)
+    — independent GLM 5.2 mathematical and evidence review.
 
 ## Main formula
 
@@ -243,6 +306,45 @@ X_t=X_0+\frac1\alpha\log\frac{|Z_t|}{|Z_0|}.
 \]
 
 This is a rank-one logarithmic-spiral diffusion, not planar Brownian motion.
+
+For the Phase 5 additive process
+
+\[
+Z_t=Z_0+a t+bW_t,\qquad Z_0b\ne0,
+\]
+
+a genuine, lossless, time-independent one-phase representation exists if and
+only if
+
+\[
+\frac ab\in\mathbb R,
+\qquad
+\frac b{Z_0}\notin\mathbb R.
+\]
+
+Writing \(a=\lambda b\), \(b/Z_0=\rho e^{i\phi}\), and
+\(x_t=\lambda t+W_t\), define
+
+\[
+\theta_t=\arg(1+\rho e^{i\phi}x_t)\in I_\phi.
+\]
+
+Then the exact Euler form is
+
+\[
+\boxed{
+Z_t
+=
+Z_0
+\frac{\sin\phi}{\sin(\phi-\theta_t)}
+e^{i\theta_t}.
+}
+\]
+
+The phase is the only stochastic state variable in this formula; its radial
+factor is a deterministic function of that phase. It is a bounded chart on
+the original affine support line, not Brownian motion on a circle and not a
+new stochastic dimension.
 
 For full isotropic planar Brownian motion,
 

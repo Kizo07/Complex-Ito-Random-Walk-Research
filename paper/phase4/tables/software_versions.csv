@@ -1,0 +1,12 @@
+component,version
+Python,3.12.13
+NumPy,2.5.1
+SciPy,1.18.0
+pandas,3.0.3
+Matplotlib,3.11.1
+Seaborn,0.13.2
+SymPy,1.14.0
+nbformat,5.10.4
+platform,Linux-7.1.4-1-cachyos-x86_64-with-glibc2.43
+conda environment,phase3-paper
+master seed,20260724
