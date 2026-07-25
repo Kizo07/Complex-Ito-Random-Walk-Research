@@ -1,31 +1,34 @@
 # Status
 
-- Active task: `TASK-004`
+- Active task: `TASK-005`
 - Owner: Codex (user-authorized direct exception)
 - State: complete
 - Allowed writes: project directory only
 - Conda environment: `phase3-paper` (Python 3.12.13)
-- Approved plan: `PHASE_3_TECHNICAL_PAPER_PLAN.md`
-- Scope: Phase 3 technical paper only
+- Approved plan: `PHASE_4_COORDINATE_FREE_COMPLEX_GBM_PLAN.md`
+- Scope: Phase 4 coordinate-free complex geometric Brownian motion
 - Central model:
-  \(Z_t=Z_0\exp((\alpha+i\beta)(X_t-X_0))\)
+  \[
+  \mathcal Z_t=\mathcal Z_0
+  \exp\!\left(
+  \left[\left(\mu-\frac12\sigma^2\right)+i\omega\right]t
+  +(\sigma+i\beta)W_t
+  \right)
+  \]
+- Target modulus:
+  \(d|\mathcal Z_t|/|\mathcal Z_t|=\mu\,dt+\sigma\,dW_t\)
+- Target phase:
+  \(\Theta_t=\Theta_0+\omega t+\beta W_t\)
 - Primary notebook:
-  `paper/notebooks/phase3_discovery.ipynb`
-- Canonical manuscript: `paper/index.qmd`
-- Rendered PDF: `paper/output/phase3-one-driver-complex-embedding.pdf`
-- Rendered HTML: `paper/output/phase3-one-driver-complex-embedding.html`
-- Toolchain check: Quarto 1.9.38 and TinyTeX 2026 detected; required Python
-  numerical, notebook, cache, and static-export packages import successfully
-- Execution note: the managed workspace blocks Jupyter's local sockets, so
-  two clean-kernel executions used the approved external execution boundary
-- Reproducibility result: 15 code-cell outputs exactly equal across clean
-  executions; sequential counts 1–15; zero error outputs
-- Publication result: 23-page PDF, HTML companion, 18 vector figures with
-  raster companions, 8 generated CSV/JSON tables
-- Independent review: opencode `zai-coding-plan/glm-5.2` returned **PASS**,
-  with no critical or major findings; all four editorial notes were addressed
-- Review usage ID: `0afa46c6-6b46-4dd2-a026-7b43209ae569`
-- Scorecard evaluation ID: `c2c88e0f-1bcd-4ed3-a4d1-e2b0bbd72663`
+  `notebooks/phase4_coordinate_free_complex_gbm.ipynb`
+- Verification: two clean notebook runs, 12 sequential code cells, zero error
+  outputs, matching deterministic hashes; 10/10 unit tests pass; seven
+  authoritative Markdown files render with Pandoc 3.8
+- Independent review: OpenCode `zai-coding-plan/glm-5.2` returned **PASS**,
+  with no critical or major findings; all minor evidence and editorial
+  follow-ups were resolved
+- Review usage ID: `c18c03a7-4f5a-4a1b-96c7-c767987d7bc4`
+- Scorecard evaluation ID: `98e03e34-ccf7-42cf-bf44-745aad55f866`
 - Blockers: none
-- Git note: the user authorized a feature-branch commit, push, and pull
-  request on 2026-07-24; merge and release remain out of scope
+- Git branch: `phase-4-coordinate-free-complex-gbm`
+- Git publication actions: out of scope unless separately requested
