@@ -1,0 +1,8 @@
+{
+  "beta": 0.48299999999999993,
+  "gamma": 1.15,
+  "max_pathwise_error": 2.7336071744532853e-16,
+  "omega": 0.10557,
+  "restriction_beta_equals_gamma_sigma": true,
+  "restriction_omega_equals_gamma_log_drift": true
+}

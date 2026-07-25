@@ -1,0 +1,8 @@
+{
+  "evaluations": 2869,
+  "max_absolute_residual": 8.122450385894542e-10,
+  "max_relative_residual_above_1e-8": 0.00204763343867459,
+  "rms_residual": 5.5093539278274636e-11,
+  "theta_step": 8e-05,
+  "time_step": 2.5e-05
+}

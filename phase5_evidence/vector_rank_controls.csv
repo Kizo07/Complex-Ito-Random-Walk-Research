@@ -1,0 +1,5 @@
+case,eigenvalue_1,eigenvalue_2,determinant,rank_tol_1e-6
+one-phase tangent covariance,0,0.64,0,1
+planar Brownian terminal covariance,0.994278357501,1.00360554515,0.99786327301,2
+hypoelliptic terminal covariance empirical,0.0661832616413,1.26649308622,0.083820643292,2
+hypoelliptic terminal covariance theory,0.0657414540893,1.26759187924,0.0833333333333,2

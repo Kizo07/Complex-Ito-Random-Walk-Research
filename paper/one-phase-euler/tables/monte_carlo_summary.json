@@ -1,0 +1,6 @@
+{
+  "interpretation": "terminal phase does not encode path history; the full phase path remains equivalent to the full scalar path",
+  "max_direct_phase_payoff_difference": 1.7763568394002505e-15,
+  "max_state_reconstruction_error": 1.7763568394002505e-15,
+  "mean_barrier_payoff_conditional_variance_given_terminal_phase_bin": 0.05196433041301627
+}

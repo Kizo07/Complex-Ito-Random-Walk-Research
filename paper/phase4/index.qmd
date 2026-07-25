@@ -1,0 +1,1300 @@
+---
+title: "Native Complex Geometric Brownian Motion"
+subtitle: "Itô correction, stochastic rotation, and noise-dimension geometry"
+author:
+  - name: "Complex–Itô Random-Walk Research Project"
+date: 2026-07-24
+date-format: long
+abstract: |
+  We construct a native complex exponential driven by one real Brownian
+  motion whose modulus is exactly a prescribed geometric Brownian motion and
+  whose imaginary log increment supplies deterministic and stochastic
+  rotation. For real parameters $\mu,\sigma,\omega,\beta$ and
+  $\mathcal Z_0\ne0$, the process is
+  $$
+  \mathcal Z_t=\mathcal Z_0
+  \exp\!\left(
+  [(\mu-\sigma^2/2)+i\omega]t+(\sigma+i\beta)W_t
+  \right).
+  $$
+  Its modulus satisfies $d|\mathcal Z_t|/|\mathcal Z_t|
+  =\mu\,dt+\sigma\,dW_t$, while a continuous phase lift is
+  $\Theta_t=\Theta_0+\omega t+\beta W_t$. Complex Itô calculus gives the
+  multiplicative SDE drift
+  $\mu-\beta^2/2+i(\omega+\sigma\beta)$; the cross term is essential.
+  We reconcile the ordinary exponential, exact finite-step walk, stochastic
+  logarithm, and Doléans exponential; derive transition laws, moments, and
+  bilinear and Hermitian brackets; and prove that one real driver forces
+  rank-one log-polar and Cartesian local covariance. Phase 3 is recovered as a
+  constrained subfamily, whereas independent radial and angular diffusion
+  requires two drivers. An executable notebook supplies 18 visual
+  explanations and seeded checks of exactness, moments, covariance rank,
+  Euler--Maruyama convergence, and quadratic variation. Complex geometric
+  Brownian motion is established theory; the contribution is a
+  modulus-preserving four-parameter synthesis and an explicit account of its
+  noise-dimension boundary.
+keywords:
+  - Itô calculus
+  - complex geometric Brownian motion
+  - stochastic exponential
+  - stochastic rotation
+  - covariance rank
+  - quadratic variation
+  - exact simulation
+output-file: phase4-native-complex-geometric-brownian-motion
+---
+
+# Introduction {#sec-introduction}
+
+Euler's formula,
+
+$$
+e^{i\theta}=\cos\theta+i\sin\theta,
+$$
+
+turns an imaginary exponent into rotation. Geometric Brownian motion (GBM)
+already has an exponential representation,
+
+$$
+R_t=R_0\exp\!\left[
+\left(\mu-\frac12\sigma^2\right)t+\sigma W_t
+\right].
+$$
+
+These observations suggest a precise design question: can one add an
+imaginary drift and an imaginary Brownian coefficient to the same exponent so
+that the result rotates while its modulus remains *exactly* the prescribed
+GBM? We also require the definition to begin with one complex initial value
+and one real Brownian motion, rather than with separately evolved Cartesian
+coordinates or a pre-existing state process.
+
+The answer is the direct construction
+
+$$
+\boxed{
+\mathcal Z_t
+=
+\mathcal Z_0
+\exp\!\left(
+\left[\left(\mu-\frac12\sigma^2\right)+i\omega\right]t
++(\sigma+i\beta)W_t
+\right).
+}
+$$ {#eq-central-process}
+
+The four real parameters retain separate meanings:
+
+- $\mu$ is the arithmetic drift of the modulus;
+- $\sigma$ is its Brownian volatility;
+- $\omega$ is deterministic angular velocity; and
+- $\beta$ is angular Brownian volatility.
+
+The construction is elementary to state, but its Itô dynamics are not obtained
+by simply reading the ordinary exponent. If
+
+$$
+B=\sigma+i\beta,
+$$
+
+then $B^2=\sigma^2-\beta^2+2i\sigma\beta$. Consequently, the complex
+multiplicative SDE contains both a real correction $-\beta^2/2$ and an
+imaginary cross drift $\sigma\beta$. That square is a complex bilinear
+square. It must not be replaced by the nonnegative quantity $|B|^2$.
+
+![Flow diagram separating established complex linear SDE theory from the Phase 4 parameter synthesis and its rank-one limitation.](figures/vector/f01_research_claim_map.pdf){#fig-research-claim-map fig-alt="Flow diagram separating established complex linear SDE theory from the Phase 4 parameter synthesis and its rank-one limitation." width=100%}
+
+@fig-research-claim-map states the claim hierarchy used throughout this paper.
+Itô's formula, scalar complex linear SDEs, complex GBM, and stochastic
+exponentials are established [@ito1951; @doleansdade1970; @higham2001;
+@buckwar2006]. Our contribution is a transparent parameter synthesis,
+geometric interpretation, exact one-step formula, and reproducible boundary
+analysis. We do not claim to have invented complex GBM.
+
+A second distinction is equally important. The informal notation
+$(dW_t)^2=dt$ summarizes quadratic variation; $i^2=-1$ is an algebraic
+identity. They are not the same statement. Complex multiplication organizes
+scale and rotation, while quadratic variation supplies the second-order term
+in Itô's formula. The connection is through calculus, not through an
+identification of the two rules.
+
+# Literature and positioning {#sec-literature}
+
+Itô's original change-of-variables formula establishes the second-order
+correction that distinguishes stochastic from ordinary differential calculus
+[@ito1951]. Doléans-Dade's work places multiplicative solutions in the
+semimartingale exponential framework [@doleansdade1970]. Modern treatments
+make the relation between stochastic exponentials and logarithms explicit
+[@larssonruf2019], while semimartingale representation and multiplicative
+compensation frameworks include complex-valued processes [@cernyruf2022;
+@cernyruf2023].
+
+For the constant-coefficient scalar linear equation,
+
+$$
+dX_t=\lambda X_t\,dt+\eta X_t\,dW_t,
+$$
+
+Higham uses the exact exponential solution as a central analytical and
+computational benchmark [@higham2001]. Buckwar, Horváth-Bokor, and Winkler
+allow the state and coefficients to be complex, keep $W$ real, and explicitly
+call the exact solution “complex geometric Brownian motion” in the full text
+(p. 262) [@buckwar2006]. Perret independently uses the same terminology for
+the scalar complex linear SDE with multiplicative real noise [@perret2010].
+Complex scalar linear test equations also appear in numerical stability
+analysis [@abdulle2013], and direction-and-norm decompositions provide related
+geometric context for multiplicative-noise schemes [@mora2015].
+
+The present process is therefore an established complex linear SDE under a
+particular parameterization. What the parameterization accomplishes is to
+preserve the ordinary GBM meanings of $(\mu,\sigma)$ in the modulus while
+assigning independent modeling meanings to $(\omega,\beta)$ in the phase.
+It also reveals the correction needed when translating those log-polar targets
+to the Itô SDE coefficients.
+
+Classical planar Brownian motion is a different object. Its two Cartesian
+Brownian coordinates yield two noise directions, and its winding theory has
+distinct asymptotic laws [@spitzer1958; @pitmanyor1986]. Those references are
+used here only to mark the distinction. A single real $W$, even when
+multiplied by a complex number, still supplies one instantaneous random
+direction.
+
+The full source and claim audit is preserved in `RESEARCH_NOTES.md`. The audit
+deliberately excludes claims that the complex GBM family, stochastic
+exponential, or exact scalar linear solution is new.
+
+# Preliminaries and notation {#sec-preliminaries}
+
+Let $(\Omega,\mathcal F,(\mathcal F_t)_{t\ge0},\mathbb P)$ satisfy the usual
+conditions, and let $W=(W_t)_{t\ge0}$ be a standard **real** Brownian motion.
+Brownian quadratic variation is
+
+$$
+[W,W]_t=t,
+$$ {#eq-brownian-bracket}
+
+or differentially $d[W,W]_t=dt$. For a partition
+$\pi=\{0=t_0<\cdots<t_n=t\}$, this means
+
+$$
+\sum_{k=0}^{n-1}(W_{t_{k+1}}-W_{t_k})^2
+\longrightarrow t
+$$
+
+in probability as the mesh tends to zero; it is not an ordinary
+finite-increment identity [@mortersperes2010].
+
+We take
+
+$$
+\mu,\sigma,\omega,\beta\in\mathbb R,\qquad
+\mathcal Z_0\in\mathbb C\setminus\{0\},
+$$
+
+and choose an initial phase lift $\Theta_0$ satisfying
+$\mathcal Z_0=R_0e^{i\Theta_0}$, where $R_0=|\mathcal Z_0|>0$.
+Define
+
+$$
+\kappa
+=
+\left(\mu-\frac12\sigma^2\right)+i\omega,\qquad
+B=\sigma+i\beta.
+$$ {#eq-kappa-B}
+
+We use two complex brackets:
+
+$$
+[Z,Z]_t
+\quad\text{and}\quad
+[Z,\overline Z]_t.
+$$
+
+The first is bilinear and can be complex. The second is Hermitian and
+nonnegative. Conflating them replaces $B^2$ by $|B|^2$ and changes the
+model.
+
+“Native complex” is operational language in this paper. It means that the
+defining formula uses $\mathcal Z_0$, $W_t$, and complex coefficients
+directly. It does not claim invariance under arbitrary coordinate changes.
+Cartesian components may be plotted later, but they are consequences rather
+than primitives.
+
+# Problem formulation {#sec-problem}
+
+We seek a nonzero complex process satisfying five requirements:
+
+1. its definition contains no separately evolved $X_t$ and $Y_t$;
+2. its modulus is a real GBM with parameters $(\mu,\sigma)$;
+3. its continuous phase has drift $\omega$ and Brownian coefficient
+   $\beta$;
+4. one finite Brownian increment produces an exact multiplicative step; and
+5. the number of stochastic drivers remains explicit.
+
+A Cartesian-first definition $Z_t=X_t+iY_t$ does not answer the first
+requirement. A post-processing map $Z_t=f(S_t)$ of a pre-existing scalar
+state also leaves the original coordinate system in the definition. Instead,
+we specify the complex log increment itself:
+
+$$
+d\Lambda_t=\kappa\,dt+B\,dW_t,\qquad \Lambda_0=0,
+$$
+
+and exponentiate:
+
+$$
+\mathcal Z_t=\mathcal Z_0e^{\Lambda_t}.
+$$
+
+![A colored line in the complex log plane maps through the exponential to a rotating curve with changing radius in the complex plane.](figures/vector/f02_log_to_exponential_plane.pdf){#fig-log-exponential fig-alt="A colored line in the complex log plane maps through the exponential to a rotating curve with changing radius in the complex plane." width=100%}
+
+The two panels of @fig-log-exponential show the organizing geometry. A single
+scalar Gaussian coordinate moves along an affine direction in the complex log
+plane. Exponentiation converts its real component to log scale and its
+imaginary component to phase.
+
+# Native complex exponential construction {#sec-construction}
+
+## Direct definition
+
+For $t\ge0$, define the process by @eq-central-process, equivalently
+
+$$
+\mathcal Z_t=\mathcal Z_0e^{\kappa t+BW_t}.
+$$ {#eq-native-short}
+
+The sample paths are continuous and adapted. Since the complex exponential
+never vanishes,
+
+$$
+\mathcal Z_0\ne0
+\quad\Longrightarrow\quad
+\mathcal Z_t\ne0
+\quad\text{for every finite }t
+$$
+
+pathwise. This avoids the zero-crossing and local-time complications that
+arise when a signed real process is encoded literally as a polar radius.
+
+## Four-parameter separation
+
+Taking the real and imaginary parts of the exponent yields
+
+$$
+\operatorname{Re}(\kappa t+BW_t)
+=
+\left(\mu-\frac12\sigma^2\right)t+\sigma W_t,
+$$
+
+$$
+\operatorname{Im}(\kappa t+BW_t)
+=
+\omega t+\beta W_t.
+$$
+
+The same $W_t$ appears in both. The parameters are freely specifiable, but
+the realized log-radius and phase noise are perfectly coupled whenever
+$\sigma\beta\ne0$.
+
+# Exact modulus and continuous phase {#sec-modulus-phase}
+
+## Modulus
+
+Using $|e^z|=e^{\operatorname{Re}z}$,
+
+$$
+\boxed{
+R_t:=|\mathcal Z_t|
+=
+R_0\exp\!\left[
+\left(\mu-\frac12\sigma^2\right)t+\sigma W_t
+\right].
+}
+$$ {#eq-radius}
+
+Applying real Itô calculus gives
+
+$$
+\boxed{
+\frac{dR_t}{R_t}=\mu\,dt+\sigma\,dW_t.
+}
+$$ {#eq-radius-sde}
+
+Thus the rotational parameters $\omega$ and $\beta$ do not alter the
+modulus law. The equality is pathwise, not merely distributional.
+
+## Phase lift
+
+Define
+
+$$
+\boxed{
+\Theta_t=\Theta_0+\omega t+\beta W_t.
+}
+$$ {#eq-phase}
+
+Then
+
+$$
+\mathcal Z_t=R_te^{i\Theta_t}.
+$$
+
+$\Theta$ is a continuous unwrapped phase. The principal argument
+$\operatorname{Arg}\mathcal Z_t\in(-\pi,\pi]$ may jump by $2\pi$ at its
+branch cut even though $\mathcal Z$ and $\Theta$ are continuous. We
+therefore never silently identify the continuous lift with the principal
+branch.
+
+![Three panels show the exact GBM modulus, continuous unwrapped phase, and resulting complex trajectory generated by one Brownian path.](figures/vector/f03_linked_modulus_phase_path.pdf){#fig-linked-path fig-alt="Three panels show the exact GBM modulus, continuous unwrapped phase, and resulting complex trajectory generated by one Brownian path." width=95%}
+
+@fig-linked-path shows three views of one Brownian realization. Neither the
+radius nor the phase is fixed, yet no second random input has been introduced.
+
+![Three-dimensional curve showing real part, imaginary part, and time for one exact native complex geometric Brownian motion path.](figures/vector/f04_space_time_trajectory.pdf){#fig-space-time fig-alt="Three-dimensional curve showing real part, imaginary part, and time for one exact native complex geometric Brownian motion path." width=85%}
+
+The space-time view in @fig-space-time prevents a common visual
+misinterpretation: a path drawn in a plane is not necessarily driven by
+two-dimensional Brownian noise.
+
+![Four complex paths compare absent, deterministic, stochastic, and combined rotation while keeping the same radial GBM parameters and Brownian path.](figures/vector/f05_rotation_parameter_gallery.pdf){#fig-rotation-gallery fig-alt="Four complex paths compare absent, deterministic, stochastic, and combined rotation while keeping the same radial GBM parameters and Brownian path." width=88%}
+
+@fig-rotation-gallery varies only $(\omega,\beta)$ while holding the radial
+parameters and Brownian path fixed. Deterministic rotation changes the phase
+trend; stochastic rotation changes the phase's quadratic variation.
+
+# Complex Itô dynamics {#sec-ito-dynamics}
+
+Let $F(z)=e^z$ and $\Lambda_t=\kappa t+BW_t$. The complex exponential is
+entire, so applying Itô's formula componentwise gives
+
+$$
+d(e^{\Lambda_t})
+=
+e^{\Lambda_t}d\Lambda_t
++\frac12e^{\Lambda_t}d[\Lambda,\Lambda]_t.
+$$
+
+Because the bracket is bilinear,
+
+$$
+d[\Lambda,\Lambda]_t=B^2dt.
+$$
+
+Therefore
+
+$$
+\frac{d\mathcal Z_t}{\mathcal Z_t}
+=
+\left(\kappa+\frac12B^2\right)dt+B\,dW_t.
+$$ {#eq-ito-compact}
+
+Set $A=\kappa+B^2/2$. Expanding the square,
+
+$$
+B^2=(\sigma+i\beta)^2
+=\sigma^2-\beta^2+2i\sigma\beta,
+$$
+
+so
+
+$$
+\boxed{
+A
+=
+\mu-\frac12\beta^2+i(\omega+\sigma\beta).
+}
+$$ {#eq-drift-A}
+
+The native complex Itô SDE is
+
+$$
+\boxed{
+\frac{d\mathcal Z_t}{\mathcal Z_t}
+=
+\left[
+\mu-\frac12\beta^2+i(\omega+\sigma\beta)
+\right]dt
++(\sigma+i\beta)dW_t.
+}
+$$ {#eq-final-sde}
+
+Two corrections must be retained:
+
+- $-\beta^2/2$ compensates the radial effect of stochastic rotation; and
+- $+\sigma\beta$ is the imaginary cross drift caused by a shared driver.
+
+These terms are forced by the target modulus and phase. Conversely, starting
+from $B=\sigma+i\beta$ and demanding
+$A-B^2/2=\kappa$ determines $A$ uniquely.
+
+## Pure stochastic rotation stress test
+
+Take $\mu=\sigma=0$. Then
+
+$$
+\mathcal Z_t=\mathcal Z_0e^{i\omega t+i\beta W_t}
+$$
+
+has constant modulus. Its SDE nevertheless contains a real drift:
+
+$$
+\frac{d\mathcal Z_t}{\mathcal Z_t}
+=
+\left(-\frac12\beta^2+i\omega\right)dt+i\beta\,dW_t.
+$$
+
+If the term $-\beta^2/2$ is omitted from the SDE drift, the corresponding
+exact solution acquires the spurious radial factor $e^{\beta^2t/2}$.
+
+![The correctly compensated pure stochastic rotation keeps constant modulus, while omitting the negative half beta-squared Itô drift creates spurious radial growth.](figures/vector/f06_constant_modulus_correction.pdf){#fig-constant-modulus fig-alt="The correctly compensated pure stochastic rotation keeps constant modulus, while omitting the negative half beta-squared Itô drift creates spurious radial growth." width=82%}
+
+@fig-constant-modulus is a direct diagnostic of the Itô correction. Rotation
+generated by Brownian phase is not ordinary differentiable rotation.
+
+# Stochastic exponential and logarithm {#sec-stochastic-exponential}
+
+Let
+
+$$
+Y_t=At+BW_t.
+$$
+
+For a continuous semimartingale, the Doléans exponential is
+
+$$
+\mathcal E(Y)_t
+=
+\exp\!\left(Y_t-Y_0-\frac12[Y,Y]_t\right)
+$$
+
+[@doleansdade1970; @larssonruf2019]. Since
+$[Y,Y]_t=B^2t$,
+
+$$
+\mathcal E(Y)_t
+=
+\exp\!\left[
+\left(A-\frac12B^2\right)t+BW_t
+\right]
+=e^{\kappa t+BW_t}.
+$$
+
+Hence
+
+$$
+\boxed{
+\mathcal Z_t=\mathcal Z_0\mathcal E(Y)_t.
+}
+$$ {#eq-doleans-form}
+
+This reconciles the ordinary and stochastic exponentials. The continuous
+ordinary log lift and the stochastic logarithm are related but not identical:
+
+$$
+\log_{\mathrm{cont}}\frac{\mathcal Z_t}{\mathcal Z_0}
+=\kappa t+BW_t,
+$$
+
+whereas
+
+$$
+\mathcal L\!\left(\frac{\mathcal Z}{\mathcal Z_0}\right)_t
+:=
+\int_0^t\frac{d\mathcal Z_s}{\mathcal Z_s}
+=At+BW_t.
+$$
+
+Their difference is the half-bracket correction $B^2t/2$. This is the
+complex analogue of the familiar distinction between the log return and the
+arithmetic drift of real GBM.
+
+# Exact transition and random-walk formula {#sec-exact-transition}
+
+For a grid $t_n$ with step $h=t_{n+1}-t_n$, define
+$\Delta W_n=W_{t_{n+1}}-W_{t_n}\sim N(0,h)$. Independent Brownian
+increments give
+
+$$
+\boxed{
+\mathcal Z_{n+1}
+=
+\mathcal Z_n
+\exp\!\left(
+\left[\left(\mu-\frac12\sigma^2\right)+i\omega\right]h
++(\sigma+i\beta)\Delta W_n
+\right).
+}
+$$ {#eq-exact-step}
+
+This is an exact random walk on the multiplicative group
+$\mathbb C\setminus\{0\}$. One complex log increment combines:
+
+$$
+\Delta\log R_n
+=
+\left(\mu-\frac12\sigma^2\right)h+\sigma\Delta W_n,
+$$
+
+$$
+\Delta\Theta_n
+=
+\omega h+\beta\Delta W_n.
+$$
+
+![A complex log increment is shown as one vector whose exponential maps an initial state to the next state along a scale-and-rotation arc.](figures/vector/f07_exact_step_geometry.pdf){#fig-exact-step fig-alt="A complex log increment is shown as one vector whose exponential maps an initial state to the next state along a scale-and-rotation arc." width=95%}
+
+@fig-exact-step visualizes the step in the log plane and its multiplicative
+image. Unlike Euler--Maruyama, @eq-exact-step has no time-discretization error
+for the constant-coefficient model.
+
+# Transition laws and moments {#sec-laws-moments}
+
+## Singular log-polar Gaussian law
+
+At time $t$,
+
+$$
+\begin{pmatrix}
+\log(R_t/R_0)\\
+\Theta_t-\Theta_0
+\end{pmatrix}
+\sim
+\mathcal N\!\left(
+\begin{pmatrix}
+(\mu-\sigma^2/2)t\\
+\omega t
+\end{pmatrix},
+t
+\begin{pmatrix}
+\sigma^2&\sigma\beta\\
+\sigma\beta&\beta^2
+\end{pmatrix}
+\right).
+$$ {#eq-log-polar-law}
+
+The covariance determinant is zero:
+
+$$
+\sigma^2\beta^2-(\sigma\beta)^2=0.
+$$
+
+If $\sigma\ne0$, the support line is
+
+$$
+\Theta_t-\Theta_0-\omega t
+=
+\frac{\beta}{\sigma}
+\left[
+\log(R_t/R_0)-\left(\mu-\frac12\sigma^2\right)t
+\right].
+$$ {#eq-support-line}
+
+![A fixed-horizon log-radius and phase sample lies on the analytic rank-one Gaussian support line in log-polar coordinates.](figures/vector/f08_log_polar_transition.pdf){#fig-log-polar-transition fig-alt="A fixed-horizon log-radius and phase sample lies on the analytic rank-one Gaussian support line in log-polar coordinates." width=80%}
+
+The simulated transition sample in @fig-log-polar-transition lies on
+@eq-support-line up to floating-point plotting precision.
+
+At fixed $t$, the complex support is parameterized by one real coordinate:
+
+$$
+\left\{
+\mathcal Z_0e^{\kappa t+Bw}:w\in\mathbb R
+\right\}.
+$$
+
+For $\sigma\beta\ne0$, this is a logarithmic spiral. Degenerate cases become
+a ray ($\beta=0$) or a circle traced through wrapped phase
+($\sigma=0,\beta\ne0$).
+
+![Terminal complex samples from one real Brownian driver lie on a one-dimensional logarithmic spiral rather than filling a two-dimensional region.](figures/vector/f09_fixed_time_spiral_support.pdf){#fig-fixed-support fig-alt="Terminal complex samples from one real Brownian driver lie on a one-dimensional logarithmic spiral rather than filling a two-dimensional region." width=80%}
+
+@fig-fixed-support shows why a complex-valued law need not have a
+two-dimensional density with respect to planar area.
+
+## Radial moments
+
+For real $p$ for which the expression is considered,
+
+$$
+\boxed{
+\mathbb E[R_t^p]
+=
+R_0^p
+\exp\!\left[
+\left(
+p\mu+\frac12p(p-1)\sigma^2
+\right)t
+\right].
+}
+$$ {#eq-radial-moment}
+
+All real powers have finite moments at finite $t$ because $R_t$ is
+lognormal.
+
+## Complex integer moments
+
+For integer $n$,
+
+$$
+\boxed{
+\mathbb E[\mathcal Z_t^n]
+=
+\mathcal Z_0^n
+\exp\!\left[
+\left(n\kappa+\frac12n^2B^2\right)t
+\right].
+}
+$$ {#eq-complex-moment}
+
+The complex square $B^2$ determines both amplification or damping and
+rotation of the moment.
+
+## Mixed log-polar moments
+
+For real $p,q$,
+
+$$
+\boxed{
+\mathbb E\!\left[
+R_t^p e^{iq(\Theta_t-\Theta_0)}
+\right]
+=
+R_0^p
+\exp\!\left[
+p\left(\mu-\frac12\sigma^2\right)t
++iq\omega t
++\frac12(p\sigma+iq\beta)^2t
+\right].
+}
+$$ {#eq-mixed-moment}
+
+This formula exposes the shared-driver coupling through the cross term in
+$(p\sigma+iq\beta)^2$.
+
+![Analytic radial and mixed log-polar moments agree with seeded Monte Carlo estimates and their componentwise two-standard-error bars.](figures/vector/f13_moment_validation.pdf){#fig-moment-validation fig-alt="Analytic radial and mixed log-polar moments agree with seeded Monte Carlo estimates and their componentwise two-standard-error bars." width=95%}
+
+@fig-moment-validation compares these formulas with independent terminal
+samples. The estimates are a numerical check; Gaussian evaluation proves the
+identities.
+
+![The analytic complex mean traces a deterministic curve through time and ends at the same point as the seeded Monte Carlo terminal mean.](figures/vector/f14_complex_mean_geometry.pdf){#fig-complex-mean fig-alt="The analytic complex mean traces a deterministic curve through time and ends at the same point as the seeded Monte Carlo terminal mean." width=76%}
+
+The first moment in @fig-complex-mean need not rotate at the same rate as an
+individual path because the term $B^2/2$ changes both its real and imaginary
+exponents.
+
+# Geometry and noise dimension {#sec-geometry}
+
+## Local Cartesian diffusion
+
+Write $\mathcal Z_t=X_t+iY_t$. This is a derived decomposition, not the
+definition. The complex diffusion coefficient at state $z$ is $Bz$, so
+the real two-vector multiplying $dW_t$ is
+
+$$
+g(z)
+=
+\begin{pmatrix}
+\operatorname{Re}(Bz)\\
+\operatorname{Im}(Bz)
+\end{pmatrix}.
+$$
+
+The instantaneous Cartesian covariance is
+
+$$
+g(z)g(z)^\mathsf T\,dt.
+$$
+
+It is an outer product and therefore has rank at most one. Both radial and
+tangential components may be nonzero, but a single scalar increment chooses
+only one combined direction.
+
+![At one complex state, the diffusion vector has radial and tangential components but remains a single local noise direction driven by one scalar Brownian increment.](figures/vector/f10_local_noise_direction.pdf){#fig-local-direction fig-alt="At one complex state, the diffusion vector has radial and tangential components but remains a single local noise direction driven by one scalar Brownian increment." width=72%}
+
+@fig-local-direction distinguishes “two geometric components” from “two
+independent stochastic directions.”
+
+## Log-polar covariance rank
+
+The martingale parts of log-radius and phase are
+
+$$
+dM_t^{(r)}=\sigma\,dW_t,\qquad
+dM_t^{(\theta)}=\beta\,dW_t.
+$$
+
+Their covariance rate is
+
+$$
+\boxed{
+\Sigma_1
+=
+\begin{pmatrix}
+\sigma^2&\sigma\beta\\
+\sigma\beta&\beta^2
+\end{pmatrix}
+=
+\begin{pmatrix}\sigma\\\beta\end{pmatrix}
+\begin{pmatrix}\sigma&\beta\end{pmatrix}.
+}
+$$ {#eq-one-covariance}
+
+The nonzero eigenvalue is $\sigma^2+\beta^2$; the other is zero. This rank
+is invariant under any nonsingular deterministic change of the two output
+coordinates. Coordinate notation cannot increase the input noise dimension.
+
+![The one-driver covariance has one numerically vanishing eigenvalue, while a companion heatmap contrasts its outer-product structure with the two-driver diagonal covariance.](figures/vector/f11_covariance_eigenspectrum.pdf){#fig-covariance-spectrum fig-alt="The one-driver covariance has one numerically vanishing eigenvalue, while a companion heatmap contrasts its outer-product structure with the two-driver diagonal covariance." width=95%}
+
+The eigenvalue ratio reported by the notebook for @fig-covariance-spectrum is
+$5.54\times10^{-16}$, numerical rank one.
+
+![One-driver log-polar increments form a line, whereas independent radial and angular Brownian increments fill a two-dimensional elliptical cloud.](figures/vector/f12_one_vs_two_driver_clouds.pdf){#fig-driver-clouds fig-alt="One-driver log-polar increments form a line, whereas independent radial and angular Brownian increments fill a two-dimensional elliptical cloud." width=92%}
+
+The two clouds in @fig-driver-clouds provide the most direct visual test of
+the driver-count claim.
+
+## Bilinear and Hermitian brackets
+
+From the diffusion $B\mathcal Z_t\,dW_t$,
+
+$$
+\boxed{
+d[\mathcal Z,\mathcal Z]_t
+=B^2\mathcal Z_t^2\,dt,
+}
+$$ {#eq-bilinear-bracket}
+
+and
+
+$$
+\boxed{
+d[\mathcal Z,\overline{\mathcal Z}]_t
+=|B|^2|\mathcal Z_t|^2\,dt.
+}
+$$ {#eq-hermitian-bracket}
+
+The first preserves complex orientation information; the second is a
+nonnegative accumulated energy. They answer different questions.
+
+# Phase 3 and two-driver boundaries {#sec-boundaries}
+
+## Phase 3 constrained subfamily
+
+Phase 3 used
+
+$$
+\mathcal Z_t
+=
+\mathcal Z_0e^{(1+i\gamma)L_t},
+$$
+
+where the real GBM log return is
+
+$$
+L_t
+=
+\left(\mu-\frac12\sigma^2\right)t+\sigma W_t.
+$$
+
+Expanding and matching @eq-central-process gives the necessary and sufficient
+restrictions
+
+$$
+\boxed{
+\beta=\gamma\sigma,\qquad
+\omega=\gamma\left(\mu-\frac12\sigma^2\right).
+}
+$$ {#eq-phase3-restrictions}
+
+Thus Phase 3 ties the angular drift and diffusion to one spiral coefficient
+$\gamma$. Phase 4 permits $\omega$ and $\beta$ to be chosen
+independently while preserving the same radial GBM.
+
+![The Phase 3 logarithmic-spiral formula exactly overlaps the restricted Phase 4 process, while independently chosen phase parameters produce a different path.](figures/vector/f15_phase3_subfamily.pdf){#fig-phase3-subfamily fig-alt="The Phase 3 logarithmic-spiral formula exactly overlaps the restricted Phase 4 process, while independently chosen phase parameters produce a different path." width=92%}
+
+The restricted paths in @fig-phase3-subfamily agree to
+$2.73\times10^{-16}$, the maximum pathwise discrepancy recorded in
+`phase3_equivalence.json`.
+
+## Independent two-driver comparator
+
+Let $W^{(r)}$ and $W^{(\theta)}$ be independent real Brownian motions and
+define
+
+$$
+\mathcal Z_t^{(2)}
+=
+\mathcal Z_0
+\exp\!\left[
+\kappa t+\sigma W_t^{(r)}+i\beta W_t^{(\theta)}
+\right].
+$$ {#eq-two-driver-process}
+
+The modulus and phase targets remain
+
+$$
+\frac{dR_t^{(2)}}{R_t^{(2)}}=\mu\,dt+\sigma\,dW_t^{(r)},
+$$
+
+$$
+d\Theta_t^{(2)}=\omega\,dt+\beta\,dW_t^{(\theta)},
+$$
+
+but their covariance rate becomes
+
+$$
+\boxed{
+\Sigma_2=
+\begin{pmatrix}
+\sigma^2&0\\
+0&\beta^2
+\end{pmatrix}.
+}
+$$ {#eq-two-covariance}
+
+It has rank two when $\sigma\beta\ne0$. The Itô bracket of the complex log
+increment is now
+
+$$
+\sigma^2dt+(i\beta)^2dt=(\sigma^2-\beta^2)dt,
+$$
+
+because the cross bracket of the independent drivers vanishes. Therefore
+
+$$
+\boxed{
+\frac{d\mathcal Z_t^{(2)}}{\mathcal Z_t^{(2)}}
+=
+\left(\mu-\frac12\beta^2+i\omega\right)dt
++\sigma\,dW_t^{(r)}
++i\beta\,dW_t^{(\theta)}.
+}
+$$ {#eq-two-driver-sde}
+
+Compared with @eq-final-sde, the imaginary cross drift $\sigma\beta$
+disappears. It is a signature of the one-driver coupling, not a universal
+feature of complex notation.
+
+# Numerical methods {#sec-methods}
+
+## Reproducible design
+
+The executed discovery notebook imports the tested root `phase4_model.py`.
+It does not reimplement the model in an isolated paper-only module. All random
+number generators use seeds derived from 20260724. Figures are written as
+vector PDF files for the printed paper and 300-dpi PNG companions for HTML.
+Every evidence table is CSV or sorted JSON, and a manifest records all
+generated artifacts and figure alt text.
+
+The primary numerical parameters are
+
+$$
+(\mu,\sigma,\omega,\beta)=(0.18,0.42,0.90,0.65),
+$$
+
+with $R_0=1.25$, $\Theta_0=0.35$, and $T=1.50$. These values are
+illustrative and were fixed before reporting diagnostics.
+
+The environment record is summarized below.
+
+| Component | Version |
+|:--|:--|
+| Python | 3.12.13 |
+| NumPy | 2.5.1 |
+| SciPy | 1.18.0 |
+| pandas | 3.0.3 |
+| Matplotlib | 3.11.1 |
+| Seaborn | 0.13.2 |
+| SymPy | 1.14.0 |
+| nbformat | 5.10.4 |
+
+: Software versions from `tables/software_versions.csv`. {#tbl-software}
+
+## Exact-identity checks
+
+One Brownian path with 8192 increments tests:
+
+- $A-B^2/2=\kappa$;
+- $|\mathcal Z_t|=R_t$;
+- reconstruction $R_te^{i\Theta_t}=\mathcal Z_t$;
+- agreement of the unwrapped numerical argument with $\Theta_t$;
+- the exact one-step transition; and
+- constant modulus under pure stochastic rotation.
+
+The acceptance tolerance is $2\times10^{-13}$. These checks diagnose
+implementation consistency, while the preceding algebra supplies the proof.
+
+## Transition and covariance experiments
+
+The transition and covariance experiment uses 250,000 seeded Gaussian
+increments. Empirical covariance matrices are compared with
+@eq-one-covariance and @eq-two-covariance. Numerical rank uses a fixed
+$10^{-4}$ eigenvalue threshold; the one-driver small-to-large eigenvalue
+ratio must be below $10^{-12}$.
+
+## Moment experiment
+
+The moment experiment uses 600,000 independent terminal samples. For each
+real or complex quantity, the notebook reports componentwise Monte Carlo
+standard errors. A standardized residual is the empirical-minus-analytic
+difference divided by its estimated standard error. Every nondegenerate real
+and imaginary residual is required to have absolute value below 3.
+
+## Strong convergence
+
+Euler--Maruyama is applied to @eq-final-sde using 12,000 shared Brownian paths.
+All levels are aggregated from 512 fine increments, with step counts
+$16,32,64,128,256$. The terminal root-mean-square strong error is regressed
+against the step size on a log-log scale. The prespecified acceptance interval
+for the slope is $[0.42,0.65]$, centered on the classical order $1/2$
+behavior described for scalar SDE simulation by @higham2001.
+
+## Quadratic variation
+
+A single path with 262,144 increments compares realized cumulative sums
+
+$$
+\sum(\Delta\mathcal Z)^2,\qquad
+\sum|\Delta\mathcal Z|^2
+$$
+
+with the left-point integral targets in @eq-bilinear-bracket and
+@eq-hermitian-bracket. Both terminal relative errors must be below 2%.
+
+# Numerical results {#sec-results}
+
+## Coefficients and exactness
+
+For the primary parameters,
+
+| Coefficient | Real part | Imaginary part |
+|:--|--:|--:|
+| $\kappa$ | 0.0918 | 0.9000 |
+| $B$ | 0.4200 | 0.6500 |
+| $A$ | -0.03125 | 1.1730 |
+| $A-B^2/2$ | 0.0918 | 0.9000 |
+
+: Coefficient reconciliation from `tables/coefficient_reconciliation.csv`. {#tbl-coefficients}
+
+The coefficient residual is exactly zero at the stored double-precision
+values. Across the pathwise invariant suite, the largest error is
+$6.66\times10^{-16}$.
+
+| Check | Maximum absolute error |
+|:--|--:|
+| modulus | $4.44\times10^{-16}$ |
+| phase lift | $4.44\times10^{-16}$ |
+| polar reconstruction | $6.66\times10^{-16}$ |
+| exact step | $1.14\times10^{-16}$ |
+| constant-modulus stress test | $4.44\times10^{-16}$ |
+
+: Exact-identity diagnostics from `tables/exactness.json`. {#tbl-exactness}
+
+## Transition and covariance
+
+At $T=1.50$, the empirical and analytic transition summaries are:
+
+| Variable | Empirical mean | Analytic mean | Empirical variance | Analytic variance |
+|:--|--:|--:|--:|--:|
+| log-radius increment | 0.13681 | 0.13770 | 0.26570 | 0.26460 |
+| phase increment | 1.34863 | 1.35000 | 0.63638 | 0.63375 |
+
+: Fixed-horizon summaries from `tables/transition_summary.csv`. {#tbl-transition}
+
+The covariance comparison is more structurally informative.
+
+| Model | $\widehat\Sigma_{00}$ | $\widehat\Sigma_{01}$ | $\widehat\Sigma_{11}$ | Small eigenvalue | Large eigenvalue | Rank |
+|:--|--:|--:|--:|--:|--:|--:|
+| one driver | 0.17713 | 0.27413 | 0.42426 | $3.33\times10^{-16}$ | 0.60139 | 1 |
+| two drivers | 0.17601 | 0.00025 | 0.42319 | 0.17601 | 0.42319 | 2 |
+
+: Empirical covariance rates from 250,000 increments in `tables/covariance_rank.csv`. {#tbl-covariance}
+
+The results confirm both the rank-one theorem and the two-driver boundary.
+The tiny two-driver off-diagonal term is sampling error around the analytic
+value zero.
+
+## Moments
+
+Selected results are shown below; the complete table includes radial orders
+1–3, complex orders 1–2, and two mixed moments.
+
+| Quantity | Analytic value | Monte Carlo value | Standardized residual |
+|:--|:--|:--|--:|
+| $\mathbb E[R_T]$ | 1.63746 | 1.63891 | 1.250 |
+| $\mathbb E[R_T^2]$ | 3.49344 | 3.49776 | 0.701 |
+| $\mathbb E[\mathcal Z_T]$ | $-0.61191+1.02383i$ | $-0.61408+1.02437i$ | max 1.356 |
+| $\mathbb E[\mathcal Z_T^2]$ | $0.31462-0.93185i$ | $0.31935-0.93475i$ | max 0.873 |
+
+: Selected moment validation values from `tables/moment_validation.csv`; complex residual is the larger absolute componentwise residual. {#tbl-moments}
+
+The maximum absolute standardized residual across the complete table is
+1.356, comfortably inside the prespecified threshold 3.
+
+## Strong convergence
+
+| Steps | Step size | Terminal RMS error |
+|--:|--:|--:|
+| 16 | 0.062500 | 0.21371 |
+| 32 | 0.031250 | 0.13548 |
+| 64 | 0.015625 | 0.09148 |
+| 128 | 0.0078125 | 0.06331 |
+| 256 | 0.00390625 | 0.04450 |
+
+: Shared-path Euler--Maruyama data from `tables/strong_convergence.csv`. {#tbl-convergence}
+
+The fitted slope is 0.5625.
+
+![A log-log plot of Euler--Maruyama terminal root-mean-square error follows the reference square-root step-size line on shared Brownian paths.](figures/vector/f16_strong_convergence.pdf){#fig-strong-convergence fig-alt="A log-log plot of Euler--Maruyama terminal root-mean-square error follows the reference square-root step-size line on shared Brownian paths." width=76%}
+
+@fig-strong-convergence shows the expected order-$1/2$ trend. The exact
+transition @eq-exact-step remains preferable for this constant-coefficient
+model; Euler--Maruyama is included as a numerical consistency check and a
+baseline for extensions without a closed form.
+
+## Quadratic variation
+
+| Bracket | Realized terminal value | Integral target | Relative error |
+|:--|:--|:--|--:|
+| bilinear | $-0.21668-1.42167i$ | $-0.21402-1.42148i$ | 0.00186 |
+| Hermitian | 1.77059 | 1.76728 | 0.00187 |
+
+: Quadratic-variation diagnostics from `tables/quadratic_variation.csv`. {#tbl-brackets}
+
+![Cumulative realized bilinear and Hermitian complex quadratic variations track their analytic time-integral targets, with the bilinear bracket split into real and imaginary parts.](figures/vector/f17_complex_quadratic_variation.pdf){#fig-complex-brackets fig-alt="Cumulative realized bilinear and Hermitian complex quadratic variations track their analytic time-integral targets, with the bilinear bracket split into real and imaginary parts." width=95%}
+
+The simultaneous agreement in @fig-complex-brackets is a useful guard against
+accidentally replacing $B^2$ with $|B|^2$.
+
+# Discussion {#sec-discussion}
+
+The construction achieves the requested elimination of an external
+$x$-$y$ state definition. The complete process is specified by one term,
+$\kappa t+BW_t$, inside one complex exponential. The real part of that term
+is the log GBM; the imaginary part is the phase lift. The corresponding exact
+finite-step walk has the same architecture.
+
+The rotational role of Euler's formula is genuine. Multiplication by
+$e^{i\Delta\theta}$ rotates each state, and the imaginary Brownian
+coefficient makes $\Delta\theta$ random. What does *not* follow is an
+algebraic identification of $i^2=-1$ with Brownian quadratic variation.
+Instead, the square of the complex diffusion coefficient enters because Itô's
+formula contains a quadratic-variation term. This disciplined separation
+preserves both the geometric intuition and the stochastic calculus.
+
+The one-driver model produces strong scale--rotation dependence. A positive
+Brownian shock changes log-radius by $\sigma\,dW$ and phase by
+$\beta\,dW$ simultaneously. This may be a desired modeling feature. If
+independent scale and rotation shocks are required, @eq-two-driver-process is
+the correct extension.
+
+The ordinary exponential, stochastic exponential, exact random walk, and Itô
+SDE are not competing formulas. They are equivalent views connected by the
+half-bracket correction:
+
+![A taxonomy links the direct exponential, exact random walk, complex Itô SDE, exact GBM modulus, continuous phase, and rank-one noise boundary.](figures/vector/f18_representation_taxonomy.pdf){#fig-taxonomy fig-alt="A taxonomy links the direct exponential, exact random walk, complex Itô SDE, exact GBM modulus, continuous phase, and rank-one noise boundary." width=100%}
+
+@fig-taxonomy is the compact answer to the session's design goal.
+
+# Limitations {#sec-limitations}
+
+1. **Established family.** The process belongs to the known complex scalar
+   linear SDE/complex GBM family. The paper contributes a parameterization and
+   synthesis, not a new existence theorem.
+2. **One noise dimension.** A complex coefficient does not create an
+   independent Brownian coordinate. Both log-radius and phase noise lie in a
+   rank-one covariance direction.
+3. **Singular fixed-time support.** For one driver, the joint log-polar law is
+   singular and the complex fixed-time support is one-dimensional.
+4. **Phase conventions.** The continuous phase requires a chosen initial
+   lift. The principal argument remains discontinuous at its branch cut.
+5. **No zeros.** The exponential construction stays in
+   $\mathbb C\setminus\{0\}$. It does not model paths that hit the origin.
+6. **Constant coefficients.** Exact transition and closed-form moments rely
+   on constant coefficients. State-dependent or noncommuting matrix
+   extensions require additional analysis.
+7. **No planar Brownian claim.** Classical planar Brownian motion and its
+   winding laws [@spitzer1958; @pitmanyor1986] are not laws of this one-driver
+   process.
+8. **No financial assertion.** Although GBM terminology is standard in
+   mathematical finance, this paper makes no pricing, calibration, or
+   no-arbitrage claim.
+
+# Conclusion {#sec-conclusion}
+
+The design objective admits one concise native complex form:
+
+$$
+\boxed{
+\mathcal Z_t
+=
+\mathcal Z_0
+\exp\!\left(
+\left[\left(\mu-\frac12\sigma^2\right)+i\omega\right]t
++(\sigma+i\beta)W_t
+\right).
+}
+$$
+
+Its exact random-walk transition is
+
+$$
+\boxed{
+\mathcal Z_{n+1}
+=
+\mathcal Z_n
+\exp\!\left(
+\left[\left(\mu-\frac12\sigma^2\right)+i\omega\right]h
++(\sigma+i\beta)\Delta W_n
+\right).
+}
+$$
+
+Its equivalent complex Itô SDE is
+
+$$
+\boxed{
+\frac{d\mathcal Z_t}{\mathcal Z_t}
+=
+\left[
+\mu-\frac12\beta^2+i(\omega+\sigma\beta)
+\right]dt
++(\sigma+i\beta)dW_t.
+}
+$$
+
+The modulus is exactly the desired real GBM, and the imaginary exponent
+provides deterministic and stochastic rotation. The cross drift and rank-one
+covariance are not incidental: they precisely record the use of one shared
+real Brownian driver. In this way, complex notation supplies a unified
+scale--rotation language while covariance rank keeps the stochastic dimension
+honest.
+
+# Appendix A: Expanded Itô algebra {#sec-appendix-ito}
+
+Write
+
+$$
+\Lambda_t=U_t+iV_t,
+$$
+
+where
+
+$$
+dU_t
+=
+\left(\mu-\frac12\sigma^2\right)dt+\sigma\,dW_t,
+$$
+
+$$
+dV_t=\omega\,dt+\beta\,dW_t.
+$$
+
+In quadratic-covariation notation, the two real processes have Itô products
+
+$$
+(dU_t)^2=\sigma^2dt,\qquad
+(dV_t)^2=\beta^2dt,\qquad
+dU_t\,dV_t=\sigma\beta\,dt.
+$$
+
+Since
+
+$$
+\mathcal Z_t=\mathcal Z_0e^{U_t}(\cos V_t+i\sin V_t),
+$$
+
+one may apply the two-dimensional real Itô formula. More compactly,
+
+$$
+(d\Lambda_t)^2
+=(dU_t+i\,dV_t)^2
+=
+(dU_t)^2-(dV_t)^2+2i\,dU_t\,dV_t,
+$$
+
+so
+
+$$
+(d\Lambda_t)^2
+=
+(\sigma^2-\beta^2+2i\sigma\beta)dt
+=B^2dt.
+$$
+
+Then
+
+$$
+\frac{d\mathcal Z_t}{\mathcal Z_t}
+=d\Lambda_t+\frac12(d\Lambda_t)^2,
+$$
+
+which expands to @eq-final-sde. This calculation makes clear that the
+imaginary cross drift arises from $dU_t\,dV_t$, the shared Brownian
+covariation.
+
+# Appendix B: Moment derivations {#sec-appendix-moments}
+
+For any complex $c$,
+
+$$
+\mathbb E[e^{cW_t}]=e^{c^2t/2},
+$$
+
+by analytic continuation of the Gaussian moment-generating function. For the
+radial moment, substitute
+
+$$
+R_t^p
+=R_0^p
+e^{p(\mu-\sigma^2/2)t+p\sigma W_t}
+$$
+
+and use $c=p\sigma$. This yields @eq-radial-moment.
+
+For the complex moment,
+
+$$
+\mathcal Z_t^n
+=
+\mathcal Z_0^n e^{n\kappa t+nBW_t},
+$$
+
+and $c=nB$ yields @eq-complex-moment.
+
+Finally,
+
+$$
+R_t^p e^{iq(\Theta_t-\Theta_0)}
+=
+R_0^p
+\exp\!\left[
+p\left(\mu-\frac12\sigma^2\right)t
++iq\omega t
++\left(p\sigma+iq\beta\right)W_t
+\right],
+$$
+
+which gives @eq-mixed-moment.
+
+# Appendix C: Reproducibility manifest {#sec-appendix-reproducibility}
+
+The canonical source is `index.qmd`. The discovery record is
+`notebooks/phase4_discovery.ipynb`, generated by
+`notebooks/build_phase4_discovery.py`. The builder writes:
+
+- 18 vector figures under `figures/vector/`;
+- 18 raster companions under `figures/raster/`;
+- coefficient, exactness, transition, covariance, moment, Phase 3,
+  convergence, bracket, and software evidence under `tables/`; and
+- figure and table manifests with stable relative paths.
+
+Two clean notebook executions completed with sequential code-cell counts
+1–9, no error outputs, identical code sources, identical deterministic stream
+text, and the terminal marker `ALL_PHASE4_ASSERTIONS_PASSED`. The generated
+table hashes are recorded in the project reproducibility guide.
+
+The paper uses simulations to check implementation and illustrate geometry.
+All the central identities—modulus, phase, Itô drift, exact transition,
+moments, brackets, covariance rank, Phase 3 restrictions, and two-driver
+drift—are analytical.

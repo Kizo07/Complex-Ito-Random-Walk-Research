@@ -1,0 +1,5 @@
+metric,value
+exact transform max modulus error,4.4408920985e-16
+inverse max error,1.7763568394e-15
+complex Euler max modulus error,0.251886281943
+minimum distance to missing point,0.243292998025

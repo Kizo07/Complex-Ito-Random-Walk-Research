@@ -1,0 +1,13 @@
+name,format,purpose
+coefficient_reconciliation.csv,csv,ordinary and Ito exponential coefficient identity
+covariance_rank.csv,csv,one-driver and two-driver covariance evidence
+exactness.json,json,pathwise identity tolerances
+figure_manifest.csv,csv,publication figure paths and alt text
+moment_validation.csv,csv,analytic and Monte Carlo moments with uncertainty
+numerical_summary.json,json,headline acceptance metrics
+phase3_equivalence.json,json,Phase 3 constrained-subfamily identity
+quadratic_variation.csv,csv,bilinear and Hermitian bracket evidence
+software_versions.csv,csv,execution environment record
+strong_convergence.csv,csv,shared-path Euler--Maruyama convergence
+table_manifest.csv,csv,generated table inventory
+transition_summary.csv,csv,fixed-horizon transition summaries

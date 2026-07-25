@@ -1,0 +1,13 @@
+claim,decision,evidence
+exact lossless affine representation,supported,machine-precision reconstruction and proof
+additive phase winds,refuted,phase domain has length pi
+Cayley is the original additive process,refuted,it is an invertible nonlinear transform
+Cayley is circular Brownian motion,refuted,angular diffusion is state dependent
+one driver creates rank-one terminal law in every system,refuted,hypoelliptic control has full-rank covariance
+complex embedding creates holomorphic derivatives,refuted,normal derivative depends on off-curve extension
+phase coordinate reduces ordinary MC variance,refuted,identical streams give identical samples
+phase coordinate lowers direct terminal-estimator work,refuted,same random dimension plus an arctangent/tangent round trip
+compactification always improves PDE numerics,refuted,accuracy and conditioning depend on c and resolution
+compatible multiplicative phase can wind losslessly,supported,logarithmic spiral reconstruction
+geometry can preserve a transformed invariant,supported,exact Cayley map preserves unit modulus
+new analytic solution for ABM,not claimed,exact phase kernel is the known Gaussian kernel under a diffeomorphism

@@ -1,0 +1,7 @@
+candidate,represents,time_independent_radius,lossless,phase_domain,can_wind,transition_or_limit
+canonical secant,original affine embedding,True,True,open interval of length pi,False,exact transformed Gaussian
+general affine line,original eligible affine state,True,True,open interval of length pi,False,exact transformed Gaussian
+Cayley,invertible transform,True,True,"(-pi, pi)",False,exact transformed Gaussian
+wrapped exponential,encoding only,True,False,circle,True,loses winding index
+compatible logarithmic spiral,multiplicative state,True,True,real line,True,exact affine Gaussian phase
+moving affine line,original general affine state,False,True,time-dependent half-turn,False,fails at support origin crossing

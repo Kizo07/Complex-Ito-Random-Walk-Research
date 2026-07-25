@@ -1,41 +1,67 @@
-# Phase 3 paper reproducibility guide
+# Technical Papers
 
-This directory contains the paper
-**A Faithful One-Driver Complex Embedding of Arithmetic Brownian Motion:
-Itô Dynamics, Covariance Rank, and Zero Crossings**.
+This directory contains three independent Quarto manuscript projects. Each
+project owns its notebook, figures, tables, bibliography, styles, filters, and
+rendered outputs.
 
-## Canonical sources
+## Phase 3
 
-- `index.qmd` is the edited paper source.
-- `notebooks/phase3_discovery.ipynb` records the computational discovery path.
-- `notebooks/build_phase3_discovery.py` regenerates the notebook structure.
-- `references.bib` contains the checked bibliography.
-- `environment.yml` records direct Python dependencies.
+**A Faithful One-Driver Complex Embedding of Arithmetic Brownian Motion**
 
-Generated figures and tables are written under `figures/` and `tables/`.
-The final PDF and HTML companion are written under `output/`.
+- canonical manuscript: [`phase3/index.qmd`](phase3/index.qmd)
+- discovery notebook:
+  [`phase3/notebooks/phase3_discovery.ipynb`](phase3/notebooks/phase3_discovery.ipynb)
+- PDF:
+  [`phase3/output/phase3-one-driver-complex-embedding.pdf`](phase3/output/phase3-one-driver-complex-embedding.pdf)
+- HTML:
+  [`phase3/output/phase3-one-driver-complex-embedding.html`](phase3/output/phase3-one-driver-complex-embedding.html)
 
-## Rebuild
-
-From the repository root:
+Render from the repository root:
 
 ```bash
-conda run -n phase3-paper python paper/notebooks/build_phase3_discovery.py
-conda run -n phase3-paper jupyter nbconvert \
-  --to notebook --execute --inplace \
-  --ExecutePreprocessor.timeout=900 \
-  paper/notebooks/phase3_discovery.ipynb
-quarto render paper
+quarto render paper/phase3
 ```
 
-The notebook must be executed before rendering because the paper consumes its
-generated figures and CSV/JSON summaries. The notebook uses deterministic
-seeds, relative paths, and assertions for exact identities and numerical
-tolerances. A second clean execution reproduces the same 15 code-cell outputs
-exactly.
+## Phase 4
 
-## Scope
+**Native Complex Geometric Brownian Motion**
 
-The article covers Phase 3 only. The two-driver planar process appears solely
-as a control for interpreting covariance rank; it is not presented as an
-equivalent representation of the scalar process.
+- canonical manuscript: [`phase4/index.qmd`](phase4/index.qmd)
+- research record: [`phase4/RESEARCH_NOTES.md`](phase4/RESEARCH_NOTES.md)
+- discovery notebook:
+  [`phase4/notebooks/phase4_discovery.ipynb`](phase4/notebooks/phase4_discovery.ipynb)
+- PDF:
+  [`phase4/output/phase4-native-complex-geometric-brownian-motion.pdf`](phase4/output/phase4-native-complex-geometric-brownian-motion.pdf)
+- HTML:
+  [`phase4/output/phase4-native-complex-geometric-brownian-motion.html`](phase4/output/phase4-native-complex-geometric-brownian-motion.html)
+
+Render from the repository root:
+
+```bash
+quarto render paper/phase4
+```
+
+## One-Phase Euler Coordinates
+
+**One-Phase Euler Coordinates for Affine Brownian Factors: Exact
+Classification, Pricing Conjugacy, and Numerical Consequences**
+
+- canonical manuscript:
+  [`one-phase-euler/index.qmd`](one-phase-euler/index.qmd)
+- research record:
+  [`one-phase-euler/RESEARCH_NOTES.md`](one-phase-euler/RESEARCH_NOTES.md)
+- reproducible notebook:
+  [`one-phase-euler/notebooks/one_phase_euler_finance.ipynb`](one-phase-euler/notebooks/one_phase_euler_finance.ipynb)
+- PDF:
+  [`one-phase-euler/output/one-phase-euler-affine-brownian-factors.pdf`](one-phase-euler/output/one-phase-euler-affine-brownian-factors.pdf)
+- HTML:
+  [`one-phase-euler/output/one-phase-euler-affine-brownian-factors.html`](one-phase-euler/output/one-phase-euler-affine-brownian-factors.html)
+
+Render from the repository root:
+
+```bash
+quarto render paper/one-phase-euler
+```
+
+All three projects are deliberately isolated: rendering one does not modify
+the sources, caches, figures, tables, or outputs of either other project.

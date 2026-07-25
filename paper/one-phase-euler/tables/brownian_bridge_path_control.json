@@ -1,0 +1,14 @@
+{
+  "common_terminal_forward_max_error": 6.938893903907228e-18,
+  "common_terminal_phase_max_spread": 2.7755575615628914e-16,
+  "path_average_quantiles": {
+    "0.01": 0.01014638139062003,
+    "0.1": 0.014553935439526629,
+    "0.5": 0.019979438711754737,
+    "0.9": 0.025498207210400622,
+    "0.99": 0.030034732529567894
+  },
+  "path_average_standard_deviation": 0.004267495185143631,
+  "paths": 28000,
+  "steps": 80
+}

@@ -1,0 +1,5 @@
+coefficient,real_part,imaginary_part
+log drift kappa,0.0918,0.9
+diffusion B,0.42,0.65
+Ito drift A,-0.03125000000000003,1.173
+A - B^2/2,0.0918,0.9

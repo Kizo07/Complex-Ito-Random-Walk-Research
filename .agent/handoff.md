@@ -2,10 +2,191 @@
 
 ## Active work
 
-`TASK-005` is complete under the user's Codex-direct exception. No
-implementation was delegated. The Phase 4 branch is preserved locally;
-commit, push, pull request, merge, release, and publication were not authorized
-for this task.
+`TASK-008` is complete under the user's Codex-direct exception. The academic
+paper, reproducible finance notebook, rendered publication artifacts, source
+audit, verification ledger, and independent review are complete. Work remains
+local; commit, push, pull request, merge, publication, and release were not
+authorized for this task.
+
+## TASK-008 outcome
+
+The new paper is **One-Phase Euler Coordinates for Affine Brownian Factors:
+Exact Classification, Pricing Conjugacy, and Numerical Consequences**. It
+proves that, for \(Z_t=Z_0+at+bW_t\) with \(Z_0b\ne0\), a lossless
+time-independent genuine one-phase Euler representation exists exactly when
+\(a/b\in\mathbb R\) and \(b/Z_0\notin\mathbb R\). It develops the exact phase
+diffusion, kernel, generator, boundary classification, rigidity and group
+structure, then proves Bachelier pricing, PDE, Greek, and hedge conjugacy.
+
+Primary artifacts:
+
+- `docs/superpowers/specs/2026-07-25-one-phase-euler-financial-paper-design.md`;
+- `docs/superpowers/plans/2026-07-25-one-phase-euler-financial-paper.md`;
+- `paper/one-phase-euler/index.qmd`;
+- `paper/one-phase-euler/RESEARCH_NOTES.md`;
+- `paper/one-phase-euler/notebooks/one_phase_euler_finance.ipynb`;
+- `paper/one-phase-euler/output/one-phase-euler-affine-brownian-factors.pdf`;
+- `paper/one-phase-euler/output/one-phase-euler-affine-brownian-factors.html`;
+- `phase5_finance.py` and `tests/test_phase5_finance.py`;
+- `.agent/evidence/TASK-008-verification.md`; and
+- `.agent/reviews/TASK-008-opencode-glm52-review.md`.
+
+Verification:
+
+- 39/39 full-project tests pass.
+- Two clean-kernel notebook executions had 22 sequential code cells, zero
+  errors, and byte-identical 44-file structured-evidence bundles.
+- The final artifact set has 22 raster and 22 vector figures.
+- The PDF has 47 letter-size pages, embedded fonts, and no unresolved
+  citations or cross-references.
+- The HTML has 22 accessible figures, 52 bibliography entries, and no missing
+  source or broken internal fragment.
+- OpenCode `zai-coding-plan/glm-5.2` found no critical or major defect; both
+  minor findings were resolved.
+- Review usage ID: `61d151d7-1472-4571-a4dc-ed1089a0ecb0`.
+- Scorecard evaluation ID: `92e9a611-3108-40b5-b12d-5488204e79a8`.
+
+## TASK-007 completed context
+
+`TASK-007` is complete under the user's Codex-direct exception. Its approved
+plan was `PHASE_5_COMPREHENSIVE_ONE_PHASE_EULER_RESEARCH_PLAN.md`.
+
+## TASK-007 outcome
+
+Phase 5 classifies the requested time-independent, lossless one-phase Euler
+representation of additive complex Brownian motion. For
+\(Z_t=Z_0+a t+bW_t\), \(Z_0b\ne0\), it exists if and only if
+\(a/b\in\mathbb R\) and \(b/Z_0\notin\mathbb R\). Writing
+\(a=\lambda b\), \(b/Z_0=\rho e^{i\phi}\), and
+\(x_t=\lambda t+W_t\), the exact representation is
+
+\[
+Z_t
+=
+Z_0\frac{\sin\phi}{\sin(\phi-\theta_t)}e^{i\theta_t},
+\qquad
+\theta_t=\arg(1+\rho e^{i\phi}x_t)\in I_\phi.
+\]
+
+The phase SDE, generator, kernel, natural boundaries, reconstruction, Cayley
+alternative, transported group law, moving-line fallback, and compatible
+multiplicative logarithmic spiral are all derived. The implications analysis
+shows that one phase is an exact coordinate compression of a one-dimensional
+support, not a new vector dimension, holomorphic extension, analytic solution,
+or automatic numerical acceleration.
+
+Primary artifacts:
+
+- `PHASE_5_CANDIDATE_AUDIT.md`;
+- `PHASE_5_LITERATURE_REVIEW.md`;
+- `PHASE_5_MATHEMATICAL_FOUNDATIONS.md`;
+- `PHASE_5_RIGIDITY_AND_GROUP_STRUCTURE.md`;
+- `PHASE_5_VECTOR_AND_COMPLEX_CALCULUS_IMPLICATIONS.md`;
+- `PHASE_5_NUMERICAL_IMPLICATIONS.md`;
+- `phase5_model.py` and `tests/test_phase5_model.py`;
+- `notebooks/phase5_one_phase_euler.ipynb`;
+- `PHASE_5_SIMULATION_RESULTS.md`;
+- `PHASE_5_SYNTHESIS.md`; and
+- `.agent/reviews/TASK-007-opencode-glm52-review.md`.
+
+## TASK-007 verification and review
+
+- 23/23 focused tests and 33/33 full-project tests pass.
+- Three post-review clean-kernel notebook executions had 18 sequential code
+  cells, zero errors, and byte-identical 33-file evidence bundles.
+- Two unexecuted deterministic builds were byte-identical.
+- The artifact set has 18 raster and 18 vector figures.
+- Ordered relative-name evidence SHA-256:
+  `fa8fd5f517c9f321f3426cfdbd5fe2e9f8bea4e213ad945a8207a87a9736619e`.
+- OpenCode `zai-coding-plan/glm-5.2` returned PASS after all six minor findings
+  were resolved; no critical or major defect remains.
+- Review usage ID: `02b1ddc2-d429-4f87-be6d-a3cf873b8c32`.
+- Scorecard evaluation ID: `ca7b1eca-19a4-41e1-92e5-565ccc78c595`.
+
+## TASK-006 completed context
+
+`TASK-006` is complete under the user's Codex-direct exception. Codex completed
+the paper implementation and final verification without delegating
+implementation. OpenCode `zai-coding-plan/glm-5.2` completed the required
+independent review and second opinion; every finding is resolved. The branch
+remains local; commit, push, pull request, merge, release, and publication were
+not authorized for this task.
+
+## TASK-006 implementation
+
+The publication hierarchy now contains two independent Quarto projects:
+
+- `paper/phase3/` preserves and successfully rerenders the completed Phase 3
+  manuscript;
+- `paper/phase4/` contains the primary-source audit, bibliography, canonical
+  QMD, deterministic notebook builder, executed discovery notebook, 18 vector
+  figures with 18 raster companions, 12 evidence/manifests tables, retained
+  TeX, and rendered PDF/HTML; and
+- `paper/README.md` indexes both papers.
+
+The Phase 4 paper is titled **Native Complex Geometric Brownian Motion: Itô
+correction, stochastic rotation, and noise-dimension geometry**. It positions
+complex GBM and stochastic exponentials as established theory and centers the
+modulus-preserving four-parameter synthesis, the exact one-step walk, the
+rank-one one-driver geometry, the Phase 3 subfamily, and the two-driver
+boundary.
+
+Primary TASK-006 artifacts:
+
+- `docs/superpowers/specs/2026-07-24-phase4-technical-paper-design.md`;
+- `docs/superpowers/plans/2026-07-24-phase4-technical-paper.md`;
+- `paper/phase4/RESEARCH_NOTES.md`;
+- `paper/phase4/index.qmd`;
+- `paper/phase4/notebooks/build_phase4_discovery.py`;
+- `paper/phase4/notebooks/phase4_discovery.ipynb`;
+- `paper/phase4/output/phase4-native-complex-geometric-brownian-motion.pdf`;
+- `paper/phase4/output/phase4-native-complex-geometric-brownian-motion.html`;
+  and
+- `.agent/reviews/TASK-006-opencode-glm52-review.md`.
+
+## TASK-006 verification
+
+- The 10 Phase 4 unit tests pass in the unchanged `phase3-paper` environment,
+  and the model, tests, and notebook builder compile.
+- Two clean notebook executions had nine sequential code cells, zero error
+  outputs, identical cell sources, identical deterministic stream text, and
+  the terminal assertion marker. Exactness, moments, covariance ranks, strong
+  convergence, and both complex brackets meet their prespecified thresholds.
+- Phase 3 and Phase 4 render independently with Quarto 1.9.38 and LuaLaTeX.
+- The final Phase 4 PDF has 30 letter-size pages with the specified one-inch
+  margins, all fonts are embedded, no unresolved markers were found, and all
+  pages were visually inspected, including those changed after review.
+- The HTML has zero missing local links or image sources, all 18 publication
+  raster figures, and nonempty alt text for every image.
+- The figure/table manifests are complete; every one of the 13 bibliography
+  entries is cited, with no missing or unused keys.
+- Root and paper README links validate apart from the deliberately pending
+  TASK-006 review path.
+- `git diff --check` passes.
+
+The notebook, code-source, deterministic-stream, table-aggregate, and QMD
+SHA-256 values are recorded in `paper/phase4/README.md`.
+
+## TASK-006 independent review
+
+OpenCode `zai-coding-plan/glm-5.2` returned **PASS WITH MINOR FINDINGS**, with
+no critical or major findings. It independently re-derived every central
+formula without importing the project model and reproduced every reported
+numerical value to the manuscript's printed precision. It also reran all 10
+unit tests, inspected the notebook, verified PDF/HTML properties, and confirmed
+that the moved Phase 3 QMD is byte-for-byte identical to the pre-move source.
+
+All reviewer notes were resolved:
+
+- M1: restored the specified one-inch PDF margins and rerendered;
+- M2: confirmed the exact “complex geometric Brownian motion” phrase on
+  p. 262 of the Buckwar et al. full text and made the page-level attribution
+  explicit in the manuscript and research audit;
+- E1: added Seaborn 0.13.2 to the manuscript software table; and
+- E2: labeled the Appendix A Itô products as quadratic-covariation notation.
+
+Review usage ID: `bc5efdbc-e11f-4ac4-8483-e5f2a49987ca`. Scorecard evaluation
+ID: `5012ba6e-83d8-44ed-8fea-5f7fd53295b3`.
 
 ## TASK-005 outcome
 

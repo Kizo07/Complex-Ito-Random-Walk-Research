@@ -1,4 +1,6 @@
 output/** -whitespace
+**/output/** -whitespace
+**/site_libs/** -whitespace
 *.ipynb -diff
 *.pdf binary
 *.png binary
