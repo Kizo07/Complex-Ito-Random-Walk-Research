@@ -2,10 +2,81 @@
 
 ## Active work
 
-`TASK-004` is complete under the user's Codex-direct exception. No
-implementation was delegated. On 2026-07-24, the user separately authorized a
-feature-branch commit, push, and pull request; merge and release remain out of
-scope.
+`TASK-005` is complete under the user's Codex-direct exception. No
+implementation was delegated. The Phase 4 branch is preserved locally;
+commit, push, pull request, merge, release, and publication were not authorized
+for this task.
+
+## TASK-005 outcome
+
+Phase 4 now defines a native complex geometric Brownian motion directly from
+one real Brownian motion:
+
+\[
+\mathcal Z_t=\mathcal Z_0
+\exp\!\left(
+\left[\left(\mu-\frac12\sigma^2\right)+i\omega\right]t
++(\sigma+i\beta)W_t
+\right).
+\]
+
+Its modulus is exactly GBM, its phase contains deterministic and stochastic
+rotation, and its exact transition combines the time and Brownian increments
+inside one complex exponential. The derivations also reconcile the ordinary
+and Doléans exponentials, recover Phase 3 as a constrained subfamily, and make
+the one-driver rank-one limitation explicit.
+
+Primary deliverables:
+
+- `13_COORDINATE_FREE_COMPLEX_GBM.md`;
+- `14_COMPLEX_LOG_DRIVER_AND_STOCHASTIC_EXPONENTIAL.md`;
+- `15_PHASE_4_EQUIVALENCE_RANK_AND_LIMITS.md`;
+- `phase4_model.py` and `tests/test_phase4_model.py`;
+- `notebooks/build_phase4_coordinate_free_complex_gbm.py`;
+- `notebooks/phase4_coordinate_free_complex_gbm.ipynb`;
+- `PHASE_4_SIMULATION_RESULTS.md`;
+- `PHASE_4_SYNTHESIS.md`;
+- `.agent/reviews/TASK-005-opencode-glm52-review.md`.
+
+## TASK-005 verification
+
+The final notebook executed twice from clean kernels: once in place and once
+to `/tmp/phase4_coordinate_free_complex_gbm_recheck.ipynb`. Both runs had 12
+sequentially numbered code cells, zero error outputs, and matching
+code-source and deterministic text-output hashes. All notebook assertions
+passed. Ten unit tests pass in the unmodified `phase3-paper` conda
+environment.
+
+Pandoc 3.8 rendered the Phase 4 plan, literature review, three derivation
+chapters, simulation record, and synthesis to temporary HTML without fatal
+errors. The Python sources compile, project JSON parses, and
+`git diff --check` passes.
+
+## TASK-005 independent review
+
+OpenCode with `zai-coding-plan/glm-5.2` returned **PASS**, with no critical or
+major findings. It independently re-derived the exponential construction,
+modulus and phase, full complex Itô drift, moment formulas, both complex
+brackets, covariance-rank result, Phase 3 mapping, and two-driver comparator.
+It also reran the ten tests and independently reproduced the numerical
+benchmarks.
+
+The review's three minor evidence notes were closed by recording the second
+clean notebook run, Pandoc render, and test-first red/green history. Its
+editorial consistency note was closed by explaining that the constant-radius
+counterexample retains \(i\omega\) solely to isolate the omitted Itô drift.
+
+Review usage ID: `c18c03a7-4f5a-4a1b-96c7-c767987d7bc4`. Scorecard evaluation
+ID: `98e03e34-ccf7-42cf-bf44-745aad55f866`.
+
+## TASK-005 remaining risks
+
+The model is deliberately one-driver and therefore has rank-one instantaneous
+log-polar covariance; independently randomized radial and angular noise
+requires a second Brownian motion. Monte Carlo values remain seed- and
+sample-size-dependent within their reported standard errors. The relation
+\(d[W,W]_t=dt\) is a quadratic-variation statement, not the algebraic identity
+\(i^2=-1\).
 
 ## TASK-004 outcome
 

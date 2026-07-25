@@ -100,6 +100,39 @@ an executed discovery notebook and reproducible PDF/HTML renders:
 6. [`.agent/reviews/TASK-004-opencode-glm52-review.md`](.agent/reviews/TASK-004-opencode-glm52-review.md)
    — independent GLM 5.2 mathematical and numerical review.
 
+## Phase 4 reading order
+
+Phase 4 defines complex geometric Brownian motion natively, without first
+constructing Cartesian coordinates or transforming a pre-existing state
+process. Its modulus is exactly GBM and its imaginary exponent supplies
+rotation:
+
+1. [`PHASE_4_COORDINATE_FREE_COMPLEX_GBM_PLAN.md`](PHASE_4_COORDINATE_FREE_COMPLEX_GBM_PLAN.md)
+   — approved scope, candidate constructions, and acceptance criteria.
+2. [`PHASE_4_LITERATURE_REVIEW.md`](PHASE_4_LITERATURE_REVIEW.md) — source
+   audit establishing complex GBM and complex stochastic exponentials as
+   existing theory.
+3. [`13_COORDINATE_FREE_COMPLEX_GBM.md`](13_COORDINATE_FREE_COMPLEX_GBM.md) —
+   native definition, exact GBM modulus, phase, SDE, transitions, and moments.
+4. [`14_COMPLEX_LOG_DRIVER_AND_STOCHASTIC_EXPONENTIAL.md`](14_COMPLEX_LOG_DRIVER_AND_STOCHASTIC_EXPONENTIAL.md)
+   — ordinary exponential, Doléans exponential, stochastic logarithm, Itô
+   correction, and complex brackets.
+5. [`15_PHASE_4_EQUIVALENCE_RANK_AND_LIMITS.md`](15_PHASE_4_EQUIVALENCE_RANK_AND_LIMITS.md)
+   — Phase 3 equivalence, fixed-spiral condition, rank-one obstruction, and
+   two-driver boundary.
+6. [`phase4_model.py`](phase4_model.py) and
+   [`tests/test_phase4_model.py`](tests/test_phase4_model.py) — tested
+   computational formulas.
+7. [`notebooks/phase4_coordinate_free_complex_gbm.ipynb`](notebooks/phase4_coordinate_free_complex_gbm.ipynb)
+   — executed exactness, rotation, covariance, moment, convergence, and
+   quadratic-variation checks.
+8. [`PHASE_4_SIMULATION_RESULTS.md`](PHASE_4_SIMULATION_RESULTS.md) —
+   reproducibility record and numerical results.
+9. [`PHASE_4_SYNTHESIS.md`](PHASE_4_SYNTHESIS.md) — concise final derivation
+   and interpretation.
+10. [`.agent/reviews/TASK-005-opencode-glm52-review.md`](.agent/reviews/TASK-005-opencode-glm52-review.md)
+    — independent GLM 5.2 review after implementation.
+
 ## Main formula
 
 If
@@ -133,6 +166,50 @@ dZ_t
 =\left(i\omega-\frac12\beta^2\right)Z_tdt
 +i\beta Z_tdW_t.
 \]
+
+For the native Phase 4 complex geometric Brownian motion, define
+
+\[
+\boxed{
+\mathcal Z_t
+=
+\mathcal Z_0
+\exp\!\left(
+\left[\left(\mu-\frac12\sigma^2\right)+i\omega\right]t
++(\sigma+i\beta)W_t
+\right).
+}
+\]
+
+Then its modulus is exactly the real GBM
+
+\[
+\frac{d|\mathcal Z_t|}{|\mathcal Z_t|}
+=
+\mu\,dt+\sigma\,dW_t,
+\]
+
+its continuous phase is
+
+\[
+\Theta_t=\Theta_0+\omega t+\beta W_t,
+\]
+
+and its native complex Itô SDE is
+
+\[
+\boxed{
+\frac{d\mathcal Z_t}{\mathcal Z_t}
+=
+\left[
+\mu-\frac12\beta^2+i(\omega+\sigma\beta)
+\right]dt
++(\sigma+i\beta)dW_t.
+}
+\]
+
+This is a one-driver, rank-one complex GBM. Independent radial and angular
+noise requires a second Brownian motion.
 
 For a faithful one-driver representation with stochastic radius, let
 
