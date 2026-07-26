@@ -6,7 +6,7 @@ polar form, Brownian quadratic variation, Itô's lemma, and random walks.
 ## Phase 1 reading order
 
 1. [`RESEARCH_PLAN.md`](RESEARCH_PLAN.md) — objectives and research phases.
-2. [`01_ITO_ALGEBRA.md`](01_ITO_ALGEBRA.md) — why \((dW)^2=dt\).
+2. [`01_ITO_ALGEBRA.md`](01_ITO_ALGEBRA.md) — why $(dW)^2=dt$.
 3. [`02_ARITHMETIC_DIFFUSION.md`](02_ARITHMETIC_DIFFUSION.md) — the additive
    random-walk benchmark.
 4. [`03_STOCHASTIC_EXPONENTIAL.md`](03_STOCHASTIC_EXPONENTIAL.md) — the
@@ -33,7 +33,7 @@ Phase 2 replaces the fixed-radius circle model with a full planar diffusion:
 1. [`PHASE_2_PLAN.md`](PHASE_2_PLAN.md) — approved scope and acceptance
    criteria.
 2. [`06_COMPLEX_QUADRATIC_VARIATION.md`](06_COMPLEX_QUADRATIC_VARIATION.md)
-   — why \([Z,Z]\) and \([Z,\overline Z]\) are different.
+   — why $[Z,Z]$ and $[Z,\overline Z]$ are different.
 3. [`07_STOCHASTIC_RADIUS_AND_PLANAR_EXPONENTIAL.md`](07_STOCHASTIC_RADIUS_AND_PLANAR_EXPONENTIAL.md)
    — Bessel radius, winding angle, and the full stochastic polar exponential.
 4. [`08_GENERAL_COMPLEX_DIFFUSIONS.md`](08_GENERAL_COMPLEX_DIFFUSIONS.md)
@@ -200,146 +200,141 @@ capabilities:
 
 If
 
-\[
+$$
 dA_t=a_tdt+u_t\cdot dW_t,\qquad
 d\Theta_t=\omega_tdt+v_t\cdot dW_t,
 \qquad
 Z_t=e^{A_t+i\Theta_t},
-\]
+$$
 
 then
 
-\[
+$$
 \frac{dZ_t}{Z_t}
 =\left[
 a_t+\frac12(\|u_t\|^2-\|v_t\|^2)
 +i(\omega_t+u_t\cdot v_t)
 \right]dt
 +(u_t+i v_t)\cdot dW_t.
-\]
+$$
 
 Pure stochastic rotation is the special case
 
-\[
+$$
 Z_t=r_0e^{i(\theta_0+\omega t+\beta W_t)},
-\]
+$$
 
-\[
+$$
 dZ_t
 =\left(i\omega-\frac12\beta^2\right)Z_tdt
 +i\beta Z_tdW_t.
-\]
+$$
 
 For the native Phase 4 complex geometric Brownian motion, define
 
-\[
+$$
 \boxed{
-\mathcal Z_t
-=
+\mathcal Z_t =
 \mathcal Z_0
 \exp\!\left(
 \left[\left(\mu-\frac12\sigma^2\right)+i\omega\right]t
 +(\sigma+i\beta)W_t
 \right).
 }
-\]
+$$
 
 Then its modulus is exactly the real GBM
 
-\[
-\frac{d|\mathcal Z_t|}{|\mathcal Z_t|}
-=
+$$
+\frac{d|\mathcal Z_t|}{|\mathcal Z_t|} =
 \mu\,dt+\sigma\,dW_t,
-\]
+$$
 
 its continuous phase is
 
-\[
+$$
 \Theta_t=\Theta_0+\omega t+\beta W_t,
-\]
+$$
 
 and its native complex Itô SDE is
 
-\[
+$$
 \boxed{
-\frac{d\mathcal Z_t}{\mathcal Z_t}
-=
+\frac{d\mathcal Z_t}{\mathcal Z_t} =
 \left[
 \mu-\frac12\beta^2+i(\omega+\sigma\beta)
 \right]dt
 +(\sigma+i\beta)dW_t.
 }
-\]
+$$
 
 This is a one-driver, rank-one complex GBM. Independent radial and angular
 noise requires a second Brownian motion.
 
 For a faithful one-driver representation with stochastic radius, let
 
-\[
+$$
 X_t=X_0+\mu t+\sigma W_t,
 \qquad
 c=\alpha+i\beta,
 \qquad
 \alpha\ne0.
-\]
+$$
 
 Then
 
-\[
+$$
 \boxed{
 Z_t=Z_0e^{c(X_t-X_0)},}
-\]
+$$
 
-\[
+$$
 \boxed{
-\frac{dZ_t}{Z_t}
-=
+\frac{dZ_t}{Z_t} =
 \left(c\mu+\frac12c^2\sigma^2\right)dt
 +c\sigma dW_t.}
-\]
+$$
 
 Its radius recovers the original scalar state:
 
-\[
+$$
 X_t=X_0+\frac1\alpha\log\frac{|Z_t|}{|Z_0|}.
-\]
+$$
 
 This is a rank-one logarithmic-spiral diffusion, not planar Brownian motion.
 
 For the Phase 5 additive process
 
-\[
+$$
 Z_t=Z_0+a t+bW_t,\qquad Z_0b\ne0,
-\]
+$$
 
 a genuine, lossless, time-independent one-phase representation exists if and
 only if
 
-\[
+$$
 \frac ab\in\mathbb R,
 \qquad
 \frac b{Z_0}\notin\mathbb R.
-\]
+$$
 
-Writing \(a=\lambda b\), \(b/Z_0=\rho e^{i\phi}\), and
-\(x_t=\lambda t+W_t\), define
+Writing $a=\lambda b$, $b/Z_0=\rho e^{i\phi}$, and
+$x_t=\lambda t+W_t$, define
 
-\[
+$$
 \theta_t=\arg(1+\rho e^{i\phi}x_t)\in I_\phi.
-\]
+$$
 
 Then the exact Euler form is
 
-\[
+$$
 \boxed{
-Z_t
-=
+Z_t =
 Z_0
 \frac{\sin\phi}{\sin(\phi-\theta_t)}
 e^{i\theta_t}.
 }
-\]
+$$
 
 The phase is the only stochastic state variable in this formula; its radial
 factor is a deterministic function of that phase. It is a bounded chart on
@@ -348,24 +343,24 @@ new stochastic dimension.
 
 For full isotropic planar Brownian motion,
 
-\[
+$$
 dZ_t=\sigma(dW_t^1+i\,dW_t^2),
-\]
+$$
 
 the stochastic radius and angle satisfy
 
-\[
+$$
 dR_t=\frac{\sigma^2}{2R_t}dt+\sigma dB_t^R,
 \qquad
 d\Theta_t=\frac{\sigma}{R_t}dB_t^\Theta,
-\]
+$$
 
 and the complete nonconstant-radius exponential representation is
 
-\[
+$$
 Z_t
 =Z_0\exp\!\left[
 \int_0^t\frac{\sigma}{R_s}dB_s^R
 +i\int_0^t\frac{\sigma}{R_s}dB_s^\Theta
 \right].
-\]
+$$
