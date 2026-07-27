@@ -1,0 +1,7 @@
+milestone,check,result
+M1 kernels,hitting CDF vs MC,within 2 SE
+M2 derivatives,ordering digital<=touch<=touch-hit,holds
+M3 reduction,full 3-driver vs scalar reduction,z = -1.16
+M4 FK clock,FK price vs MC benchmark,within 2 SE
+M5 corridor,arcsine digital,diff 4.4e-04
+M6 OU,OU FK price vs MC,z = -0.14
