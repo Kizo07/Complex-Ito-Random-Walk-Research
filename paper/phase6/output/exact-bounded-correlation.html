@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Complex–Itô Random-Walk Research Project">
+<meta name="dcterms.date" content="2026-07-27">
+<meta name="keywords" content="stochastic correlation, one-phase Euler coordinates, barrier options, first passage, Dambis–Dubins–Schwarz, Feynman–Kac, occupation time, Ornstein–Uhlenbeck, Bachelier model">
+
+<title>Exact Bounded Correlation</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-712a858a7335f8c7f74f41a4769ee845.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-d0b1ce03bd2b513547a63dc7d023d1ec.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta name="citation_title" content="Exact Bounded Correlation">
+<meta name="citation_abstract" content="We construct a stochastic-correlation framework in which the correlation
+state is the sine of the one-phase Euler phase of a scalar Gaussian
+factor: $\rho_t=X_t/\sqrt{X_t^2+c^2}$ with $X_t=x_0+\mu t+\sigma W_t$.
+Because the map is a monotone conjugacy, the framework inherits exact
+laws that no tractable competitor possesses jointly: a closed-form
+finite-time transition density; reflection-principle first-passage laws
+for correlation barriers; and exact prices for correlation derivatives —
+digitals, one-touches paid at expiry and at hit (a new closed form via a
+completing-the-square identity), and discretely monitored range accruals.
+For two assets driven by Brownian motions correlated through $\rho_t$,
+with the correlation driver independent of the asset drivers, the
+Dambis–Dubins–Schwarz theorem reduces every linear combination of the
+assets — spreads, baskets — to Brownian motion with a deterministic
+variance clock, collapsing joint barrier pricing to a scalar functional
+of the correlation path. The full law of that clock is computed
+deterministically by a Feynman–Kac resolvent and a Fourier series (the
+clock&amp;amp;#039;s support is bounded), verified against exact-skeleton Monte Carlo.
+The same resolvent prices continuous corridor occupation derivatives
+after an explicit atom separation, reproducing Lévy's arcsine law as a
+parameter-free anchor. Replacing the Brownian driver by an
+Ornstein–Uhlenbeck driver yields a mean-reverting correlation state with
+exact stationary density, and we prove the stationarity–tractability
+classification: static laws and the clock reduction survive, while
+closed-form first-passage laws are surrendered to the resolvent. All
+claims are verified by unit tests and reproducible notebooks; economic
+costs (non-stationarity under the Brownian driver, polynomial boundary
+tails, exclusion of leverage) are stated explicitly.
+">
+<meta name="citation_keywords" content="stochastic correlation,one-phase Euler coordinates,barrier options,first passage,Dambis–Dubins–Schwarz,Feynman–Kac,occupation time,Ornstein–Uhlenbeck,Bachelier model">
+<meta name="citation_author" content="Complex–Itô Random-Walk Research Project">
+<meta name="citation_publication_date" content="2026-07-27">
+<meta name="citation_cover_date" content="2026-07-27">
+<meta name="citation_year" content="2026">
+<meta name="citation_online_date" content="2026-07-27">
+<meta name="citation_language" content="en">
+<meta name="citation_reference" content="citation_title=Modelling stochastic correlation;,citation_author=Long Teng;,citation_author=Matthias Ehrhardt;,citation_author=Michael Günther;,citation_publication_date=2016;,citation_cover_date=2016;,citation_year=2016;,citation_issue=1;,citation_doi=10.1186/s13362-016-0018-4;,citation_volume=6;,citation_journal_title=Journal of Mathematics in Industry;">
+<meta name="citation_reference" content="citation_title=Modelling correlation as a stochastic process;,citation_author=Christian Emmerich;,citation_publication_date=2006;,citation_cover_date=2006;,citation_year=2006;">
+<meta name="citation_reference" content="citation_title=Diffusion on the circle and a stochastic correlation model;,citation_author=Sourav Majumdar;,citation_publication_date=2024;,citation_cover_date=2024;,citation_year=2024;">
+<meta name="citation_reference" content="citation_title=Stochastic spot/volatility correlation in stochastic volatility models and barrier option pricing;,citation_author=Mark Higgins;,citation_publication_date=2014;,citation_cover_date=2014;,citation_year=2014;">
+<meta name="citation_reference" content="citation_title=The jacobi stochastic volatility model;,citation_author=Damien Ackerer;,citation_author=Damir Filipović;,citation_author=Sergio Pulido;,citation_publication_date=2018;,citation_cover_date=2018;,citation_year=2018;,citation_issue=3;,citation_doi=10.1007/s00780-018-0364-8;,citation_volume=22;,citation_journal_title=Finance and Stochastics;">
+<meta name="citation_reference" content="citation_title=The price of correlation risk: Evidence from equity options;,citation_author=Joost Driessen;,citation_author=Pascal J. Maenhout;,citation_author=Grigory Vilkov;,citation_publication_date=2009;,citation_cover_date=2009;,citation_year=2009;,citation_issue=3;,citation_doi=10.1111/j.1540-6261.2009.01467.x;,citation_volume=64;,citation_journal_title=The Journal of Finance;">
+<meta name="citation_reference" content="citation_title=Pricing and hedging spread options;,citation_author=René Carmona;,citation_author=Valdo Durrleman;,citation_publication_date=2003;,citation_cover_date=2003;,citation_year=2003;,citation_issue=4;,citation_doi=10.1137/S0036144503424798;,citation_volume=45;,citation_journal_title=SIAM Review;">
+<meta name="citation_reference" content="citation_title=First-passage-time density and moments of the Ornstein–Uhlenbeck process;,citation_author=Luigi M. Ricciardi;,citation_author=Shunsuke Sato;,citation_publication_date=1988;,citation_cover_date=1988;,citation_year=1988;,citation_issue=1;,citation_doi=10.2307/3214232;,citation_volume=25;,citation_journal_title=Journal of Applied Probability;">
+<meta name="citation_reference" content="citation_title=Representations of the first hitting time density of an Ornstein–Uhlenbeck process;,citation_author=Larbi Alili;,citation_author=Pierre Patie;,citation_author=Jesper L. Pedersen;,citation_publication_date=2005;,citation_cover_date=2005;,citation_year=2005;,citation_issue=4;,citation_doi=10.1080/15326340500294702;,citation_volume=21;,citation_journal_title=Stochastic Models;">
+<meta name="citation_reference" content="citation_title=Brownian motion and stochastic calculus;,citation_author=Ioannis Karatzas;,citation_author=Steven E. Shreve;,citation_publication_date=1991;,citation_cover_date=1991;,citation_year=1991;,citation_doi=10.1007/978-1-4612-0949-2;">
+<meta name="citation_reference" content="citation_title=Handbook of Brownian motion — facts and formulae;,citation_author=Andrei N. Borodin;,citation_author=Paavo Salminen;,citation_publication_date=2002;,citation_cover_date=2002;,citation_year=2002;,citation_doi=10.1007/978-3-0348-8163-0;">
+<meta name="citation_reference" content="citation_title=On distributions of certain Wiener functionals;,citation_author=Mark Kac;,citation_publication_date=1949;,citation_cover_date=1949;,citation_year=1949;,citation_issue=1;,citation_doi=10.2307/1990512;,citation_volume=65;,citation_journal_title=Transactions of the American Mathematical Society;">
+<meta name="citation_reference" content="citation_title=Sur certains processus stochastiques homogènes;,citation_author=Paul Lévy;,citation_publication_date=1939;,citation_cover_date=1939;,citation_year=1939;,citation_volume=7;,citation_journal_title=Compositio Mathematica;">
+<meta name="citation_reference" content="citation_title=On a formula concerning stochastic differentials;,citation_author=Kiyosi Itô;,citation_publication_date=1951;,citation_cover_date=1951;,citation_year=1951;,citation_doi=10.1017/S0027763000012216;,citation_volume=3;,citation_journal_title=Nagoya Mathematical Journal;">
+<meta name="citation_reference" content="citation_title=On transforming a certain class of stochastic processes by absolutely continuous substitution of measures;,citation_author=Igor V. Girsanov;,citation_publication_date=1960;,citation_cover_date=1960;,citation_year=1960;,citation_issue=3;,citation_doi=10.1137/1105027;,citation_volume=5;,citation_journal_title=Theory of Probability &amp;amp;amp; Its Applications;">
+<meta name="citation_reference" content="citation_title=The pricing of options and corporate liabilities;,citation_author=Fischer Black;,citation_author=Myron Scholes;,citation_publication_date=1973;,citation_cover_date=1973;,citation_year=1973;,citation_issue=3;,citation_doi=10.1086/260062;,citation_volume=81;,citation_journal_title=Journal of Political Economy;">
+<meta name="citation_reference" content="citation_title=Theory of rational option pricing;,citation_author=Robert C. Merton;,citation_publication_date=1973;,citation_cover_date=1973;,citation_year=1973;,citation_issue=1;,citation_doi=10.2307/3003143;,citation_volume=4;,citation_journal_title=The Bell Journal of Economics and Management Science;">
+<meta name="citation_reference" content="citation_title=Exact simulation of diffusions;,citation_author=Alexandros Beskos;,citation_author=Gareth O. Roberts;,citation_publication_date=2005;,citation_cover_date=2005;,citation_year=2005;,citation_issue=4;,citation_doi=10.1214/105051605000000485;,citation_volume=15;,citation_journal_title=The Annals of Applied Probability;">
+<meta name="citation_reference" content="citation_title=A finite difference scheme for option pricing in jump diffusion and exponential lévy models;,citation_author=Rama Cont;,citation_author=Ekaterina Voltchkova;,citation_publication_date=2005;,citation_cover_date=2005;,citation_year=2005;,citation_issue=4;,citation_doi=10.1137/040613337;,citation_volume=43;,citation_journal_title=SIAM Journal on Numerical Analysis;">
+<meta name="citation_reference" content="citation_title=A yield-factor model of interest rates;,citation_author=Darrell Duffie;,citation_author=Rui Kan;,citation_publication_date=1996;,citation_cover_date=1996;,citation_year=1996;,citation_issue=4;,citation_doi=10.1111/j.1467-9965.1996.tb00123.x;,citation_volume=6;,citation_journal_title=Mathematical Finance;">
+<meta name="citation_reference" content="citation_title=Numerical valuation of American basket options via partial differential complementarity problems;,citation_author=Karel J. Hout;,citation_author=Jacob Snoeijer;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;,citation_issue=13;,citation_doi=10.3390/math9131498;,citation_volume=9;,citation_journal_title=Mathematics;">
+<meta name="citation_reference" content="citation_title=Applied stochastic differential equations;,citation_author=Simo Särkkä;,citation_author=Arno Solin;,citation_publication_date=2019;,citation_cover_date=2019;,citation_year=2019;,citation_doi=10.1017/9781108186735;">
+<meta name="citation_reference" content="citation_title=How close are the option pricing formulas of Bachelier and Black–Merton–Scholes?;,citation_author=Walter Schachermayer;,citation_author=Josef Teichmann;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_issue=1;,citation_doi=10.1111/j.1467-9965.2007.00326.x;,citation_volume=18;,citation_journal_title=Mathematical Finance;">
+<meta name="citation_reference" content="citation_title=A Black–Scholes user’s guide to the Bachelier model;,citation_author=Jaehyuk Choi;,citation_author=Minsuk Kwak;,citation_author=Chyng Wen Tee;,citation_author=Yumeng Wang;,citation_publication_date=2022;,citation_cover_date=2022;,citation_year=2022;,citation_issue=5;,citation_doi=10.1002/fut.22315;,citation_volume=42;,citation_journal_title=Journal of Futures Markets;">
+<meta name="citation_reference" content="citation_title=Clearing advisory: WTI crude oil options to be revalued using bachelier model;,citation_author=CME Group;,citation_publication_date=2020;,citation_cover_date=2020;,citation_year=2020;,citation_fulltext_html_url=https://www.cmegroup.com/notices/clearing/2020/20090.html;">
+<meta name="citation_reference" content="citation_title=One-phase Euler coordinates for affine Brownian factors: Exact classification, pricing conjugacy, and numerical consequences;,citation_author=Complex–Itô Random-Walk Research Project;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;">
+</head>
+
+<body class="quarto-light">
+
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Exact Bounded Correlation</h1>
+            <p class="subtitle lead">One-Phase Euler Coordinates for Stochastic Correlation, Derivative Pricing, and Joint Barriers</p>
+          </div>
+
+    
+    <div class="quarto-title-meta-container">
+      <div class="quarto-title-meta-column-start">
+        
+        <div class="quarto-title-meta">
+
+                <div>
+            <div class="quarto-title-meta-heading">Author</div>
+            <div class="quarto-title-meta-contents">
+                        <p>Complex–Itô Random-Walk Research Project </p>
+                      </div>
+          </div>
+                
+                <div>
+            <div class="quarto-title-meta-heading">Published</div>
+            <div class="quarto-title-meta-contents">
+              <p class="date">July 27, 2026</p>
+            </div>
+          </div>
+          
+                
+              </div>
+      </div>
+      <div class="quarto-title-meta-column-end quarto-other-formats-target">
+      <div class="quarto-alternate-formats"><div class="quarto-title-meta-heading">Other Formats</div><div class="quarto-title-meta-contents"><p><a href="exact-bounded-correlation.pdf"><i class="bi bi-file-pdf"></i>PDF</a></p></div></div></div>
+    </div>
+
+    <div>
+      <div class="abstract">
+        <div class="block-title">Abstract</div>
+        <p>We construct a stochastic-correlation framework in which the correlation state is the sine of the one-phase Euler phase of a scalar Gaussian factor: <span class="math inline">\(\rho_t=X_t/\sqrt{X_t^2+c^2}\)</span> with <span class="math inline">\(X_t=x_0+\mu t+\sigma W_t\)</span>. Because the map is a monotone conjugacy, the framework inherits exact laws that no tractable competitor possesses jointly: a closed-form finite-time transition density; reflection-principle first-passage laws for correlation barriers; and exact prices for correlation derivatives — digitals, one-touches paid at expiry and at hit (a new closed form via a completing-the-square identity), and discretely monitored range accruals. For two assets driven by Brownian motions correlated through <span class="math inline">\(\rho_t\)</span>, with the correlation driver independent of the asset drivers, the Dambis–Dubins–Schwarz theorem reduces every linear combination of the assets — spreads, baskets — to Brownian motion with a deterministic variance clock, collapsing joint barrier pricing to a scalar functional of the correlation path. The full law of that clock is computed deterministically by a Feynman–Kac resolvent and a Fourier series (the clock’s support is bounded), verified against exact-skeleton Monte Carlo. The same resolvent prices continuous corridor occupation derivatives after an explicit atom separation, reproducing Lévy’s arcsine law as a parameter-free anchor. Replacing the Brownian driver by an Ornstein–Uhlenbeck driver yields a mean-reverting correlation state with exact stationary density, and we prove the stationarity–tractability classification: static laws and the clock reduction survive, while closed-form first-passage laws are surrendered to the resolvent. All claims are verified by unit tests and reproducible notebooks; economic costs (non-stationarity under the Brownian driver, polynomial boundary tails, exclusion of leverage) are stated explicitly.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="keywords">
+        <div class="block-title">Keywords</div>
+        <p>stochastic correlation, one-phase Euler coordinates, barrier options, first passage, Dambis–Dubins–Schwarz, Feynman–Kac, occupation time, Ornstein–Uhlenbeck, Bachelier model</p>
+      </div>
+    </div>
+
+    <div class="quarto-other-links-text-target">
+    </div>  </div>
+</header><div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-introduction" id="toc-sec-introduction" class="nav-link active" data-scroll-target="#sec-introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#setup-and-conventions" id="toc-setup-and-conventions" class="nav-link" data-scroll-target="#setup-and-conventions">Setup and conventions</a></li>
+  </ul></li>
+  <li><a href="#sec-coordinate" id="toc-sec-coordinate" class="nav-link" data-scroll-target="#sec-coordinate">The bounded correlation coordinate</a></li>
+  <li><a href="#sec-firstpassage" id="toc-sec-firstpassage" class="nav-link" data-scroll-target="#sec-firstpassage">First-passage laws under the Brownian driver</a></li>
+  <li><a href="#sec-derivatives" id="toc-sec-derivatives" class="nav-link" data-scroll-target="#sec-derivatives">Correlation derivatives</a></li>
+  <li><a href="#sec-reduction" id="toc-sec-reduction" class="nav-link" data-scroll-target="#sec-reduction">Joint two-asset barriers: the variance-clock reduction</a>
+  <ul class="collapse">
+  <li><a href="#model" id="toc-model" class="nav-link" data-scroll-target="#model">Model</a></li>
+  </ul></li>
+  <li><a href="#sec-fk" id="toc-sec-fk" class="nav-link" data-scroll-target="#sec-fk">The full clock law by Feynman–Kac</a></li>
+  <li><a href="#sec-corridor" id="toc-sec-corridor" class="nav-link" data-scroll-target="#sec-corridor">Corridor occupation</a></li>
+  <li><a href="#sec-ou" id="toc-sec-ou" class="nav-link" data-scroll-target="#sec-ou">The OU driver and the stationarity–tractability classification</a></li>
+  <li><a href="#sec-related" id="toc-sec-related" class="nav-link" data-scroll-target="#sec-related">Novelty boundary and related work</a></li>
+  <li><a href="#sec-conclusion" id="toc-sec-conclusion" class="nav-link" data-scroll-target="#sec-conclusion">Conclusion</a></li>
+  <li><a href="#sec-reproducibility" id="toc-sec-reproducibility" class="nav-link" data-scroll-target="#sec-reproducibility">Reproducibility</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="quarto-alternate-notebooks"><h2>Notebooks</h2><ul><li><a href="notebooks/phase6_correlation_paper-preview.html"><i class="bi bi-journal-code"></i>Reproducible bounded-correlation research notebook</a></li></ul></div></nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+  
+
+
+<p><strong>Mathematics Subject Classification (2020):</strong> 60H10, 60J60, 60J65, 91G20, 91G60.</p>
+<p><strong>JEL classification:</strong> C02, C63, G12, G13.</p>
+<section id="sec-introduction" class="level1">
+<h1>Introduction</h1>
+<p>Correlation is the canonical bounded state variable of multi-asset finance, and it is empirically stochastic <span class="citation" data-cites="teng2016 driessen2009">(<a href="#ref-teng2016" role="doc-biblioref">Teng et al. 2016</a>; <a href="#ref-driessen2009" role="doc-biblioref">Driessen et al. 2009</a>)</span>. The modeling question is thirty years old and the answers split into two families, both with structural defects for pricing. Bounded <em>intrinsic</em> diffusions — the Jacobi process of van Emmerich <span class="citation" data-cites="vanemmerich2006 ackerer2018">(<a href="#ref-vanemmerich2006" role="doc-biblioref">Emmerich 2006</a>; <a href="#ref-ackerer2018" role="doc-biblioref">Ackerer et al. 2018</a>)</span> — are mean-reverting but have no closed-form transition density, so likelihoods and prices need spectral expansions. <em>Transform</em> models — correlation as a bounded function of a Gaussian factor, as in the hyperbolic-tangent model of Teng, Ehrhardt, and Günther <span class="citation" data-cites="teng2016">(<a href="#ref-teng2016" role="doc-biblioref">Teng et al. 2016</a>)</span> — have exact marginals by change of variables, but the transform in use has never been given the path-level laws that exotic pricing consumes: barrier and one-touch structures under stochastic correlation are handled by approximation <span class="citation" data-cites="higgins2014">(<a href="#ref-higgins2014" role="doc-biblioref">Higgins 2014</a>)</span>, and the first-passage problems of the underlying drivers are unsolved in closed form outside the Brownian case <span class="citation" data-cites="ricciardi1988 alili2005">(<a href="#ref-ricciardi1988" role="doc-biblioref">Ricciardi and Sato 1988</a>; <a href="#ref-alili2005" role="doc-biblioref">Alili et al. 2005</a>)</span>.</p>
+<p>This paper closes that gap for one particular transform — the one whose path-level laws <em>are</em> closed form. The correlation state is</p>
+<p><span class="math display">\[
+\rho_t=\sin\theta_t=\frac{X_t}{\sqrt{X_t^{2}+c^{2}}},\qquad
+\theta_t=\arctan(X_t/c),\qquad X_t=x_0+\mu t+\sigma W_t,
+\]</span></p>
+<p>the sine of the <em>one-phase Euler phase</em> of the companion paper <span class="citation" data-cites="onephaseeuler2026">(<a href="#ref-onephaseeuler2026" role="doc-biblioref">Complex–Itô Random-Walk Research Project 2026</a>)</span>, where <span class="math inline">\(\theta_t\)</span> was proved to be the unique lossless phase coordinate of an affine complex Brownian process. The map <span class="math inline">\(x\mapsto x/\sqrt{x^{2}+c^{2}}\)</span> is a smooth monotone conjugacy between the real line and <span class="math inline">\((-1,1)\)</span>; every path property of <span class="math inline">\(X\)</span> therefore transfers to <span class="math inline">\(\rho\)</span>, and the Brownian driver’s reflection principle becomes exact first-passage law for correlation barriers. No Jacobi, tanh-transformed-OU, or circular model has this, because their drivers’ first-passage problems admit no reflection principle.</p>
+<p>The contributions, each verified in the companion notebook <span class="citation" data-cites="onephaseeuler2026">(<a href="#ref-onephaseeuler2026" role="doc-biblioref">Complex–Itô Random-Walk Research Project 2026</a>, companion notebook therein)</span> and the reproducibility material of this paper, are:</p>
+<ol type="1">
+<li><strong>Exact kernels</strong> (<a href="#sec-coordinate" class="quarto-xref">Section&nbsp;2</a>, <a href="#sec-firstpassage" class="quarto-xref">Section&nbsp;3</a>): the finite-time transition density, the first-passage CDF and density, the perpetual hitting probability, and the two-sided band-exit law of <span class="math inline">\(\rho_t\)</span>, all in terms of the Gaussian CDF; plus invariance of the entire class under Girsanov measure changes with constant correlation risk premium.</li>
+<li><strong>Exact correlation derivatives</strong> (<a href="#sec-derivatives" class="quarto-xref">Section&nbsp;4</a>): digital, one-touch paid at expiry, one-touch paid at hit — the last a new closed form obtained by completing the square in the inverse-Gaussian density — and discretely monitored range accruals.</li>
+<li><strong>The variance-clock reduction</strong> (<a href="#sec-reduction" class="quarto-xref">Section&nbsp;5</a>): for two Bachelier assets correlated through <span class="math inline">\(\rho_t\)</span>, any linear combination is, conditionally on the correlation path, Brownian motion with a deterministic clock. Joint barrier pricing collapses from three drivers to one scalar functional, with a sign theorem: correlation risk misprices spread and basket barriers in <em>opposite</em> directions.</li>
+<li><strong>The full clock law</strong> (<a href="#sec-fk" class="quarto-xref">Section&nbsp;6</a>): the clock’s bounded support turns its Feynman–Kac characteristic function into a Fourier series, giving deterministic prices with two monitored discretization errors, statistically indistinguishable from exact simulation (<span class="math inline">\(|z|&lt;1\)</span> in all reported configurations).</li>
+<li><strong>Corridor occupation</strong> (<a href="#sec-corridor" class="quarto-xref">Section&nbsp;7</a>): the same resolvent with an indicator potential, after explicit separation of the never-exit atom, prices continuous corridor digitals and calls; the driftless half-line case reproduces Lévy’s arcsine law to <span class="math inline">\(5\times10^{-4}\)</span>.</li>
+<li><strong>The OU driver and the classification</strong> (<a href="#sec-ou" class="quarto-xref">Section&nbsp;8</a>): an Ornstein–Uhlenbeck driver makes the correlation state mean-reverting with exact stationary density; we classify precisely what is kept (static laws, clock reduction, resolvent machinery) and what is surrendered (reflection-principle hitting laws), and verify the <span class="math inline">\(\kappa\to0^{+}\)</span> degeneration into the Brownian results.</li>
+</ol>
+<p><a href="#sec-related" class="quarto-xref">Section&nbsp;9</a> states the novelty boundary: we do not claim the transform itself (bounded functions of Gaussian factors are established <span class="citation" data-cites="vanemmerich2006 teng2016">(<a href="#ref-vanemmerich2006" role="doc-biblioref">Emmerich 2006</a>; <a href="#ref-teng2016" role="doc-biblioref">Teng et al. 2016</a>)</span>), nor a new correlation model in the empirical sense; the claim is the exact path-level and pricing content of this coordinate, which the audited literature does not contain, and the classification theorem of <a href="#sec-ou" class="quarto-xref">Section&nbsp;8</a>. The economic costs — non-stationarity under the Brownian driver, polynomial approach to the boundaries <span class="math inline">\(\pm1\)</span> (slower than the tanh model’s exponential, the very objection raised in <span class="citation" data-cites="teng2016">(<a href="#ref-teng2016" role="doc-biblioref">Teng et al. 2016</a>)</span> against arctan-family maps), and the exclusion of leverage — are stated where they apply, not hidden.</p>
+<section id="setup-and-conventions" class="level2">
+<h2 class="anchored" data-anchor-id="setup-and-conventions">Setup and conventions</h2>
+<p>Throughout, <span class="math inline">\(W\)</span> is standard Brownian motion on a filtered probability space, <span class="math inline">\(\Phi\)</span> is the standard normal CDF, <span class="math inline">\(c&gt;0\)</span> is the chart scale, and</p>
+<p><span class="math display">\[
+f(x)=\frac{x}{\sqrt{x^{2}+c^{2}}},\qquad
+f^{-1}(\rho)=\frac{c\,\rho}{\sqrt{1-\rho^{2}}},\qquad
+\frac{d f^{-1}}{d\rho}=\frac{c}{(1-\rho^{2})^{3/2}} .
+\]</span></p>
+<p>Quadratic variation is written <span class="math inline">\(d[W]_t=dt\)</span>; no finite-increment identity is implied. Prices are at time <span class="math inline">\(0\)</span> with constant rate <span class="math inline">\(r\ge0\)</span> under a chosen pricing measure; <a href="#sec-firstpassage" class="quarto-xref">Section&nbsp;3</a> shows the exact class is invariant under the measure changes pricing requires.</p>
+</section>
+</section>
+<section id="sec-coordinate" class="level1">
+<h1>The bounded correlation coordinate</h1>
+<div id="def-coordinate" class="theorem definition">
+<p><span class="theorem-title"><strong>Definition 1 (Bounded correlation coordinate)</strong></span> Let <span class="math inline">\(X_t=x_0+\mu t+\sigma W_t\)</span> with <span class="math inline">\(\sigma&gt;0\)</span>, <span class="math inline">\(c&gt;0\)</span>. The <em>bounded correlation coordinate</em> is <span class="math inline">\(\rho_t=f(X_t)\)</span>, and <span class="math inline">\(\theta_t=\arctan(X_t/c)\)</span> is its <em>phase</em>, so <span class="math inline">\(\rho_t=\sin\theta_t\in(-1,1)\)</span>.</p>
+</div>
+<p>The coordinate is not an ad hoc choice: in the companion paper’s classification <span class="citation" data-cites="onephaseeuler2026">(<a href="#ref-onephaseeuler2026" role="doc-biblioref">Complex–Itô Random-Walk Research Project 2026</a>)</span>, <span class="math inline">\(\theta_t\)</span> is the <em>unique</em> time-independent lossless phase of an affine complex Brownian process <span class="math inline">\(1+iX_t/c=\sec\theta_t\,e^{i\theta_t}\)</span>, and <span class="math inline">\(r(\theta)=\sec\theta\)</span> is the polar equation of its supporting line. What the present paper adds is the financial reading of <span class="math inline">\(\sin\theta\)</span> as a correlation state and the pricing content that reading enables.</p>
+<div id="prp-sde" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 1 (The autonomous correlation SDE)</strong></span> <span class="math display">\[
+d\rho_t=
+\Big[\frac{\mu}{c}(1-\rho_t^{2})^{3/2}
+-\frac{3\sigma^{2}}{2c^{2}}\rho_t(1-\rho_t^{2})^{2}\Big]dt
++\frac{\sigma}{c}(1-\rho_t^{2})^{3/2}\,dW_t .
+\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Itô’s formula with <span class="math inline">\(f'(x)=c^{2}(x^{2}+c^{2})^{-3/2}\)</span>, <span class="math inline">\(f''(x)=-3c^{2}x(x^{2}+c^{2})^{-5/2}\)</span>, and <span class="math inline">\(x^{2}+c^{2}=c^{2}/(1-\rho^{2})\)</span>. ∎</p>
+</div>
+<p>The diffusion coefficient vanishes like <span class="math inline">\((1-\rho^{2})^{3/2}\)</span> at the boundaries — faster than the Jacobi <span class="math inline">\(\sqrt{1-\rho^{2}}\)</span> — so <span class="math inline">\(\pm1\)</span> are unattainable in finite time (they correspond to <span class="math inline">\(|X_t|=\infty\)</span>), and the coordinate respects correlation’s natural state space without parameter restrictions, unlike the Jacobi family whose Feller condition constrains parameters <span class="citation" data-cites="vanemmerich2006 teng2016">(<a href="#ref-vanemmerich2006" role="doc-biblioref">Emmerich 2006</a>; <a href="#ref-teng2016" role="doc-biblioref">Teng et al. 2016</a>)</span>. The cost: approach to the boundaries is polynomial, so the model places more mass near strong correlation regimes than exponential-transform models; see <a href="#sec-related" class="quarto-xref">Section&nbsp;9</a>.</p>
+<div id="thm-density" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 1 (Exact transition density)</strong></span> For <span class="math inline">\(t&gt;0\)</span> and <span class="math inline">\(\rho\in(-1,1)\)</span>, <span class="math display">\[
+p_t(\rho\mid\rho_0)
+=
+\frac{c}{(1-\rho^{2})^{3/2}}\,
+\frac{1}{\sigma\sqrt{2\pi t}}
+\exp\!\Big[-\frac{\big(f^{-1}(\rho)-f^{-1}(\rho_0)-\mu t\big)^{2}}
+{2\sigma^{2}t}\Big].
+\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Monotone change of variables of the Gaussian law of <span class="math inline">\(X_t\)</span>. ∎</p>
+</div>
+<p>This is an exact <em>finite-time</em> law in a single closed form. For contrast, the closed-form density of the tanh-transformed modified-OU model <span class="citation" data-cites="teng2016">(<a href="#ref-teng2016" role="doc-biblioref">Teng et al. 2016</a>)</span> is its <em>stationary</em> density; its finite-time transition density is not closed form because its driver has none, and the Jacobi transition density requires spectral expansions <span class="citation" data-cites="ackerer2018">(<a href="#ref-ackerer2018" role="doc-biblioref">Ackerer et al. 2018</a>)</span>. <a href="#fig-kernels" class="quarto-xref">Figure&nbsp;1</a> (left) verifies <a href="#thm-density" class="quarto-xref">Theorem&nbsp;1</a> against exact-skeleton simulation.</p>
+</section>
+<section id="sec-firstpassage" class="level1">
+<h1>First-passage laws under the Brownian driver</h1>
+<p>Write <span class="math inline">\(x(\rho)=f^{-1}(\rho)\)</span> and, for an upper level <span class="math inline">\(\rho^{*}&gt;\rho_0\)</span>, <span class="math inline">\(b=x(\rho^{*})-x(\rho_0)&gt;0\)</span> for the <em>conjugate barrier distance</em>.</p>
+<div id="thm-firstpassage" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 2 (Exact correlation first-passage law)</strong></span> Let <span class="math inline">\(\tau_\rho=\inf\{t\ge0:\rho_t\ge\rho^{*}\}\)</span>. Then <span class="math inline">\(\tau_\rho=\inf\{t\ge0:X_t\ge x(\rho^{*})\}\)</span> almost surely, and:</p>
+<p><strong>(a)</strong> for <span class="math inline">\(T&gt;0\)</span>, <span class="math display">\[
+\mathbb P(\tau_\rho\le T)
+=
+\Phi\!\Big(\frac{\mu T-b}{\sigma\sqrt T}\Big)
++
+e^{2\mu b/\sigma^{2}}\,
+\Phi\!\Big(-\frac{\mu T+b}{\sigma\sqrt T}\Big);
+\]</span></p>
+<p><strong>(b)</strong> the (possibly defective) hitting-time density is inverse Gaussian, <span class="math display">\[
+g_\tau(t)=\frac{b}{\sigma\sqrt{2\pi t^{3}}}
+\exp\!\Big[-\frac{(b-\mu t)^{2}}{2\sigma^{2}t}\Big],
+\qquad
+\int_0^{\infty}g_\tau=\min\!\big(1,e^{2\mu b/\sigma^{2}}\big);
+\]</span></p>
+<p><strong>(c)</strong> the perpetual hitting probability is <span class="math inline">\(\mathbb P(\tau_\rho&lt;\infty)=1\)</span> for <span class="math inline">\(\mu\ge0\)</span> and <span class="math inline">\(e^{2\mu b/\sigma^{2}}\)</span> for <span class="math inline">\(\mu&lt;0\)</span>; <strong>(d)</strong> conditional moments for <span class="math inline">\(\mu&gt;0\)</span> are <span class="math inline">\(\mathbb E[\tau\mid\tau&lt;\infty]=b/\mu\)</span> and <span class="math inline">\(\operatorname{Var}(\tau\mid\tau&lt;\infty)=b\sigma^{2}/\mu^{3}\)</span>.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span><span class="math inline">\(f\)</span> is strictly increasing, so the events coincide; (a)–(d) are the reflection-principle facts of drifted Brownian motion <span class="citation" data-cites="borodinsalminen2002">(<a href="#ref-borodinsalminen2002" role="doc-biblioref">Borodin and Salminen 2002, sec. 1.1</a>)</span>. ∎</p>
+</div>
+<p>The two-sided analogue follows from the scale function <span class="math inline">\(s(x)=e^{-2\mu x/\sigma^{2}}\)</span> (<span class="math inline">\(s(x)=x\)</span> for <span class="math inline">\(\mu=0\)</span>): for <span class="math inline">\(\rho_\ell&lt;\rho_0&lt;\rho_h\)</span>, <span class="math inline">\(\mathbb P(\text{exit at }\rho_h)=
+\big(s(x_0)-s(x(\rho_\ell))\big)/\big(s(x(\rho_h))-s(x(\rho_\ell))\big)\)</span>. <a href="#fig-kernels" class="quarto-xref">Figure&nbsp;1</a> (right) verifies (a) against bridge-corrected simulation.</p>
+<div id="fig-kernels" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-kernels-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/correlation_kernels.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: Exact kernels of the bounded correlation coordinate: transition density (left) and first-passage CDF (right), closed forms against exact-skeleton Monte Carlo. Seed 20260727."><img src="figures/correlation_kernels.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-kernels-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Exact kernels of the bounded correlation coordinate: transition density (left) and first-passage CDF (right), closed forms against exact-skeleton Monte Carlo. Seed 20260727.
+</figcaption>
+</figure>
+</div>
+<div id="prp-measurechange" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 2 (Measure-change invariance)</strong></span> Under any equivalent martingale measure with constant market price of correlation risk <span class="math inline">\(\lambda\)</span>, every law of this section and every price of <a href="#sec-derivatives" class="quarto-xref">Section&nbsp;4</a> holds verbatim with <span class="math inline">\(\mu\)</span> replaced by <span class="math inline">\(\mu^{\mathbb Q}=\mu+\sigma\lambda\)</span>.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Girsanov with constant <span class="math inline">\(\lambda\)</span> maps drifted Brownian motion to drifted Brownian motion <span class="citation" data-cites="girsanov1960">(<a href="#ref-girsanov1960" role="doc-biblioref">Girsanov 1960</a>)</span>; the reflection principle and the conjugate map see only the drift. ∎</p>
+</div>
+<p>Since correlation is not a traded asset, the pricing measure is a choice parameterized by <span class="math inline">\(\lambda\)</span>; <a href="#prp-measurechange" class="quarto-xref">Proposition&nbsp;2</a> says the exact-kernel class is <em>closed</em> under that choice. The correlation risk premium <span class="citation" data-cites="driessen2009">(<a href="#ref-driessen2009" role="doc-biblioref">Driessen et al. 2009</a>)</span> enters as one scalar drift parameter, and price sensitivities to it are closed-form comparative statics (no re-simulation).</p>
+</section>
+<section id="sec-derivatives" class="level1">
+<h1>Correlation derivatives</h1>
+<p>All four products below are priced in terms of <span class="math inline">\(\Phi\)</span> — no series, no transform inversion, no simulation. To our knowledge after the audit of <a href="#sec-related" class="quarto-xref">Section&nbsp;9</a>, these are the first closed-form prices for correlation-barrier and correlation-range payoffs: the tractable competitors cover European-type payoffs only, and barrier/touch structures under stochastic correlation have approximations <span class="citation" data-cites="higgins2014">(<a href="#ref-higgins2014" role="doc-biblioref">Higgins 2014</a>)</span>.</p>
+<div id="prp-digital" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 3 (Digital)</strong></span> <span class="math inline">\(V_{\mathrm{dig}}=e^{-rT}\Phi\!\big((\mu T-b)/(\sigma\sqrt T)\big)\)</span>, paying <span class="math inline">\(\mathbf 1_{\{\rho_T\ge\rho^{*}\}}\)</span> (any <span class="math inline">\(\rho^{*}\in(-1,1)\)</span>).</p>
+</div>
+<div id="prp-touch" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 4 (One-touch paid at expiry)</strong></span> <span class="math inline">\(V_{\mathrm{touch}}^{T}=e^{-rT}\,\mathbb P(\tau_\rho\le T)\)</span> with <a href="#thm-firstpassage" class="quarto-xref">Theorem&nbsp;2</a> (a), paying <span class="math inline">\(\mathbf 1_{\{\tau_\rho\le T\}}\)</span> at <span class="math inline">\(T\)</span>.</p>
+</div>
+<div id="thm-touchhit" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 3 (One-touch paid at hit — a new closed form)</strong></span> With <span class="math inline">\(\gamma=\sqrt{\mu^{2}+2r\sigma^{2}}\)</span>, <span class="math display">\[
+V_{\mathrm{touch}}^{\mathrm{hit}}
+=
+e^{-b(\gamma-\mu)/\sigma^{2}}
+\Big[
+\Phi\!\Big(\frac{\gamma T-b}{\sigma\sqrt T}\Big)
++
+e^{2\gamma b/\sigma^{2}}
+\Phi\!\Big(-\frac{\gamma T+b}{\sigma\sqrt T}\Big)
+\Big],
+\]</span> paying <span class="math inline">\(1\)</span> at <span class="math inline">\(\tau_\rho\)</span> if <span class="math inline">\(\tau_\rho\le T\)</span>.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Completing the square, <span class="math inline">\((b-\mu t)^{2}/(2\sigma^{2}t)+rt=(b-\gamma t)^{2}/(2\sigma^{2}t)
++b(\gamma-\mu)/\sigma^{2}\)</span>, so <span class="math inline">\(e^{-rt}g_\tau^{(\mu)}(t)=e^{-b(\gamma-\mu)/\sigma^{2}}g_\tau^{(\gamma)}(t)\)</span> and the right side integrates as <a href="#thm-firstpassage" class="quarto-xref">Theorem&nbsp;2</a> (a) with drift <span class="math inline">\(\gamma\)</span>. ∎</p>
+</div>
+<p>Consistency limits, enforced as unit tests: <span class="math inline">\(r\to0^{+}\)</span> recovers <a href="#prp-touch" class="quarto-xref">Proposition&nbsp;4</a> undiscounted (both drift signs); <span class="math inline">\(T\to\infty\)</span> recovers the classical Laplace transform <span class="math inline">\(e^{-b(\gamma-\mu)/\sigma^{2}}\)</span>; and <span class="math inline">\(V_{\mathrm{touch}}^{\mathrm{hit}}\ge V_{\mathrm{touch}}^{T}\ge
+V_{\mathrm{dig}}\)</span>.</p>
+<div id="prp-accrual" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 5 (Discretely monitored range accrual)</strong></span> For monitoring dates <span class="math inline">\(0&lt;t_1&lt;\dots&lt;t_n=T\)</span> and band <span class="math inline">\((\rho_\ell,\rho_h)\)</span>, <span class="math display">\[
+V_{\mathrm{range}}
+=
+\sum_{i=1}^{n}e^{-rt_i}
+\Big[
+\Phi\!\Big(\frac{x(\rho_h)-x_0-\mu t_i}{\sigma\sqrt{t_i}}\Big)
+-
+\Phi\!\Big(\frac{x(\rho_\ell)-x_0-\mu t_i}{\sigma\sqrt{t_i}}\Big)
+\Big],
+\]</span> paying <span class="math inline">\(\sum_i\mathbf 1_{\{\rho_\ell\le\rho_{t_i}\le\rho_h\}}\)</span>. Either level may be <span class="math inline">\(\mp1\)</span>, recovering one-sided digitals.</p>
+</div>
+<p>Daily monitoring is how range accruals are written, so <a href="#prp-accrual" class="quarto-xref">Proposition&nbsp;5</a> is the practical product; the <em>continuous</em> corridor is the harder object and is solved in <a href="#sec-corridor" class="quarto-xref">Section&nbsp;7</a>.</p>
+<p>The paper notebook reports all prices against bridge-corrected Monte Carlo (within <span class="math inline">\(2\)</span> standard errors), and plots the one-touch price against the correlation risk premium <span class="math inline">\(\lambda\)</span> of <a href="#prp-measurechange" class="quarto-xref">Proposition&nbsp;2</a> — a closed-form comparative static that the approximation literature cannot produce.</p>
+</section>
+<section id="sec-reduction" class="level1">
+<h1>Joint two-asset barriers: the variance-clock reduction</h1>
+<section id="model" class="level2">
+<h2 class="anchored" data-anchor-id="model">Model</h2>
+<p>Two traded forward prices (martingales under the forward measure, so no drifts appear), correlated through the bounded coordinate:</p>
+<p><span class="math display">\[
+dF_1=\sigma_1\,dW_1,\qquad
+dF_2=\sigma_2\big(\rho_t\,dW_1+\sqrt{1-\rho_t^{2}}\,dW_2\big),
+\]</span></p>
+<p>with <span class="math inline">\(\rho_t=f(X_t)\)</span> as before. <strong>Structural assumption:</strong> the correlation driver <span class="math inline">\(W\)</span> is independent of the asset drivers <span class="math inline">\((W_1,W_2)\)</span> — the van Emmerich/Teng construction <span class="citation" data-cites="vanemmerich2006 teng2016">(<a href="#ref-vanemmerich2006" role="doc-biblioref">Emmerich 2006</a>; <a href="#ref-teng2016" role="doc-biblioref">Teng et al. 2016</a>)</span>. The cost is the exclusion of leverage (correlation does not respond to asset moves); see <a href="#sec-related" class="quarto-xref">Section&nbsp;9</a>.</p>
+<div id="lem-gaussian" class="theorem lemma">
+<p><span class="theorem-title"><strong>Lemma 1 (Conditional Gaussianity)</strong></span> Conditional on the correlation path <span class="math inline">\(\rho_{[0,T]}\)</span>, the pair <span class="math inline">\((F_1,F_2)\)</span> is Gaussian with deterministic covariance determined by <span class="math inline">\(\rho_{[0,T]}\)</span>.</p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Itô integrals with (conditionally) deterministic integrands are Gaussian; independence of <span class="math inline">\(W\)</span> makes conditioning free. ∎</p>
+</div>
+<div id="thm-clock" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 4 (Deterministic variance clock)</strong></span> Let <span class="math inline">\(Z=\alpha_1F_1+\alpha_2F_2\)</span> (spread <span class="math inline">\(\alpha=(1,-1)\)</span>, basket <span class="math inline">\(\alpha=(1,1)\)</span>), <span class="math inline">\(z_0=\alpha_1F_{1,0}+\alpha_2F_{2,0}\)</span>. Conditionally on <span class="math inline">\(\rho_{[0,T]}\)</span>, <span class="math display">\[
+Z_t\ \stackrel{\mathrm{law}}{=}\ z_0+B_{v(t)},\qquad
+v(t)=\int_0^{t}q(\rho_s)\,ds,
+\]</span> <span class="math display">\[
+q(\rho)=\alpha_1^{2}\sigma_1^{2}+\alpha_2^{2}\sigma_2^{2}
++2\alpha_1\alpha_2\sigma_1\sigma_2\,\rho .
+\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span><span class="math inline">\(Z\)</span> is a continuous local martingale with quadratic variation <span class="math inline">\(\int q(\rho_s)\,ds\)</span>, deterministic under conditioning; the Dambis–Dubins–Schwarz theorem <span class="citation" data-cites="karatzasshreve1991">(<a href="#ref-karatzasshreve1991" role="doc-biblioref">Karatzas and Shreve 1991</a>, Thm. 3.4.6)</span> applies. ∎</p>
+</div>
+<div id="cor-scalar" class="theorem corollary">
+<p><span class="theorem-title"><strong>Corollary 1 (Scalar reduction of joint barrier laws)</strong></span> For an upper barrier <span class="math inline">\(d&gt;z_0\)</span>, <span class="math display">\[
+\mathbb P\!\Big(\sup_{t\le T}Z_t\ge d\ \Big|\ \rho_{[0,T]}\Big)
+=
+2\Big(1-\Phi\Big(\frac{d-z_0}{\sqrt{v(T;\rho)}}\Big)\Big),
+\]</span> and analogously for lower barriers and the joint law of <span class="math inline">\((\sup Z,Z_T)\)</span>. Every claim measurable in the running extrema of <span class="math inline">\(Z\)</span> prices as <span class="math inline">\(e^{-rT}\mathbb E_\rho[g(v(T;\rho))]\)</span> with <span class="math inline">\(g\)</span> closed form.</p>
+</div>
+<p>The three-driver pricing problem collapses to the law of one scalar functional. The notebook verifies the theorem itself, not just its consequences: a full three-driver simulation with bridge correction matches the scalar reduction (z-scores <span class="math inline">\(-1.16\)</span>, <span class="math inline">\(+1.19\)</span> at two step sizes), with the reduction’s standard error six times smaller — an effective-dimension reduction, not a relabeling.</p>
+<div id="cor-sign" class="theorem corollary">
+<p><span class="theorem-title"><strong>Corollary 2 (Sign theorem: spread vs.&nbsp;basket)</strong></span> The <span class="math inline">\(q\)</span>-coefficient of <span class="math inline">\(\rho\)</span> is <span class="math inline">\(2\alpha_1\alpha_2\sigma_1\sigma_2\)</span>: negative for the spread, positive for the basket. Correlation risk therefore moves spread-barrier and basket-barrier prices in opposite directions, and constant-correlation pricing misprices the two in opposite senses.</p>
+</div>
+<p><a href="#fig-mispricing" class="quarto-xref">Figure&nbsp;2</a> exhibits <a href="#cor-sign" class="quarto-xref">Corollary&nbsp;2</a>: the gap between stochastic- and constant-correlation one-touch prices has opposite signs for spread and basket across the correlation-volatility range. Since <span class="math inline">\(v\mapsto 2(1-\Phi(d/\sqrt v))\)</span> changes convexity in <span class="math inline">\(v\)</span>, the <em>sign</em> of the Jensen gap is parameter-dependent and is exhibited numerically rather than asserted as a theorem.</p>
+<div id="fig-mispricing" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mispricing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/spread_basket_mispricing.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: Correlation-convexity mispricing: stochastic-correlation one-touch price minus the constant-correlation benchmark, for spread and basket barriers. Opposite signs, as Corollary&nbsp;2 requires. Seed 20260727."><img src="figures/spread_basket_mispricing.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mispricing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Correlation-convexity mispricing: stochastic-correlation one-touch price minus the constant-correlation benchmark, for spread and basket barriers. Opposite signs, as <a href="#cor-sign" class="quarto-xref">Corollary&nbsp;2</a> requires. Seed 20260727.
+</figcaption>
+</figure>
+</div>
+<p>Working with forward prices is what makes <a href="#thm-clock" class="quarto-xref">Theorem&nbsp;4</a> exact: with nonzero drifts the running supremum depends on the whole variance path, not only on <span class="math inline">\(v(T)\)</span>.</p>
+</section>
+</section>
+<section id="sec-fk" class="level1">
+<h1>The full clock law by Feynman–Kac</h1>
+<p><a href="#cor-scalar" class="quarto-xref">Corollary&nbsp;1</a> prices everything through the law of <span class="math inline">\(v(T;\rho)=\beta T+\alpha A_T\)</span> with <span class="math inline">\(\beta=\alpha_1^{2}\sigma_1^{2}+\alpha_2^{2}\sigma_2^{2}\)</span>, <span class="math inline">\(\alpha=2\alpha_1\alpha_2\sigma_1\sigma_2\)</span> and <span class="math inline">\(A_T=\int_0^T\rho_s\,ds\)</span>. The moments of <span class="math inline">\(A_T\)</span> are deterministic quadratures (Gauss–Hermite over the Gaussian factor, Gauss–Legendre over the time simplex — the naive square rule has a diagonal ridge; the triangle-aware rule converges to machine precision). For the full law:</p>
+<div id="thm-fk" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 5 (Bounded support Fourier density)</strong></span> Let <span class="math inline">\(u(t,x)=\mathbb E_x[e^{i\xi\int_0^t f(X_s)\,ds}]\)</span>. Then <span class="math display">\[
+\partial_t u=\tfrac{\sigma^{2}}{2}u_{xx}+\mu u_x+i\xi f(x)\,u,\qquad
+u(0,x)=1,
+\]</span> and <span class="math inline">\(\phi(\xi)=u(T,x_0)\)</span> is the characteristic function of <span class="math inline">\(A_T\)</span>. Since <span class="math inline">\(|f|&lt;1\)</span>, the support of <span class="math inline">\(A_T\)</span> is bounded in <span class="math inline">\((-T,T)\)</span>, and on <span class="math inline">\([-T,T]\)</span> the density is <span class="math display">\[
+p(a)=\frac{1}{2T}\sum_{k=-\infty}^{\infty}
+\phi\!\Big(\frac{k\pi}{T}\Big)e^{-ik\pi a/T}.
+\]</span></p>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Feynman–Kac <span class="citation" data-cites="kac1949">(<a href="#ref-kac1949" role="doc-biblioref">Kac 1949</a>)</span> applies since the potential is bounded; the Fourier representation is the standard series on a bounded interval. ∎</p>
+</div>
+<p>One PDE solve per Fourier mode (Krylov time integration on a truncated domain; the Dirichlet localization error is checked by doubling the margin, cf. <span class="citation" data-cites="contvoltchkova2005">(<a href="#ref-contvoltchkova2005" role="doc-biblioref">Cont and Voltchkova 2005</a>)</span>). The price is</p>
+<p><span class="math display">\[
+V_{\mathrm{FK}}
+=
+e^{-rT}\int_{-T}^{T}g\big(\beta T+\alpha a\big)\,p_K(a)\,da ,
+\]</span></p>
+<p>with two monitored discretization errors (<span class="math inline">\(K\)</span>, grid). In all reported configurations the deterministic price is statistically indistinguishable from the exact-simulation benchmark (<span class="math inline">\(|z|&lt;1\)</span>); a Gamma moment match on the quadrature moments remains as a fast screening tool whose error against the resolvent price is measured per parameter set (<span class="math inline">\(-5\times10^{-5}\)</span> to <span class="math inline">\(-2\times10^{-3}\)</span> across the correlation-volatility range).</p>
+</section>
+<section id="sec-corridor" class="level1">
+<h1>Corridor occupation</h1>
+<p>The continuous corridor pays on the occupation time <span class="math inline">\(\mathcal O_T=\int_0^T\mathbf 1_{\{x_\ell\le X_t\le x_h\}}\,dt\)</span> — exactly the occupation of the correlation band <span class="math inline">\(\{\rho_\ell\le\rho_t\le\rho_h\}\)</span>. The plain corridor bond is linear in <span class="math inline">\(\mathcal O_T\)</span> and prices by quadrature of Gaussian probabilities (an anchor, not a contribution); anything nonlinear — a corridor digital <span class="math inline">\(\mathbf 1_{\{\mathcal O_T\ge\kappa T\}}\)</span> or call <span class="math inline">\((\mathcal O_T/T-\kappa)^{+}\)</span> — needs the law.</p>
+<p>The resolvent of <a href="#thm-fk" class="quarto-xref">Theorem&nbsp;5</a> applies with potential <span class="math inline">\(i\xi\mathbf 1_{[x_\ell,x_h]}\)</span>. Two structural facts drive the computation:</p>
+<div id="prp-atom" class="theorem proposition">
+<p><span class="theorem-title"><strong>Proposition 6 (The never-exit atom)</strong></span> A bounded corridor always has an atom at <span class="math inline">\(\mathcal O_T=T\)</span> (never exit), computable deterministically by the absorbing-boundary PDE on the corridor; an unbounded corridor with drift has one in closed form from <a href="#thm-firstpassage" class="quarto-xref">Theorem&nbsp;2</a> (c). At the Fourier nodes <span class="math inline">\(\xi_k=2\pi k/T\)</span> the atom contributes its mass as a constant (<span class="math inline">\(e^{i\xi_kT}=1\)</span>), so it is subtracted from every mode and the Fourier series represents only the continuous part.</p>
+</div>
+<div id="thm-arcsine" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 6 (Arcsine anchor)</strong></span> For <span class="math inline">\(\mu=0\)</span>, corridor <span class="math inline">\([0,\infty)\)</span>, <span class="math inline">\(x_0=0\)</span>, the occupation fraction follows Lévy’s arcsine law <span class="math inline">\(\mathbb P(\mathcal O_T\le sT)=\frac{2}{\pi}\arcsin\sqrt s\)</span> <span class="citation" data-cites="levy1939">(<a href="#ref-levy1939" role="doc-biblioref">Lévy 1939</a>)</span>. The resolvent pipeline reproduces it: tail probabilities to <span class="math inline">\(5\times10^{-4}\)</span> (<a href="#fig-arcsine" class="quarto-xref">Figure&nbsp;3</a>).</p>
+</div>
+<div id="fig-arcsine" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-arcsine-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/corridor_arcsine.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;3: Driftless half-line occupation: the FK resolvent density against Lévy’s exact arcsine density — a parameter-free, non-Gaussian benchmark. Seed 20260727."><img src="figures/corridor_arcsine.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-arcsine-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Driftless half-line occupation: the FK resolvent density against Lévy’s exact arcsine density — a parameter-free, non-Gaussian benchmark. Seed 20260727.
+</figcaption>
+</figure>
+</div>
+<p>The notebook prices corridor digitals and calls against exact-skeleton simulation; the residual gap (<span class="math inline">\(\sim7\times10^{-3}\)</span>) is fully explained by two identified opposite-sign biases (simulation overstates occupation through bridge misses; Fourier truncation biases slightly downward), and is recorded as such in the reproducibility material — not reported as statistical agreement.</p>
+</section>
+<section id="sec-ou" class="level1">
+<h1>The OU driver and the stationarity–tractability classification</h1>
+<p>Replace the driver by <span class="math inline">\(dX_t=\kappa(\bar x-X_t)\,dt+\sigma\,dW_t\)</span>, <span class="math inline">\(\kappa&gt;0\)</span>. The correlation coordinate inherits mean reversion and an exact stationary density (Gaussian stationary law pushed through <span class="math inline">\(f\)</span>), answering the standard objection to non-stationary correlation models <span class="citation" data-cites="teng2016">(<a href="#ref-teng2016" role="doc-biblioref">Teng et al. 2016</a>)</span>.</p>
+<div id="thm-classification" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 7 (Stationarity–tractability classification)</strong></span> For <span class="math inline">\(\rho_t=f(X_t)\)</span> with <span class="math inline">\(X\)</span> a scalar Gaussian factor:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>object</th>
+<th>BM driver</th>
+<th>OU driver</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>stationarity</td>
+<td>none</td>
+<td>exact stationary density</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>transition density</td>
+<td>closed form</td>
+<td>closed form</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>digital / discrete accrual</td>
+<td>closed form</td>
+<td>closed form</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>first-passage laws</td>
+<td>closed form (reflection)</td>
+<td>no closed form; FK resolvent</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>DDS variance clock</td>
+<td>exact</td>
+<td>exact (driver-agnostic)</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>clock moments / full law</td>
+<td>quadrature / FK</td>
+<td>quadrature / FK (OU generator)</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>measure change, constant <span class="math inline">\(\lambda\)</span></td>
+<td><span class="math inline">\(\mu\to\mu+\sigma\lambda\)</span></td>
+<td><span class="math inline">\(\bar x\to\bar x+\sigma\lambda/\kappa\)</span></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="proof">
+<p><span class="proof-title"><em>Proof</em>. </span>Static rows: OU transitions are Gaussian, and the conjugate map is deterministic. First-passage row: OU hitting laws admit only series representations <span class="citation" data-cites="ricciardi1988 alili2005">(<a href="#ref-ricciardi1988" role="doc-biblioref">Ricciardi and Sato 1988</a>; <a href="#ref-alili2005" role="doc-biblioref">Alili et al. 2005</a>)</span>; hitting probabilities are path properties and the monotone map cannot repair what the generator lacks. Clock rows: <a href="#thm-clock" class="quarto-xref">Theorem&nbsp;4</a> conditions on the realized path and never sees the generator. Measure-change row: Girsanov with constant <span class="math inline">\(\lambda\)</span> shifts the OU drift by a constant, equivalently the long-run mean. ∎</p>
+</div>
+<div id="cor-frontier" class="theorem corollary">
+<p><span class="theorem-title"><strong>Corollary 3 (The frontier)</strong></span> In this model class, reflection-principle hitting laws and stationarity are mutually exclusive: a Gaussian factor with a Gaussian stationary law is not Brownian, and only Brownian motion has reflection-principle hitting laws. Mean reversion is bought by surrendering closed-form barrier laws to the resolvent; everything static and everything clock-based survives.</p>
+</div>
+<p>The <span class="math inline">\(\kappa\to0^{+}\)</span> degeneration anchors the implementation: every OU formula reproduces its Brownian counterpart (density to <span class="math inline">\(2\times10^{-7}\)</span>, occupation moments to <span class="math inline">\(6\times10^{-8}\)</span>), and the OU spread one-touch price from the resolvent matches exact OU simulation (z <span class="math inline">\(=+0.92\)</span>).</p>
+</section>
+<section id="sec-related" class="level1">
+<h1>Novelty boundary and related work</h1>
+<p><strong>Established, not claimed.</strong> Bounded correlation as a transform of a Gaussian factor: van Emmerich <span class="citation" data-cites="vanemmerich2006">(<a href="#ref-vanemmerich2006" role="doc-biblioref">Emmerich 2006</a>)</span>; tanh of a modified OU with closed-form <em>stationary</em> density and quanto pricing by conditional Monte Carlo: Teng–Ehrhardt–Günther <span class="citation" data-cites="teng2016">(<a href="#ref-teng2016" role="doc-biblioref">Teng et al. 2016</a>)</span>; Jacobi correlation and Jacobi volatility with spectral methods <span class="citation" data-cites="ackerer2018">(<a href="#ref-ackerer2018" role="doc-biblioref">Ackerer et al. 2018</a>)</span>; circular correlation models with approximate likelihood <span class="citation" data-cites="majumdar2024">(<a href="#ref-majumdar2024" role="doc-biblioref">Majumdar 2024</a>)</span>; barrier/touch <em>approximations</em> under stochastic (spot–vol) correlation <span class="citation" data-cites="higgins2014">(<a href="#ref-higgins2014" role="doc-biblioref">Higgins 2014</a>)</span>; the arctangent map as a numerical compactification in finance <span class="citation" data-cites="duffiekan1996 inthoutsnoeijer2021">(<a href="#ref-duffiekan1996" role="doc-biblioref">Duffie and Kan 1996</a>; <a href="#ref-inthoutsnoeijer2021" role="doc-biblioref">Hout and Snoeijer 2021</a>)</span>; arctangent-transformed Brownian motion as an exact SDE example <span class="citation" data-cites="sarkkasolin2019">(<a href="#ref-sarkkasolin2019" role="doc-biblioref">Särkkä and Solin 2019</a>)</span>; Bachelier pricing context <span class="citation" data-cites="schachermayerteichmann2008 choi2022 cme2020">(<a href="#ref-schachermayerteichmann2008" role="doc-biblioref">Schachermayer and Teichmann 2008</a>; <a href="#ref-choi2022" role="doc-biblioref">Choi et al. 2022</a>; <a href="#ref-cme2020" role="doc-biblioref">CME Group 2020</a>)</span>; exact simulation beyond transform methods <span class="citation" data-cites="beskosroberts2005">(<a href="#ref-beskosroberts2005" role="doc-biblioref">Beskos and Roberts 2005</a>)</span>. The one-phase Euler chart itself is the companion paper <span class="citation" data-cites="onephaseeuler2026">(<a href="#ref-onephaseeuler2026" role="doc-biblioref">Complex–Itô Random-Walk Research Project 2026</a>)</span>.</p>
+<p><strong>What the audit found open, and what is claimed here.</strong> (i) Exact finite-time kernels and reflection-principle first-passage laws for a bounded correlation state (<a href="#thm-density" class="quarto-xref">Theorem&nbsp;1</a>, <a href="#thm-firstpassage" class="quarto-xref">Theorem&nbsp;2</a>) — the competitors have stationary-only densities, spectral densities, or approximate ones. (ii) Exact prices for correlation-barrier and correlation-range payoffs, including the pay-at-hit closed form of <a href="#thm-touchhit" class="quarto-xref">Theorem&nbsp;3</a> (<a href="#sec-derivatives" class="quarto-xref">Section&nbsp;4</a>, <a href="#sec-corridor" class="quarto-xref">Section&nbsp;7</a>) — previously approximation territory. (iii) The scalar variance-clock reduction with its sign theorem (<a href="#thm-clock" class="quarto-xref">Theorem&nbsp;4</a>, <a href="#cor-sign" class="quarto-xref">Corollary&nbsp;2</a>) and the deterministic full clock law (<a href="#thm-fk" class="quarto-xref">Theorem&nbsp;5</a>). (iv) The stationarity–tractability classification (<a href="#thm-classification" class="quarto-xref">Theorem&nbsp;7</a>). Teng et al. <span class="citation" data-cites="teng2016">(<a href="#ref-teng2016" role="doc-biblioref">Teng et al. 2016</a>)</span> considered and rejected an arctan-family correlation map for its slow polynomial approach to <span class="math inline">\(\pm1\)</span>; we accept that cost explicitly (it is the price of the reflection principle), and note the rejection concerned a different member of the family (<span class="math inline">\((2/\pi)\arctan\)</span> of the factor, not <span class="math inline">\(\sin\circ\arctan\)</span>), and was an estimation argument, not a pricing one.</p>
+<p><strong>Costs and exclusions, stated.</strong> Under the Brownian driver the coordinate is non-stationary (<span class="math inline">\(\rho_t\to\operatorname{sgn}\mu\)</span> a.s. for <span class="math inline">\(\mu\neq0\)</span>; recurrent extremes for <span class="math inline">\(\mu=0\)</span>); the OU driver of <a href="#sec-ou" class="quarto-xref">Section&nbsp;8</a> answers this at the cost of <a href="#cor-frontier" class="quarto-xref">Corollary&nbsp;3</a>. Boundary approach is polynomial. The reduction of <a href="#sec-reduction" class="quarto-xref">Section&nbsp;5</a> excludes leverage (<span class="math inline">\(W\perp(W_1,W_2)\)</span>). Correlation is not traded; prices are conditional on a chosen risk premium (<a href="#prp-measurechange" class="quarto-xref">Proposition&nbsp;2</a>). Estimation and calibration are deferred, though exact likelihoods are immediate from <a href="#thm-density" class="quarto-xref">Theorem&nbsp;1</a>.</p>
+</section>
+<section id="sec-conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>One bounded change of variables — the sine of the one-phase Euler phase — carries Brownian exactness through every level of the stochastic correlation problem: kernels, first passage, derivative prices, joint barrier laws, occupation laws, and, with the OU driver, a classified stationarity frontier. The framework’s value is not a new transform but the closed-form and deterministic content the transform inherits from the reflection principle and the Feynman–Kac resolvent — content the tractable literature prices only by approximation.</p>
+</section>
+<section id="sec-reproducibility" class="level1 unnumbered">
+<h1 class="unnumbered">Reproducibility</h1>
+<p>All numerical claims are produced by the companion notebook (<code>notebooks/phase6_correlation_paper.ipynb</code>, seed 20260727, runtime under one minute) from tested repository modules (<code>phase6_correlation.py</code>, <code>phase6_joint.py</code>, <code>phase6_fk.py</code>, <code>phase6_corridor.py</code>, <code>phase6_ou.py</code>; 77 unit tests). Key checks: transition density and first-passage CDF vs.&nbsp;exact-skeleton Monte Carlo (<a href="#fig-kernels" class="quarto-xref">Figure&nbsp;1</a>); derivative ordering <span class="math inline">\(V_{\mathrm{dig}}\le V_{\mathrm{touch}}^{T}\le
+V_{\mathrm{touch}}^{\mathrm{hit}}\)</span>; full three-driver vs.&nbsp;scalar reduction; FK price vs.&nbsp;benchmark (<span class="math inline">\(|z|&lt;1\)</span>); arcsine tail to <span class="math inline">\(5\times10^{-4}\)</span>; <span class="math inline">\(\kappa\to0^{+}\)</span> anchors; OU price vs.&nbsp;benchmark (<span class="math inline">\(z=-0.14\)</span>). Figures and machine-readable checks are in <code>figures/</code> and <code>tables/</code> (<code>verification_summary.csv</code>).</p>
+</section>
+<section id="references" class="level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-ackerer2018" class="csl-entry" role="listitem">
+Ackerer, Damien, Damir Filipović, and Sergio Pulido. 2018. <span>“The Jacobi Stochastic Volatility Model.”</span> <em>Finance and Stochastics</em> 22 (3): 667–700. <a href="https://doi.org/10.1007/s00780-018-0364-8">https://doi.org/10.1007/s00780-018-0364-8</a>.
+</div>
+<div id="ref-alili2005" class="csl-entry" role="listitem">
+Alili, Larbi, Pierre Patie, and Jesper L. Pedersen. 2005. <span>“Representations of the First Hitting Time Density of an <span>Ornstein–Uhlenbeck</span> Process.”</span> <em>Stochastic Models</em> 21 (4): 967–80. <a href="https://doi.org/10.1080/15326340500294702">https://doi.org/10.1080/15326340500294702</a>.
+</div>
+<div id="ref-beskosroberts2005" class="csl-entry" role="listitem">
+Beskos, Alexandros, and Gareth O. Roberts. 2005. <span>“Exact Simulation of Diffusions.”</span> <em>The Annals of Applied Probability</em> 15 (4): 2422–44. <a href="https://doi.org/10.1214/105051605000000485">https://doi.org/10.1214/105051605000000485</a>.
+</div>
+<div id="ref-borodinsalminen2002" class="csl-entry" role="listitem">
+Borodin, Andrei N., and Paavo Salminen. 2002. <em>Handbook of <span>Brownian</span> Motion — Facts and Formulae</em>. 2nd ed. Birkh<span>ä</span>user. <a href="https://doi.org/10.1007/978-3-0348-8163-0">https://doi.org/10.1007/978-3-0348-8163-0</a>.
+</div>
+<div id="ref-choi2022" class="csl-entry" role="listitem">
+Choi, Jaehyuk, Minsuk Kwak, Chyng Wen Tee, and Yumeng Wang. 2022. <span>“A <span>Black–Scholes</span> User’s Guide to the <span>Bachelier</span> Model.”</span> <em>Journal of Futures Markets</em> 42 (5): 959–80. <a href="https://doi.org/10.1002/fut.22315">https://doi.org/10.1002/fut.22315</a>.
+</div>
+<div id="ref-cme2020" class="csl-entry" role="listitem">
+CME Group. 2020. <span>“Clearing Advisory: <span>WTI</span> Crude Oil Options to Be Revalued Using Bachelier Model.”</span> <a href="https://www.cmegroup.com/notices/clearing/2020/20090.html">https://www.cmegroup.com/notices/clearing/2020/20090.html</a>.
+</div>
+<div id="ref-onephaseeuler2026" class="csl-entry" role="listitem">
+Complex–Itô Random-Walk Research Project. 2026. <em>One-Phase <span>Euler</span> Coordinates for Affine <span>Brownian</span> Factors: Exact Classification, Pricing Conjugacy, and Numerical Consequences</em>.
+</div>
+<div id="ref-contvoltchkova2005" class="csl-entry" role="listitem">
+Cont, Rama, and Ekaterina Voltchkova. 2005. <span>“A Finite Difference Scheme for Option Pricing in Jump Diffusion and Exponential l<span>é</span>vy Models.”</span> <em>SIAM Journal on Numerical Analysis</em> 43 (4): 1596–626. <a href="https://doi.org/10.1137/040613337">https://doi.org/10.1137/040613337</a>.
+</div>
+<div id="ref-driessen2009" class="csl-entry" role="listitem">
+Driessen, Joost, Pascal J. Maenhout, and Grigory Vilkov. 2009. <span>“The Price of Correlation Risk: Evidence from Equity Options.”</span> <em>The Journal of Finance</em> 64 (3): 1377–406. <a href="https://doi.org/10.1111/j.1540-6261.2009.01467.x">https://doi.org/10.1111/j.1540-6261.2009.01467.x</a>.
+</div>
+<div id="ref-duffiekan1996" class="csl-entry" role="listitem">
+Duffie, Darrell, and Rui Kan. 1996. <span>“A Yield-Factor Model of Interest Rates.”</span> <em>Mathematical Finance</em> 6 (4): 379–406. <a href="https://doi.org/10.1111/j.1467-9965.1996.tb00123.x">https://doi.org/10.1111/j.1467-9965.1996.tb00123.x</a>.
+</div>
+<div id="ref-vanemmerich2006" class="csl-entry" role="listitem">
+Emmerich, Christian van. 2006. <em>Modelling Correlation as a Stochastic Process</em>.
+</div>
+<div id="ref-girsanov1960" class="csl-entry" role="listitem">
+Girsanov, Igor V. 1960. <span>“On Transforming a Certain Class of Stochastic Processes by Absolutely Continuous Substitution of Measures.”</span> <em>Theory of Probability &amp; Its Applications</em> 5 (3): 285–301. <a href="https://doi.org/10.1137/1105027">https://doi.org/10.1137/1105027</a>.
+</div>
+<div id="ref-higgins2014" class="csl-entry" role="listitem">
+Higgins, Mark. 2014. <em>Stochastic Spot/Volatility Correlation in Stochastic Volatility Models and Barrier Option Pricing</em>.
+</div>
+<div id="ref-inthoutsnoeijer2021" class="csl-entry" role="listitem">
+Hout, Karel J. in ’t, and Jacob Snoeijer. 2021. <span>“Numerical Valuation of <span>American</span> Basket Options via Partial Differential Complementarity Problems.”</span> <em>Mathematics</em> 9 (13): 1498. <a href="https://doi.org/10.3390/math9131498">https://doi.org/10.3390/math9131498</a>.
+</div>
+<div id="ref-kac1949" class="csl-entry" role="listitem">
+Kac, Mark. 1949. <span>“On Distributions of Certain <span>Wiener</span> Functionals.”</span> <em>Transactions of the American Mathematical Society</em> 65 (1): 1–13. <a href="https://doi.org/10.2307/1990512">https://doi.org/10.2307/1990512</a>.
+</div>
+<div id="ref-karatzasshreve1991" class="csl-entry" role="listitem">
+Karatzas, Ioannis, and Steven E. Shreve. 1991. <em>Brownian Motion and Stochastic Calculus</em>. 2nd ed. Springer. <a href="https://doi.org/10.1007/978-1-4612-0949-2">https://doi.org/10.1007/978-1-4612-0949-2</a>.
+</div>
+<div id="ref-levy1939" class="csl-entry" role="listitem">
+Lévy, Paul. 1939. <span>“Sur Certains Processus Stochastiques Homog<span>è</span>nes.”</span> <em>Compositio Mathematica</em> 7: 283–339.
+</div>
+<div id="ref-majumdar2024" class="csl-entry" role="listitem">
+Majumdar, Sourav. 2024. <em>Diffusion on the Circle and a Stochastic Correlation Model</em>.
+</div>
+<div id="ref-ricciardi1988" class="csl-entry" role="listitem">
+Ricciardi, Luigi M., and Shunsuke Sato. 1988. <span>“First-Passage-Time Density and Moments of the <span>Ornstein–Uhlenbeck</span> Process.”</span> <em>Journal of Applied Probability</em> 25 (1): 43–57. <a href="https://doi.org/10.2307/3214232">https://doi.org/10.2307/3214232</a>.
+</div>
+<div id="ref-sarkkasolin2019" class="csl-entry" role="listitem">
+Särkkä, Simo, and Arno Solin. 2019. <em>Applied Stochastic Differential Equations</em>. Cambridge University Press. <a href="https://doi.org/10.1017/9781108186735">https://doi.org/10.1017/9781108186735</a>.
+</div>
+<div id="ref-schachermayerteichmann2008" class="csl-entry" role="listitem">
+Schachermayer, Walter, and Josef Teichmann. 2008. <span>“How Close Are the Option Pricing Formulas of <span>Bachelier</span> and <span>Black–Merton–Scholes</span>?”</span> <em>Mathematical Finance</em> 18 (1): 155–70. <a href="https://doi.org/10.1111/j.1467-9965.2007.00326.x">https://doi.org/10.1111/j.1467-9965.2007.00326.x</a>.
+</div>
+<div id="ref-teng2016" class="csl-entry" role="listitem">
+Teng, Long, Matthias Ehrhardt, and Michael Günther. 2016. <span>“Modelling Stochastic Correlation.”</span> <em>Journal of Mathematics in Industry</em> 6 (1): 1–18. <a href="https://doi.org/10.1186/s13362-016-0018-4">https://doi.org/10.1186/s13362-016-0018-4</a>.
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>

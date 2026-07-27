@@ -1,0 +1,56 @@
+project:
+  type: manuscript
+  output-dir: output
+  render:
+    - index.qmd
+
+manuscript:
+  article: index.qmd
+  notebooks:
+    - notebook: notebooks/phase6_correlation_paper.ipynb
+      title: Reproducible bounded-correlation research notebook
+
+bibliography: references.bib
+
+filters:
+  - filters/format-figures.lua
+
+execute:
+  freeze: auto
+
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    theme:
+      - cosmo
+      - styles/paper.scss
+    code-fold: true
+    link-external-newwindow: true
+  pdf:
+    pdf-engine: lualatex
+    documentclass: scrartcl
+    papersize: letter
+    fontsize: 10pt
+    geometry:
+      - margin=1in
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    colorlinks: true
+    keep-tex: true
+    fig-pos: tbp
+
+crossref:
+  fig-title: Figure
+  tbl-title: Table
+  eq-prefix: Eq.
+  sec-prefix: Section
+  thm-title: Theorem
+  lem-title: Lemma
+  cor-title: Corollary
+  prp-title: Proposition
+  def-title: Definition
+  exm-title: Example
+
+lang: en
