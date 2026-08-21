@@ -364,3 +364,26 @@ Z_t
 +i\int_0^t\frac{\sigma}{R_s}dB_s^\Theta
 \right].
 $$
+
+---
+
+## Phases 7–13 (completed 2026-08-21)
+
+Extension of the exact bounded-factor framework per
+`PHASE_7_13_PROGRAM_PLAN.md`. Full suite: **192/192 tests**; every notebook
+executed from a clean kernel with seed `20260821`.
+
+| Phase | Deliverable | Headline result |
+|---|---|---|
+| 7 | `phase7_term_structure.py` | Static inheritance + proportional-drift barrier class; **forward-FK discovery** (backward equation fails off constant coefficients — counterexample in-module); exact quantile term structure \(q_\alpha(t)\); bootstrap of \((c,\lambda^{\mathbb Q})\) |
+| 8 | `phase8_cos.py` | Exact 1-D characteristic function of spread/basket returns via real-potential resolvent \(L_A\); COS pricing vs MC ≤4 SE; **opposite-curvature implied-correlation smiles** |
+| 9 | `phase9_estimation.py` | **Scale observational equivalence theorem**; closed-form ratio MLE; empirical study on 4 S&P pairs (local store); attenuation ~4× at 60-day windows |
+| 10 | `phase10_matrix.py` | Phase-Gram: Gaussian-driven triangular angles → correlation-matrix processes with exact finite-time law, PSD by construction, GH pricing |
+| 11 | `phase11_levy.py` | VG/NIG drivers: marginals stay exact, clock survives via FK-PIDE; jump asymmetry flips clock drift sign |
+| 12 | `phase12_peg.py` | Pegged assets: defended bands + bounded-factor de-peg clock; closed-form de-peg digitals, pay-at-hit Laplace, shortfall swaps |
+| 13 | `PHASE_13_FLAGSHIP_MANUSCRIPT.md` | Consolidated manuscript: five headline claims, master verification table |
+
+Key documents: `PHASE_7_13_PROGRAM_PLAN.md` (approved plan),
+`PHASE_{7..13}_LITERATURE_REVIEW.md` (web-audited novelty boundaries),
+`PHASE_{7..13}_SIMULATION_RESULTS.md`, `PHASE_{7..13}_SYNTHESIS.md`,
+flagship `PHASE_13_FLAGSHIP_MANUSCRIPT.md`.
