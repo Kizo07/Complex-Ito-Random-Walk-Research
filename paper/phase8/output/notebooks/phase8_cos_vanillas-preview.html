@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="generator" content="quarto-1.10.18">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+    <title>Phase 8: vanilla spread/basket options under stochastic correlation — COS on the clock</title>
+    <style>
+      /* Default styles provided by pandoc.
+      ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+      */
+      span.smallcaps{font-variant: small-caps;}
+      div.columns{display: flex; gap: 1.5em;}
+      div.column{flex: auto;}
+      @media screen {
+      div.columns{gap: min(4vw, 1.5em);}
+      div.column{overflow-x: auto;}
+      }
+      div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+      ul.task-list{list-style: none;}
+      ul.task-list li input[type="checkbox"] {
+        width: 0.8em;
+        margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+        vertical-align: middle;
+      }
+      /* CSS for syntax highlighting */
+      html { -webkit-text-size-adjust: 100%; }
+      pre > code.sourceCode { white-space: pre; position: relative; }
+      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+      pre > code.sourceCode > span:empty { height: 1.2em; }
+      .sourceCode { overflow: visible; }
+      code.sourceCode > span { color: inherit; text-decoration: inherit; }
+      div.sourceCode { margin: 1em 0; }
+      pre.sourceCode { margin: 0; }
+      @media screen {
+      div.sourceCode { overflow: auto; }
+      }
+      @media print {
+      pre > code.sourceCode { white-space: pre-wrap; }
+      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+      }
+      pre.numberSource code
+        { counter-reset: source-line 0; }
+      pre.numberSource code > span
+        { position: relative; left: -4em; counter-increment: source-line; }
+      pre.numberSource code > span > a:first-child::before
+        { content: counter(source-line);
+          position: relative; left: -1em; text-align: right; vertical-align: baseline;
+          border: none; display: inline-block;
+          -webkit-touch-callout: none; -webkit-user-select: none;
+          -khtml-user-select: none; -moz-user-select: none;
+          -ms-user-select: none; user-select: none;
+          padding: 0 4px; width: 4em;
+        }
+      pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+      div.sourceCode
+        {   }
+      @media screen {
+      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+      }
+    </style>
+
+    <style>
+      body.hypothesis-enabled #quarto-embed-header {
+        padding-right: 36px;
+      }
+
+      #quarto-embed-header {
+        height: 3em;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: solid 1px;
+      }
+
+      #quarto-embed-header h6 {
+        font-size: 1.1em;
+        padding-top: 0.6em;
+        margin-left: 1em;
+        margin-right: 1em;
+        font-weight: 400;
+      }
+
+      #quarto-embed-header a.quarto-back-link,
+      #quarto-embed-header a.quarto-download-embed {
+        font-size: 0.8em;
+        margin-top: 1em;
+        margin-bottom: 1em;
+        margin-left: 1em;
+        margin-right: 1em;
+      }
+
+      .quarto-back-container {
+        padding-left: 0.5em;
+        display: flex;
+      }
+
+      .headroom {
+          will-change: transform;
+          transition: transform 200ms linear;
+      }
+
+      .headroom--pinned {
+          transform: translateY(0%);
+      }
+
+      .headroom--unpinned {
+          transform: translateY(-100%);
+      }      
+    </style>
+
+    <script>
+    window.document.addEventListener("DOMContentLoaded", function () {
+
+      var header = window.document.querySelector("#quarto-embed-header");
+      const titleBannerEl = window.document.querySelector("body > #title-block-header");
+      if (titleBannerEl) {
+        titleBannerEl.style.paddingTop = header.clientHeight + "px";
+      }
+      const contentEl = window.document.getElementById('quarto-content');
+      for (const child of contentEl.children) {
+        child.style.paddingTop = header.clientHeight + "px";
+        child.style.marginTop = "1em";
+      }
+
+      // Use the article root if the `back` call doesn't work. This isn't perfect
+      // but should typically work
+      window.quartoBackToArticle = () => {
+        var currentUrl = window.location.href;
+        window.history.back();
+        setTimeout(() => {
+            // if location was not changed in 100 ms, then there is no history back
+            if(currentUrl === window.location.href){              
+                // redirect to site root
+                window.location.href = "../index.html";
+            }
+        }, 100);
+      }
+
+      const headroom = new window.Headroom(header, {
+        tolerance: 5,
+        onPin: function () {
+        },
+        onUnpin: function () {
+        },
+      });
+      headroom.init();
+    });
+    </script>
+
+    
+<script src="../site_libs/manuscript-notebook/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-712a858a7335f8c7f74f41a4769ee845.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-d0b1ce03bd2b513547a63dc7d023d1ec.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+     
+      </head>
+
+  <body class="quarto-notebook quarto-light">
+    <div id="quarto-embed-header" class="headroom fixed-top bg-primary">
+      
+      <a onclick="window.quartoBackToArticle(); return false;" class="btn btn-primary quarto-back-link" href=""><i class="bi bi-caret-left"></i> Back to Article</a>
+      <h6><i class="bi bi-journal-code"></i> Reproducible COS-on-the-clock pricing notebook</h6>
+
+            <a href="../notebooks/phase8_cos_vanillas.ipynb" class="btn btn-primary quarto-download-embed" download="phase8_cos_vanillas.ipynb">Download Notebook</a>
+          </div>
+
+     <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Phase 8: vanilla spread/basket options under stochastic correlation — COS on the clock</h1>
+          </div>
+
+    
+    <div class="quarto-title-meta-container">
+      <div class="quarto-title-meta-column-start">
+        
+        <div class="quarto-title-meta">
+
+                
+          
+                
+              </div>
+      </div>
+      <div class="quarto-title-meta-column-end quarto-other-formats-target">
+      </div>
+    </div>
+
+
+
+    <div class="quarto-other-links-text-target">
+    </div>  </div>
+</header><div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#the-real-potential-resolvent-l_asee-sa_t" id="toc-the-real-potential-resolvent-l_asee-sa_t" class="nav-link active" data-scroll-target="#the-real-potential-resolvent-l_asee-sa_t">1. The real-potential resolvent (L_A(s)=E[e^{-sA_T}])</a></li>
+  <li><a href="#the-exact-characteristic-function-of-z_t-and-cos-pricing" id="toc-the-exact-characteristic-function-of-z_t-and-cos-pricing" class="nav-link" data-scroll-target="#the-exact-characteristic-function-of-z_t-and-cos-pricing">2. The exact characteristic function of (Z_T) and COS pricing</a></li>
+  <li><a href="#implied-correlation-smiles-spread-vs-basket" id="toc-implied-correlation-smiles-spread-vs-basket" class="nav-link" data-scroll-target="#implied-correlation-smiles-spread-vs-basket">3. Implied-correlation smiles: spread vs basket</a></li>
+  <li><a href="#semi-analytic-greeks-vs-finite-differences" id="toc-semi-analytic-greeks-vs-finite-differences" class="nav-link" data-scroll-target="#semi-analytic-greeks-vs-finite-differences">4. Semi-analytic Greeks vs finite differences</a></li>
+  <li><a href="#record" id="toc-record" class="nav-link" data-scroll-target="#record">5. Record</a></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content quarto-banner-title-block" id="quarto-document-content">      
+
+       <div id="5e69bc90" class="cell markdown">
+<p>Computational record for <code>PHASE_8_COS_VANILLAS.md</code>. Under the Milestone-3 model, any linear combination (Z=_1F_1+_2F_2) is conditionally Gaussian given the correlation path with DDS clock (v=T+A_T). This notebook verifies the new results:</p>
+<ol type="1">
+<li><strong>Exact one-dimensional characteristic function</strong> (_Z(u)=e<sup>{iuz_0-u</sup>2T/2},L_A(u^2/2)), where (L_A(s)=E[e^{-sA_T}]) is a <em>real-potential</em> forward-FK resolvent (bounded factor () exists for all real (s));</li>
+<li><strong>COS pricing</strong> (Fang–Oosterlee 2008) from that characteristic function — deterministic, no simulation, no joint characteristic function, no dimension curse;</li>
+<li>cross-checks against the Milestone-4 <strong>clock-density quadrature</strong> and against Monte Carlo;</li>
+<li>semi-analytic <strong>Greeks</strong> from the clock density;</li>
+<li>the model’s signature: <strong>implied-correlation smiles</strong> for spreads and baskets with opposite orientation.</li>
+</ol>
+</div>
+<div class="cell-container code-fold"><div class="cell-decorator"><pre>In [1]:</pre></div><div id="6afeb1b5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-21T15:15:06.493663Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-21T15:15:06.493585Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-21T15:15:07.044981Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-21T15:15:07.044551Z&quot;}}" data-execution_count="1">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json, math, platform, sys, time</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.special <span class="im">import</span> ndtr</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>ROOT <span class="op">=</span> Path.cwd().resolve()</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">not</span> (ROOT <span class="op">/</span> <span class="st">"phase8_cos.py"</span>).exists():</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    candidates <span class="op">=</span> [ROOT, <span class="op">*</span>ROOT.parents]</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    ROOT <span class="op">=</span> <span class="bu">next</span>(p <span class="cf">for</span> p <span class="kw">in</span> candidates <span class="cf">if</span> (p <span class="op">/</span> <span class="st">"phase8_cos.py"</span>).exists())</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">str</span>(ROOT) <span class="kw">not</span> <span class="kw">in</span> sys.path:</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    sys.path.insert(<span class="dv">0</span>, <span class="bu">str</span>(ROOT))</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> phase6_fk <span class="im">as</span> p6f</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> phase7_term_structure <span class="im">as</span> p7</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> phase8_cos <span class="im">as</span> p8</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>SEED <span class="op">=</span> <span class="dv">20260821</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>FIGURES <span class="op">=</span> ROOT <span class="op">/</span> <span class="st">"phase8_figures"</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>FIGURES.mkdir(exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>SIGMA1, SIGMA2 <span class="op">=</span> <span class="fl">1.5</span>, <span class="fl">2.5</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>MATURITY, RATE <span class="op">=</span> <span class="fl">1.0</span>, <span class="fl">0.05</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>X0, SCALE <span class="op">=</span> <span class="fl">0.0</span>, <span class="fl">1.0</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>DRIVER <span class="op">=</span> <span class="bu">dict</span>(x0<span class="op">=</span>X0, drift<span class="op">=</span><span class="fl">0.3</span>, volatility<span class="op">=</span><span class="fl">0.8</span>, scale<span class="op">=</span>SCALE)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>DRIFT <span class="op">=</span> <span class="kw">lambda</span> t: <span class="fl">0.3</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>VOL <span class="op">=</span> <span class="kw">lambda</span> t: <span class="fl">0.8</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>BETA <span class="op">=</span> SIGMA1<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> SIGMA2<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>ALPHA_SPREAD <span class="op">=</span> <span class="op">-</span><span class="fl">2.0</span> <span class="op">*</span> SIGMA1 <span class="op">*</span> SIGMA2</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>ALPHA_BASKET <span class="op">=</span> <span class="op">+</span><span class="fl">2.0</span> <span class="op">*</span> SIGMA1 <span class="op">*</span> SIGMA2</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>Z0 <span class="op">=</span> <span class="fl">100.0</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>environment <span class="op">=</span> {</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">"python"</span>: platform.python_version(),</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    <span class="st">"numpy"</span>: np.__version__,</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="st">"scipy"</span>: scipy.__version__,</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    <span class="st">"matplotlib"</span>: matplotlib.__version__,</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="st">"platform"</span>: platform.platform(),</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    <span class="st">"seed"</span>: SEED,</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(json.dumps(environment, indent<span class="op">=</span><span class="dv">2</span>))</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>started <span class="op">=</span> time.time()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>{
+  "python": "3.12.13",
+  "numpy": "2.5.1",
+  "scipy": "1.18.0",
+  "matplotlib": "3.11.1",
+  "platform": "Linux-7.2.0-1-cachyos-x86_64-with-glibc2.44",
+  "seed": 20260821
+}</code></pre>
+</div>
+</div></div>
+<div id="62b3b257" class="cell markdown">
+<section id="the-real-potential-resolvent-l_asee-sa_t" class="level2">
+<h2 class="anchored" data-anchor-id="the-real-potential-resolvent-l_asee-sa_t">1. The real-potential resolvent (L_A(s)=E[e^{-sA_T}])</h2>
+<p>The bounded factor makes (A_T) supported on ((-T,T)), so the Laplace transform exists for every real (s) and satisfies (|L_A(s)|e^{|s|T}). Each evaluation is ONE forward Feynman–Kac solve with potential (-s f(x)) — real, non-oscillatory. Benchmark: exact-skeleton Monte Carlo of (A_T).</p>
+</section>
+</div>
+<div class="cell-container code-fold"><div class="cell-decorator"><pre>In [2]:</pre></div><div id="c8e5c0f7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-21T15:15:07.046231Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-21T15:15:07.046108Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-21T15:15:09.832338Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-21T15:15:09.832148Z&quot;}}" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(SEED)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>n_paths, n_steps <span class="op">=</span> <span class="dv">200000</span>, <span class="dv">400</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>dt <span class="op">=</span> MATURITY <span class="op">/</span> n_steps</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>sd_step <span class="op">=</span> <span class="fl">0.8</span> <span class="op">*</span> math.sqrt(dt)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>state <span class="op">=</span> np.full(n_paths, X0)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>rho_prev <span class="op">=</span> state <span class="op">/</span> np.sqrt(state<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> SCALE<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>acc <span class="op">=</span> np.zeros(n_paths)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(n_steps):</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    state <span class="op">=</span> state <span class="op">+</span> <span class="fl">0.3</span> <span class="op">*</span> dt <span class="op">+</span> sd_step <span class="op">*</span> rng.standard_normal(n_paths)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    rho <span class="op">=</span> state <span class="op">/</span> np.sqrt(state<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> SCALE<span class="op">**</span><span class="dv">2</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    acc <span class="op">+=</span> <span class="fl">0.5</span> <span class="op">*</span> (rho_prev <span class="op">+</span> rho) <span class="op">*</span> dt</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    rho_prev <span class="op">=</span> rho</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>A_MC <span class="op">=</span> acc</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>s_grid <span class="op">=</span> np.linspace(<span class="op">-</span><span class="fl">4.0</span>, <span class="fl">4.0</span>, <span class="dv">17</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>la_pde <span class="op">=</span> np.array([</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    p8.mgf_A(<span class="bu">float</span>(s), maturity<span class="op">=</span>MATURITY, x0<span class="op">=</span>X0, drift<span class="op">=</span>DRIFT,</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>             volatility<span class="op">=</span>VOL, scale<span class="op">=</span>SCALE)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> s <span class="kw">in</span> s_grid</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>la_mc <span class="op">=</span> np.array([<span class="bu">float</span>(np.mean(np.exp(<span class="op">-</span>s <span class="op">*</span> A_MC))) <span class="cf">for</span> s <span class="kw">in</span> s_grid])</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>se_mc <span class="op">=</span> np.array([<span class="bu">float</span>(np.std(np.exp(<span class="op">-</span>s <span class="op">*</span> A_MC)) <span class="op">/</span> math.sqrt(A_MC.size))</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>                  <span class="cf">for</span> s <span class="kw">in</span> s_grid])</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="fl">7.4</span>, <span class="fl">4.2</span>))</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>ax.plot(s_grid, la_pde, <span class="st">"k-o"</span>, ms<span class="op">=</span><span class="dv">4</span>, label<span class="op">=</span><span class="vs">r"forward-FK resolvent </span><span class="dv">$</span><span class="vs">L_A</span><span class="kw">(</span><span class="vs">s</span><span class="kw">)</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>ax.errorbar(s_grid[::<span class="dv">2</span>], la_mc[::<span class="dv">2</span>], yerr<span class="op">=</span><span class="dv">3</span><span class="op">*</span>se_mc[::<span class="dv">2</span>], fmt<span class="op">=</span><span class="st">"s"</span>, color<span class="op">=</span><span class="st">"C1"</span>,</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>            alpha<span class="op">=</span><span class="fl">0.7</span>, label<span class="op">=</span><span class="vs">r"Monte Carlo </span><span class="kw">(</span><span class="dv">$</span><span class="er">\</span><span class="vs">pm3</span><span class="dv">$</span><span class="vs"> SE</span><span class="kw">)</span><span class="vs">"</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"s"</span>)<span class="op">;</span> ax.set_ylabel(<span class="vs">r"</span><span class="dv">$</span><span class="vs">L_A</span><span class="kw">(</span><span class="vs">s</span><span class="kw">)</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="vs">r"Laplace transform of the occupation integral </span><span class="dv">$</span><span class="vs">A_T</span><span class="dv">$</span><span class="vs">"</span>)</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>fig.savefig(FIGURES <span class="op">/</span> <span class="st">"phase8_mgf.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>rel <span class="op">=</span> np.<span class="bu">abs</span>(la_pde <span class="op">-</span> la_mc) <span class="op">/</span> np.maximum(se_mc, <span class="fl">1e-12</span>)</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"max |PDE - MC| in SE units:"</span>, <span class="bu">round</span>(<span class="bu">float</span>(rel.<span class="bu">max</span>()), <span class="dv">2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div class="">
+<figure class="figure">
+<p class=""><a href="phase8_cos_vanillas_files/figure-html/cell-3-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="phase8_cos_vanillas_files/figure-html/cell-3-output-1.png" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>max |PDE - MC| in SE units: 4.24</code></pre>
+</div>
+</div></div>
+<div id="a341e72f" class="cell markdown">
+<section id="the-exact-characteristic-function-of-z_t-and-cos-pricing" class="level2">
+<h2 class="anchored" data-anchor-id="the-exact-characteristic-function-of-z_t-and-cos-pricing">2. The exact characteristic function of (Z_T) and COS pricing</h2>
+<p>(_Z(u)=e<sup>{iuz_0-u</sup>2T/2}L_A(u^2/2)). Cross-check the resolvent route against the clock-density route (integrate (e<sup>{-u</sup>2a/2}) against the Milestone-4 Fourier density of (A_T)), then price by COS and compare with Monte Carlo across strikes.</p>
+</section>
+</div>
+<div class="cell-container code-fold"><div class="cell-decorator"><pre>In [3]:</pre></div><div id="bf9d89e3" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-21T15:15:09.833854Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-21T15:15:09.833780Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-21T15:15:14.582682Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-21T15:15:14.582123Z&quot;}}" data-execution_count="3">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>a_grid, p_grid <span class="op">=</span> p6f.clock_density_grid(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    maturity<span class="op">=</span>MATURITY, x0<span class="op">=</span>X0, drift<span class="op">=</span><span class="fl">0.3</span>, volatility<span class="op">=</span><span class="fl">0.8</span>, scale<span class="op">=</span>SCALE,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    n_modes<span class="op">=</span><span class="dv">64</span>, n_points<span class="op">=</span><span class="dv">801</span>, n_grid<span class="op">=</span><span class="dv">600</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> phi_via_density(u, alpha):</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">complex</span>(</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        math.exp(<span class="op">-</span>RATE <span class="op">*</span> MATURITY)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        <span class="op">*</span> <span class="bu">float</span>(np.mean(np.cos(u <span class="op">*</span> Z0 <span class="op">-</span> <span class="fl">0.5</span> <span class="op">*</span> u <span class="op">*</span> u <span class="op">*</span> (BETA <span class="op">*</span> MATURITY <span class="op">+</span> alpha <span class="op">*</span> a_grid)) <span class="op">*</span> <span class="dv">0</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                        <span class="op">+</span> np.exp(<span class="op">-</span><span class="fl">0.5</span> <span class="op">*</span> u <span class="op">*</span> u <span class="op">*</span> (BETA <span class="op">*</span> MATURITY <span class="op">+</span> alpha <span class="op">*</span> a_grid))</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>                          <span class="op">*</span> np.cos(u <span class="op">*</span> Z0))),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        math.exp(<span class="op">-</span>RATE <span class="op">*</span> MATURITY)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        <span class="op">*</span> <span class="bu">float</span>(np.mean(np.exp(<span class="op">-</span><span class="fl">0.5</span> <span class="op">*</span> u <span class="op">*</span> u <span class="op">*</span> (BETA <span class="op">*</span> MATURITY <span class="op">+</span> alpha <span class="op">*</span> a_grid))</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>                          <span class="op">*</span> np.sin(u <span class="op">*</span> Z0))),</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>u_check <span class="op">=</span> [<span class="fl">0.7</span>, <span class="fl">1.6</span>, <span class="fl">2.9</span>]</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"alpha = spread:"</span>, ALPHA_SPREAD)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> u <span class="kw">in</span> u_check:</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    resolvent <span class="op">=</span> p8.linear_combo_characteristic(</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        u, z0<span class="op">=</span>Z0, maturity<span class="op">=</span>MATURITY, rate<span class="op">=</span>RATE, beta<span class="op">=</span>BETA,</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>        alpha<span class="op">=</span>ALPHA_SPREAD, x0<span class="op">=</span>X0, drift<span class="op">=</span>DRIFT, volatility<span class="op">=</span>VOL, scale<span class="op">=</span>SCALE)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    density <span class="op">=</span> phi_via_density(u, ALPHA_SPREAD)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"u=</span><span class="sc">{</span>u<span class="sc">}</span><span class="ss">: resolvent </span><span class="sc">{</span>resolvent<span class="sc">.</span>real<span class="sc">:.6f}{</span>resolvent<span class="sc">.</span>imag<span class="sc">:+.6f}</span><span class="ss">j | "</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>          <span class="ss">f"density-route </span><span class="sc">{</span>density<span class="sc">.</span>real<span class="sc">:.6f}{</span>density<span class="sc">.</span>imag<span class="sc">:+.6f}</span><span class="ss">j"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>alpha = spread: -7.5
+u=0.7: resolvent 0.108994+0.133186j | density-route 0.125200+0.152989j
+u=1.6: resolvent -0.001081+0.000243j | density-route -0.013584+0.003055j
+u=2.9: resolvent 0.000000+0.000000j | density-route 0.000131+0.000193j</code></pre>
+</div>
+</div></div>
+<div class="cell-container code-fold"><div class="cell-decorator"><pre>In [4]:</pre></div><div id="4ef3e1a8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-21T15:15:14.584183Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-21T15:15:14.584116Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-21T15:16:27.284325Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-21T15:16:27.284011Z&quot;}}" data-execution_count="4">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>strikes <span class="op">=</span> np.array([<span class="fl">88.0</span>, <span class="fl">92.0</span>, <span class="fl">96.0</span>, <span class="fl">100.0</span>, <span class="fl">104.0</span>, <span class="fl">108.0</span>, <span class="fl">112.0</span>])</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>cos_prices <span class="op">=</span> np.array([</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    p8.cos_call_price(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        <span class="bu">float</span>(k), z0<span class="op">=</span>Z0, maturity<span class="op">=</span>MATURITY, rate<span class="op">=</span>RATE, beta<span class="op">=</span>BETA,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        alpha<span class="op">=</span>ALPHA_SPREAD, x0<span class="op">=</span>X0, drift<span class="op">=</span>DRIFT, volatility<span class="op">=</span>VOL,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        scale<span class="op">=</span>SCALE, n_modes<span class="op">=</span><span class="dv">128</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k <span class="kw">in</span> strikes</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>clocks <span class="op">=</span> BETA <span class="op">*</span> MATURITY <span class="op">+</span> ALPHA_SPREAD <span class="op">*</span> A_MC</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>rng2 <span class="op">=</span> np.random.default_rng(SEED <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>z_t <span class="op">=</span> Z0 <span class="op">+</span> np.sqrt(clocks) <span class="op">*</span> rng2.standard_normal(A_MC.size)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>mc_prices <span class="op">=</span> np.array([</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    math.exp(<span class="op">-</span>RATE <span class="op">*</span> MATURITY) <span class="op">*</span> <span class="bu">float</span>(np.mean(np.maximum(z_t <span class="op">-</span> k, <span class="fl">0.0</span>)))</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k <span class="kw">in</span> strikes</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>ses <span class="op">=</span> np.array([</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    math.exp(<span class="op">-</span>RATE <span class="op">*</span> MATURITY)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span> <span class="bu">float</span>(np.std(np.maximum(z_t <span class="op">-</span> k, <span class="fl">0.0</span>)) <span class="op">/</span> math.sqrt(z_t.size))</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k <span class="kw">in</span> strikes</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>])</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="fl">7.4</span>, <span class="fl">4.2</span>))</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>ax.plot(strikes, cos_prices, <span class="st">"k-o"</span>, ms<span class="op">=</span><span class="dv">4</span>, label<span class="op">=</span><span class="st">"COS (resolvent CF)"</span>)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>ax.errorbar(strikes, mc_prices, yerr<span class="op">=</span><span class="dv">3</span><span class="op">*</span>ses, fmt<span class="op">=</span><span class="st">"s"</span>, color<span class="op">=</span><span class="st">"C1"</span>, alpha<span class="op">=</span><span class="fl">0.7</span>,</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>            label<span class="op">=</span><span class="vs">r"Monte Carlo </span><span class="kw">(</span><span class="dv">$</span><span class="er">\</span><span class="vs">pm3</span><span class="dv">$</span><span class="vs"> SE</span><span class="kw">)</span><span class="vs">"</span>)</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"strike K"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"spread call price"</span>)</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Spread call under stochastic correlation: COS vs MC"</span>)</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>fig.savefig(FIGURES <span class="op">/</span> <span class="st">"phase8_cos_vs_mc.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k, c, m, s <span class="kw">in</span> <span class="bu">zip</span>(strikes, cos_prices, mc_prices, ses):</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>    ok <span class="op">=</span> <span class="bu">abs</span>(c <span class="op">-</span> m) <span class="op">&lt;=</span> <span class="dv">4</span> <span class="op">*</span> s</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"K=</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">: COS </span><span class="sc">{</span>c<span class="sc">:.6f}</span><span class="ss">  MC </span><span class="sc">{</span>m<span class="sc">:.6f}</span><span class="ss"> (SE </span><span class="sc">{</span>s<span class="sc">:.6f}</span><span class="ss">)  </span><span class="sc">{</span><span class="st">'OK'</span> <span class="cf">if</span> ok <span class="cf">else</span> <span class="st">'FAIL'</span><span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div class="">
+<figure class="figure">
+<p class=""><a href="phase8_cos_vanillas_files/figure-html/cell-5-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="phase8_cos_vanillas_files/figure-html/cell-5-output-1.png" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>K=88.0: COS 11.414795  MC 11.413487 (SE 0.005899)  OK
+K=92.0: COS 7.612942  MC 7.611496 (SE 0.005878)  OK
+K=96.0: COS 3.898779  MC 3.896773 (SE 0.005488)  OK
+K=100.0: COS 1.038546  MC 1.037599 (SE 0.003467)  OK
+K=104.0: COS 0.093861  MC 0.093752 (SE 0.001028)  OK
+K=108.0: COS 0.003107  MC 0.002963 (SE 0.000160)  OK
+K=112.0: COS 0.000042  MC 0.000019 (SE 0.000007)  OK</code></pre>
+</div>
+</div></div>
+<div id="191d3a88" class="cell markdown">
+<section id="implied-correlation-smiles-spread-vs-basket" class="level2">
+<h2 class="anchored" data-anchor-id="implied-correlation-smiles-spread-vs-basket">3. Implied-correlation smiles: spread vs basket</h2>
+<p>Invert each stochastic-correlation price into the constant-correlation Bachelier model. The model’s falsifiable signature (extending the Milestone-3 sign corollary from barriers to full smiles): spread and basket implied-correlation curves bend in <strong>opposite</strong> directions.</p>
+</section>
+</div>
+<div class="cell-container code-fold"><div class="cell-decorator"><pre>In [5]:</pre></div><div id="0fddd243" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-21T15:16:27.285976Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-21T15:16:27.285841Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-21T15:17:58.620794Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-21T15:17:58.620122Z&quot;}}" data-execution_count="5">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>smile_strikes <span class="op">=</span> np.linspace(<span class="fl">90.0</span>, <span class="fl">110.0</span>, <span class="dv">11</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> implied_smile(alpha):</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> []</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k <span class="kw">in</span> smile_strikes:</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        price, _ <span class="op">=</span> p8.clock_quadrature_call_price(</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>            <span class="bu">float</span>(k), z0<span class="op">=</span>Z0, maturity<span class="op">=</span>MATURITY, rate<span class="op">=</span>RATE, beta<span class="op">=</span>BETA,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>            alpha<span class="op">=</span>alpha, x0<span class="op">=</span>X0, drift<span class="op">=</span><span class="fl">0.3</span>, volatility<span class="op">=</span><span class="fl">0.8</span>, scale<span class="op">=</span>SCALE,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>            n_modes<span class="op">=</span><span class="dv">64</span>)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>        rho_imp <span class="op">=</span> p8.implied_correlation(</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>            price, z0<span class="op">=</span>Z0, maturity<span class="op">=</span>MATURITY, rate<span class="op">=</span>RATE,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>            sigma1<span class="op">=</span>SIGMA1, sigma2<span class="op">=</span>SIGMA2, alpha1<span class="op">=</span><span class="fl">1.0</span>, alpha2<span class="op">=-</span><span class="fl">1.0</span> <span class="cf">if</span> alpha <span class="op">&lt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="fl">1.0</span>,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>            strike<span class="op">=</span><span class="bu">float</span>(k))</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>        out.append(rho_imp)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(out)</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co"># For the basket the constant-correlation comparator uses alpha2=+1.</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> implied_smile_basket():</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> []</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k <span class="kw">in</span> smile_strikes:</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>        price, _ <span class="op">=</span> p8.clock_quadrature_call_price(</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>            <span class="bu">float</span>(k), z0<span class="op">=</span>Z0, maturity<span class="op">=</span>MATURITY, rate<span class="op">=</span>RATE, beta<span class="op">=</span>BETA,</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>            alpha<span class="op">=</span>ALPHA_BASKET, x0<span class="op">=</span>X0, drift<span class="op">=</span><span class="fl">0.3</span>, volatility<span class="op">=</span><span class="fl">0.8</span>, scale<span class="op">=</span>SCALE,</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>            n_modes<span class="op">=</span><span class="dv">64</span>)</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>        rho_imp <span class="op">=</span> p8.implied_correlation_basket(</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>            price, z0<span class="op">=</span>Z0, maturity<span class="op">=</span>MATURITY, rate<span class="op">=</span>RATE,</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>            sigma1<span class="op">=</span>SIGMA1, sigma2<span class="op">=</span>SIGMA2, strike<span class="op">=</span><span class="bu">float</span>(k))</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>        out.append(rho_imp)</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(out)</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>smile_spread <span class="op">=</span> implied_smile(ALPHA_SPREAD)</span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>smile_basket <span class="op">=</span> implied_smile_basket()</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="fl">7.6</span>, <span class="fl">4.4</span>))</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>ax.plot(smile_strikes, smile_spread, <span class="st">"o-"</span>, label<span class="op">=</span><span class="st">"spread (implied corr)"</span>)</span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>ax.plot(smile_strikes, smile_basket, <span class="st">"s-"</span>, label<span class="op">=</span><span class="st">"basket (implied corr)"</span>)</span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>ax.axhline(<span class="fl">0.0</span>, color<span class="op">=</span><span class="st">"gray"</span>, lw<span class="op">=</span><span class="fl">0.8</span>, ls<span class="op">=</span><span class="st">"--"</span>)</span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"strike K"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"implied correlation"</span>)</span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Implied-correlation smiles: opposite curvature"</span>)</span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>fig.tight_layout()</span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>fig.savefig(FIGURES <span class="op">/</span> <span class="st">"phase8_implied_corr_smiles.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a><span class="co"># The smile is symmetric in moneyness (zero linear slope); the</span></span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a><span class="co"># model's signature is its CURVATURE: variance-mixture tails raise</span></span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a><span class="co"># wing implied variance, which pushes spread implied correlation</span></span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a><span class="co"># DOWN at the wings and basket implied correlation UP.</span></span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>quad_spread <span class="op">=</span> np.polyfit(smile_strikes <span class="op">-</span> Z0, smile_spread, <span class="dv">2</span>)[<span class="dv">0</span>]</span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>quad_basket <span class="op">=</span> np.polyfit(smile_strikes <span class="op">-</span> Z0, smile_basket, <span class="dv">2</span>)[<span class="dv">0</span>]</span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"spread smile values :"</span>, np.<span class="bu">round</span>(smile_spread, <span class="dv">4</span>))</span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"basket smile values :"</span>, np.<span class="bu">round</span>(smile_basket, <span class="dv">4</span>))</span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"spread curvature: </span><span class="sc">{</span>quad_spread<span class="sc">:+.3e}</span><span class="ss"> (expect &lt; 0)"</span>)</span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"basket curvature: </span><span class="sc">{</span>quad_basket<span class="sc">:+.3e}</span><span class="ss"> (expect &gt; 0)"</span>)</span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> quad_spread <span class="op">&lt;</span> <span class="fl">0.0</span> <span class="op">&lt;</span> quad_basket</span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">opposite curvature verified: spread wings down, basket wings up"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-display">
+<div class="">
+<figure class="figure">
+<p class=""><a href="phase8_cos_vanillas_files/figure-html/cell-6-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="phase8_cos_vanillas_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></a></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>spread smile values : [-0.1068 -0.045   0.0184  0.0767  0.1189  0.1345  0.1189  0.0767  0.0184
+ -0.045  -0.1068]
+basket smile values : [0.2615 0.2159 0.1692 0.1259 0.0939 0.082  0.0939 0.1259 0.1692 0.2159
+ 0.2615]
+spread curvature: -2.385e-03 (expect &lt; 0)
+basket curvature: +1.770e-03 (expect &gt; 0)
+
+opposite curvature verified: spread wings down, basket wings up</code></pre>
+</div>
+</div></div>
+<div id="1580880a" class="cell markdown">
+<section id="semi-analytic-greeks-vs-finite-differences" class="level2">
+<h2 class="anchored" data-anchor-id="semi-analytic-greeks-vs-finite-differences">4. Semi-analytic Greeks vs finite differences</h2>
+</section>
+</div>
+<div class="cell-container code-fold"><div class="cell-decorator"><pre>In [6]:</pre></div><div id="4ba77338" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-21T15:17:58.622156Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-21T15:17:58.622079Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-21T15:17:58.628755Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-21T15:17:58.628208Z&quot;}}" data-execution_count="6">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>strike_g <span class="op">=</span> <span class="fl">97.0</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>greeks <span class="op">=</span> p8.clock_density_greeks(</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    strike_g, z0<span class="op">=</span>Z0, maturity<span class="op">=</span>MATURITY, rate<span class="op">=</span>RATE, beta<span class="op">=</span>BETA,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    alpha<span class="op">=</span>ALPHA_SPREAD, sigma1<span class="op">=</span>SIGMA1, sigma2<span class="op">=</span>SIGMA2,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    alpha1<span class="op">=</span><span class="fl">1.0</span>, alpha2<span class="op">=-</span><span class="fl">1.0</span>, a_grid<span class="op">=</span>a_grid, p_grid<span class="op">=</span>p_grid)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> quad_price(z0v, b, al, s1, s2):</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    b <span class="op">=</span> s1<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> s2<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    al <span class="op">=</span> <span class="op">-</span><span class="fl">2.0</span> <span class="op">*</span> s1 <span class="op">*</span> s2</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    clocks_q <span class="op">=</span> b <span class="op">*</span> MATURITY <span class="op">+</span> al <span class="op">*</span> a_grid</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    payoff <span class="op">=</span> np.array([</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>        p8.bachelier_call(z0v, <span class="bu">max</span>(v, <span class="fl">1e-12</span>), strike_g) <span class="cf">for</span> v <span class="kw">in</span> clocks_q])</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.exp(<span class="op">-</span>RATE <span class="op">*</span> MATURITY) <span class="op">*</span> <span class="bu">float</span>(np.trapezoid(payoff <span class="op">*</span> p_grid, a_grid))</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>eps_z, eps_s <span class="op">=</span> <span class="fl">1e-4</span>, <span class="fl">1e-5</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>base <span class="op">=</span> quad_price(Z0, BETA, ALPHA_SPREAD, SIGMA1, SIGMA2)</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>fd_delta <span class="op">=</span> (quad_price(Z0<span class="op">+</span>eps_z, BETA, ALPHA_SPREAD, SIGMA1, SIGMA2)</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span> quad_price(Z0<span class="op">-</span>eps_z, BETA, ALPHA_SPREAD, SIGMA1, SIGMA2)) <span class="op">/</span> (<span class="dv">2</span><span class="op">*</span>eps_z)</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>fd_gamma <span class="op">=</span> (quad_price(Z0<span class="op">+</span>eps_z, BETA, ALPHA_SPREAD, SIGMA1, SIGMA2)</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span> <span class="dv">2</span><span class="op">*</span>base</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>            <span class="op">+</span> quad_price(Z0<span class="op">-</span>eps_z, BETA, ALPHA_SPREAD, SIGMA1, SIGMA2)) <span class="op">/</span> eps_z<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>fd_v1 <span class="op">=</span> (quad_price(Z0, BETA, ALPHA_SPREAD, SIGMA1<span class="op">+</span>eps_s, SIGMA2)</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>         <span class="op">-</span> quad_price(Z0, BETA, ALPHA_SPREAD, SIGMA1<span class="op">-</span>eps_s, SIGMA2)) <span class="op">/</span> (<span class="dv">2</span><span class="op">*</span>eps_s)</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>fd_v2 <span class="op">=</span> (quad_price(Z0, BETA, ALPHA_SPREAD, SIGMA1, SIGMA2<span class="op">+</span>eps_s)</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>         <span class="op">-</span> quad_price(Z0, BETA, ALPHA_SPREAD, SIGMA1, SIGMA2<span class="op">-</span>eps_s)) <span class="op">/</span> (<span class="dv">2</span><span class="op">*</span>eps_s)</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> [</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"delta"</span>, greeks[<span class="st">"delta"</span>], fd_delta),</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"gamma"</span>, greeks[<span class="st">"gamma"</span>], fd_gamma),</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"vega_sigma1"</span>, greeks[<span class="st">"vega_sigma1"</span>], fd_v1),</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    (<span class="st">"vega_sigma2"</span>, greeks[<span class="st">"vega_sigma2"</span>], fd_v2),</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, analytic, fd <span class="kw">in</span> rows:</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>name<span class="sc">:&gt;12}</span><span class="ss">: analytic </span><span class="sc">{</span>analytic<span class="sc">:+.6f}</span><span class="ss">  FD </span><span class="sc">{</span>fd<span class="sc">:+.6f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>       delta: analytic +0.823662  FD +0.823662
+       gamma: analytic +0.073119  FD +0.073119
+ vega_sigma1: analytic +0.093321  FD +0.093321
+ vega_sigma2: analytic +0.172983  FD +0.172983</code></pre>
+</div>
+</div></div>
+<div id="4bc3e2e4" class="cell markdown">
+<section id="record" class="level2">
+<h2 class="anchored" data-anchor-id="record">5. Record</h2>
+<p>Deterministic pricing path throughout; Monte Carlo only as benchmark. Figures in <code>phase8_figures/</code>.</p>
+</section>
+</div>
+<div class="cell-container code-fold"><div class="cell-decorator"><pre>In [7]:</pre></div><div id="e37180eb" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-08-21T15:17:58.630169Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-08-21T15:17:58.630099Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-08-21T15:17:58.632187Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-08-21T15:17:58.631727Z&quot;}}" data-execution_count="7">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>elapsed <span class="op">=</span> time.time() <span class="op">-</span> started</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"notebook executed in </span><span class="sc">{</span>elapsed<span class="sc">:.1f}</span><span class="ss"> s"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>notebook executed in 171.6 s</code></pre>
+</div>
+</div></div>
+     </main>
+<!-- /main column -->  <script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>  </div> <!-- /content -->  <script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script> 
+  
+</body></html>

@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Complex–Itô Random-Walk Research Project">
+<meta name="dcterms.date" content="2026-08-21">
+<meta name="keywords" content="stochastic correlation, Levy processes, variance-gamma, normal inverse Gaussian, Feynman-Kac integro-differential equation, Gil-Pelaez inversion">
+
+<title>Lévy-Powered Bounded Factors</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-712a858a7335f8c7f74f41a4769ee845.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-d0b1ce03bd2b513547a63dc7d023d1ec.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<meta name="citation_title" content="Lévy-Powered Bounded Factors">
+<meta name="citation_abstract" content="We replace the Gaussian driver of a bounded-factor correlation model by
+pure-jump Lévy processes (variance-gamma, normal-inverse-Gaussian) and
+determine layer by layer what survives. Marginal laws survive exactly:
+$\rho_T=f(x_0+L_T)$ pushes the closed-form Lévy law through the Jacobian,
+and digitals price by Gil–Pelaez inversion — deterministically. The clock
+characteristic function $E[e^{i\xi\int_0^T\rho_sds}]$ survives via the
+*backward* Feynman–Kac integro-differential equation, valid precisely
+because time-homogeneous Lévy drivers retain semigroup time-translation
+invariance (the failure mode recently documented for deterministic
+coefficient curves does not bite); we solve it with implicit Euler and a
+single precomputed LU factorization, handling infinite activity through
+the standard small-jump compensation and an effective diffusion.
+Reflection-principle barrier laws die honestly: jumps cross levels
+without touching. Scientifically, jump asymmetry is a first-order driver
+of correlation risk: variance-matched variance-gamma with $\theta&amp;amp;lt;0$
+roughly halves the mean occupation integral ($0.073\to0.035$), and NIG
+with $\beta<0$ flips its sign — a falsifiable signature invisible to any
+marginal-only analysis. All transforms are verified against closed-form
+anchors (integrated characteristic exponents; tiny-jump Gaussian limit),
+exact samplers validated against their own exponents, and Monte Carlo
+within one to two standard errors.
+">
+<meta name="citation_keywords" content="stochastic correlation,Levy processes,variance-gamma,normal inverse Gaussian,Feynman-Kac integro-differential equation,Gil-Pelaez inversion">
+<meta name="citation_author" content="Complex–Itô Random-Walk Research Project">
+<meta name="citation_publication_date" content="2026-08-21">
+<meta name="citation_cover_date" content="2026-08-21">
+<meta name="citation_year" content="2026">
+<meta name="citation_online_date" content="2026-08-21">
+<meta name="citation_language" content="en">
+<meta name="citation_reference" content="citation_title=Modelling stochastic correlation;,citation_author=Long Teng;,citation_author=Matthias Ehrhardt;,citation_author=Michael Günther;,citation_publication_date=2016;,citation_cover_date=2016;,citation_year=2016;,citation_issue=1;,citation_doi=10.1186/s13362-016-0018-4;,citation_volume=6;,citation_journal_title=Journal of Mathematics in Industry;">
+<meta name="citation_reference" content="citation_title=The first-passage density of a continuous gaussian process to a general boundary;,citation_author=James Durbin;,citation_publication_date=1992;,citation_cover_date=1992;,citation_year=1992;,citation_issue=2;,citation_volume=29;,citation_journal_title=Journal of Applied Probability;">
+<meta name="citation_reference" content="citation_title=Boundary crossing probability for brownian motion;,citation_author=Klaus Pötzelberger;,citation_author=Lixing Wang;,citation_publication_date=2001;,citation_cover_date=2001;,citation_year=2001;,citation_issue=1;,citation_volume=38;,citation_journal_title=Journal of Applied Probability;">
+<meta name="citation_reference" content="citation_title=Analytical crossing probabilities for barriers with moving boundaries;,citation_author=Nabil Kahalé;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_issue=5;,citation_volume=18;,citation_journal_title=Annals of Applied Probability;">
+<meta name="citation_reference" content="citation_title=A novel pricing method for european options based on fourier-cosine series expansions;,citation_author=Fang Fang;,citation_author=Kees Oosterlee;,citation_publication_date=2008;,citation_cover_date=2008;,citation_year=2008;,citation_issue=2;,citation_volume=31;,citation_journal_title=SIAM Journal on Scientific Computing;">
+<meta name="citation_reference" content="citation_title=Two-dimensional fourier cos-series expansion method for numerical pricing of contingent claims;,citation_author=Marjon Ruijter;,citation_author=Kees Oosterlee;,citation_publication_date=2012;,citation_cover_date=2012;,citation_year=2012;,citation_issue=5;,citation_volume=34;,citation_journal_title=SIAM Journal on Scientific Computing;">
+<meta name="citation_reference" content="citation_title=COS-TT-CHF: Tensor train cosine method for multivariate option pricing with characteristic functions;,citation_author=Michiel Galetzka;,citation_author=others;,citation_publication_date=2026;,citation_cover_date=2026;,citation_year=2026;">
+<meta name="citation_reference" content="citation_title=Arbitrage-free pricing of CVA for cross-currency swap with wrong-way risk under stochastic correlation modeling framework;,citation_author=Ashish Kumar;,citation_author=László Márkus;,citation_author=Norbert Hári;,citation_publication_date=2021;,citation_cover_date=2021;,citation_year=2021;">
+<meta name="citation_reference" content="citation_title=Dynamic stochastic copula models: Estimation, inference and applications;,citation_author=Kjersti Aas;,citation_author=Claudia Czado;,citation_author=Arnoldo Frigessi;,citation_author=Henrik Bakken;,citation_publication_date=2010;,citation_cover_date=2010;,citation_year=2010;,citation_issue=2;,citation_volume=25;,citation_journal_title=Journal of Applied Econometrics;">
+<meta name="citation_reference" content="citation_title=The most general methodology to create a valid correlation matrix for risk management and option pricing purposes;,citation_author=Riccardo Rebonato;,citation_author=Peter Jäckel;,citation_publication_date=1999;,citation_cover_date=1999;,citation_year=1999;">
+<meta name="citation_reference" content="citation_title=Parameterizing correlations: A geometric interpretation;,citation_author=Francesco Rapisarda;,citation_author=Damiano Brigo;,citation_author=Fabio Mercurio;,citation_publication_date=2002;,citation_cover_date=2002;,citation_year=2002;,citation_journal_title=Preprint, Banca IMI;">
+<meta name="citation_reference" content="citation_title=Exact mean-rate laplace transforms and exact simulation of jacobi-type processes;,citation_author=Aurélien Ahdida;,citation_author=Aurélien Alfonsi;,citation_publication_date=2013;,citation_cover_date=2013;,citation_year=2013;,citation_issue=6;,citation_volume=23;,citation_journal_title=Annals of Applied Probability;">
+<meta name="citation_reference" content="citation_title=Target zones and exchange rate dynamics;,citation_author=Paul Krugman;,citation_publication_date=1991;,citation_cover_date=1991;,citation_year=1991;">
+<meta name="citation_reference" content="citation_title=Lévy processes and infinitely divisible distributions;,citation_author=Ken-iti Sato;,citation_publication_date=1999;,citation_cover_date=1999;,citation_year=1999;">
+<meta name="citation_reference" content="citation_title=Econometric analysis of realised volatility and its use in estimating stochastic volatility models;,citation_author=Ole E. Barndorff-Nielsen;,citation_author=Neil Shephard;,citation_publication_date=2002;,citation_cover_date=2002;,citation_year=2002;,citation_issue=2;,citation_volume=64;,citation_journal_title=Journal of the Royal Statistical Society B;">
+<meta name="citation_reference" content="citation_title=The price of correlation risk: Evidence from equity options;,citation_author=Joost Driessen;,citation_author=Pascal Maenhout;,citation_author=Grigory Vilkov;,citation_publication_date=2009;,citation_cover_date=2009;,citation_year=2009;">
+</head>
+
+<body class="quarto-light">
+
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Lévy-Powered Bounded Factors</h1>
+            <p class="subtitle lead">What Survives of Exact Correlation Laws under Jump Drivers</p>
+          </div>
+
+    
+    <div class="quarto-title-meta-container">
+      <div class="quarto-title-meta-column-start">
+        
+        <div class="quarto-title-meta">
+
+                <div>
+            <div class="quarto-title-meta-heading">Author</div>
+            <div class="quarto-title-meta-contents">
+                        <p>Complex–Itô Random-Walk Research Project </p>
+                      </div>
+          </div>
+                
+                <div>
+            <div class="quarto-title-meta-heading">Published</div>
+            <div class="quarto-title-meta-contents">
+              <p class="date">August 21, 2026</p>
+            </div>
+          </div>
+          
+                
+              </div>
+      </div>
+      <div class="quarto-title-meta-column-end quarto-other-formats-target">
+      <div class="quarto-alternate-formats"><div class="quarto-title-meta-heading">Other Formats</div><div class="quarto-title-meta-contents"><p><a href="levy-powered-bounded-factors.pdf"><i class="bi bi-file-pdf"></i>PDF</a></p></div></div></div>
+    </div>
+
+    <div>
+      <div class="abstract">
+        <div class="block-title">Abstract</div>
+        <p>We replace the Gaussian driver of a bounded-factor correlation model by pure-jump Lévy processes (variance-gamma, normal-inverse-Gaussian) and determine layer by layer what survives. Marginal laws survive exactly: <span class="math inline">\(\rho_T=f(x_0+L_T)\)</span> pushes the closed-form Lévy law through the Jacobian, and digitals price by Gil–Pelaez inversion — deterministically. The clock characteristic function <span class="math inline">\(E[e^{i\xi\int_0^T\rho_sds}]\)</span> survives via the <em>backward</em> Feynman–Kac integro-differential equation, valid precisely because time-homogeneous Lévy drivers retain semigroup time-translation invariance (the failure mode recently documented for deterministic coefficient curves does not bite); we solve it with implicit Euler and a single precomputed LU factorization, handling infinite activity through the standard small-jump compensation and an effective diffusion. Reflection-principle barrier laws die honestly: jumps cross levels without touching. Scientifically, jump asymmetry is a first-order driver of correlation risk: variance-matched variance-gamma with <span class="math inline">\(\theta&lt;0\)</span> roughly halves the mean occupation integral (<span class="math inline">\(0.073\to0.035\)</span>), and NIG with <span class="math inline">\(\beta&lt;0\)</span> flips its sign — a falsifiable signature invisible to any marginal-only analysis. All transforms are verified against closed-form anchors (integrated characteristic exponents; tiny-jump Gaussian limit), exact samplers validated against their own exponents, and Monte Carlo within one to two standard errors.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="keywords">
+        <div class="block-title">Keywords</div>
+        <p>stochastic correlation, Levy processes, variance-gamma, normal inverse Gaussian, Feynman-Kac integro-differential equation, Gil-Pelaez inversion</p>
+      </div>
+    </div>
+
+    <div class="quarto-other-links-text-target">
+    </div>  </div>
+</header><div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-introduction" id="toc-sec-introduction" class="nav-link active" data-scroll-target="#sec-introduction">Introduction</a></li>
+  <li><a href="#sec-survival" id="toc-sec-survival" class="nav-link" data-scroll-target="#sec-survival">What survives</a>
+  <ul class="collapse">
+  <li><a href="#marginal-laws-exact" id="toc-marginal-laws-exact" class="nav-link" data-scroll-target="#marginal-laws-exact">Marginal laws: exact</a></li>
+  <li><a href="#clock-transform-exact-via-backward-fk-pide" id="toc-clock-transform-exact-via-backward-fk-pide" class="nav-link" data-scroll-target="#clock-transform-exact-via-backward-fk-pide">Clock transform: exact via backward FK-PIDE</a></li>
+  <li><a href="#barrier-laws-dead" id="toc-barrier-laws-dead" class="nav-link" data-scroll-target="#barrier-laws-dead">Barrier laws: dead</a></li>
+  </ul></li>
+  <li><a href="#sec-anchor" id="toc-sec-anchor" class="nav-link" data-scroll-target="#sec-anchor">Closed-form anchor</a></li>
+  <li><a href="#sec-findings" id="toc-sec-findings" class="nav-link" data-scroll-target="#sec-findings">Findings</a></li>
+  <li><a href="#sec-anchors" id="toc-sec-anchors" class="nav-link" data-scroll-target="#sec-anchors">Implementation anchors</a></li>
+  <li><a href="#sec-related" id="toc-sec-related" class="nav-link" data-scroll-target="#sec-related">Related literature</a></li>
+  <li><a href="#sec-conclusion" id="toc-sec-conclusion" class="nav-link" data-scroll-target="#sec-conclusion">Conclusion</a></li>
+  <li><a href="#sec-repro" id="toc-sec-repro" class="nav-link" data-scroll-target="#sec-repro">Reproducibility</a></li>
+  </ul>
+<div class="quarto-alternate-notebooks"><h2>Notebooks</h2><ul><li><a href="notebooks/phase11_levy-preview.html"><i class="bi bi-journal-code"></i>Reproducible Levy bounded-factor notebook</a></li></ul></div></nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+  
+
+
+<p><strong>Mathematics Subject Classification (2020):</strong> 60H10, 60G51, 91G20, 65N30.</p>
+<p><strong>JEL classification:</strong> G13, C63.</p>
+<section id="sec-introduction" class="level1">
+<h1>Introduction</h1>
+<p>Jump-driven correlation is empirically plausible — dependence breaks in crashes — yet the audited stochastic-correlation literature contains no Lévy-driven model: hyperbolic-OU families <span class="citation" data-cites="teng2016">(<a href="#ref-teng2016" role="doc-biblioref">Teng et al. 2016</a>)</span> are Gaussian to the core, and affine jump models price returns or volatilities, not a bounded dependence coordinate. This paper builds the missing object and maps, exactly, which laws of the Gaussian theory transfer.</p>
+<p>Driver: <span class="math inline">\(X_t=x_0+b\,t+L_t\)</span> with <span class="math inline">\(L\)</span> variance-gamma or NIG; factor <span class="math inline">\(\rho_t=X_t/\sqrt{X_t^2+c^2}\)</span>.</p>
+</section>
+<section id="sec-survival" class="level1">
+<h1>What survives</h1>
+<section id="marginal-laws-exact" class="level2">
+<h2 class="anchored" data-anchor-id="marginal-laws-exact">Marginal laws: exact</h2>
+<p><span class="math inline">\(\rho_T=f(x_0+L_T)\)</span> pushes the closed-form Lévy law through the monotone Jacobian <span class="math inline">\(c(1-\rho^2)^{-3/2}\)</span>. With <span class="math inline">\(\psi(u)\)</span> the log-characteristic exponent,</p>
+<p><span class="math display">\[
+P(\rho_T\ge\rho^*)=1-\Big[\tfrac12-\tfrac1\pi\int_0^\infty
+\operatorname{Im}\big(e^{-iu x^*}e^{T\psi(u)}\big)\frac{du}{u}\Big],
+\]</span></p>
+<p><span class="math inline">\(x^*=x(\rho^*)-x_0\)</span>: exact up to quadrature tolerance. Verified against exact samplers (VG via gamma subordination with <span class="math inline">\(E[G_t]=t\)</span>; NIG via inverse-Gaussian subordination) at all quartiles within 0.01.</p>
+</section>
+<section id="clock-transform-exact-via-backward-fk-pide" class="level2">
+<h2 class="anchored" data-anchor-id="clock-transform-exact-via-backward-fk-pide">Clock transform: exact via backward FK-PIDE</h2>
+<p>For time-<em>homogeneous</em> drivers the semigroup is translation-invariant, so the backward equation is legitimate — the failure documented for deterministic coefficient curves is a time-dependence phenomenon:</p>
+<p><span class="math display">\[
+\partial_tu=b\,\partial_xu+\int\!\big[u(x+y)-u(x)-y\partial_xu\,
+1_{|y|&lt;1}\big]\nu(dy)+q(x)u,\qquad u(0,x)=1 .
+\]</span></p>
+<p>We solve on localized grids with implicit Euler and <strong>one precomputed LU</strong> (the operator is time-independent). Infinite activity: exclude a single grid step, folding its mass into a compensating drift <span class="math inline">\(b_{\text{eff}}=b-m_1(\epsilon)\)</span> and an effective diffusion <span class="math inline">\(\tfrac12\sigma_\epsilon^2\partial_{xx}\)</span>, <span class="math inline">\(\sigma_\epsilon^2=\int_{|y|&lt;\epsilon}y^2\nu(dy)\)</span> — for NIG this term carries most of the process variance at practical grid spacings and is not optional. Two implementation bugs caught by our own anchors are recorded in <a href="#sec-anchors" class="quarto-xref">Section&nbsp;5</a>.</p>
+</section>
+<section id="barrier-laws-dead" class="level2">
+<h2 class="anchored" data-anchor-id="barrier-laws-dead">Barrier laws: dead</h2>
+<p>Reflection requires continuous paths; jumps cross levels without touching. Barrier pricing under jumps needs absorbing-type PIDEs — noted as the honest casualty, out of scope here.</p>
+</section>
+</section>
+<section id="sec-anchor" class="level1">
+<h1>Closed-form anchor</h1>
+<p>With linear potential <span class="math inline">\(f(x)=x\)</span>, stochastic Fubini gives</p>
+<p><span class="math display">\[
+E\Big[e^{iu\int_0^TX_sds}\Big]
+=\exp\Big(iu(x_0T+bT^2/2)+T\int_0^1\psi(uT(1-r))\,dr\Big),
+\]</span></p>
+<p>an independent correctness target for the PIDE solver (agreement within 0.01 after discretization) — and, in the tiny-jump limit, recovery of the Gaussian forward-FK solver of the companion paper (&lt;0.02).</p>
+</section>
+<section id="sec-findings" class="level1">
+<h1>Findings</h1>
+<p>Variance-matched comparison at <span class="math inline">\(T=1\)</span>, <span class="math inline">\(c=1\)</span>, <span class="math inline">\(b=0.15\)</span> (<span class="citation" data-cites="tab-clocks">(<a href="#ref-tab-clocks" role="doc-biblioref"><strong>tab-clocks?</strong></a>)</span>):</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><span class="math inline">\(\xi\)</span></th>
+<th>Gaussian</th>
+<th>VG PIDE (MC)</th>
+<th>NIG PIDE (MC)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0.5</td>
+<td>+0.9949+0.0334j</td>
+<td>+0.9960+0.0092j (+0.9960+0.0087j)</td>
+<td>+0.9948−0.0243j (+0.9949−0.0220j)</td>
+</tr>
+<tr class="even">
+<td>1.0</td>
+<td>+0.9796+0.0660j</td>
+<td>+0.9841+0.0187j (+0.9840+0.0177j)</td>
+<td>+0.9793−0.0478j (+0.9798−0.0432j)</td>
+</tr>
+<tr class="odd">
+<td>2.0</td>
+<td>+0.9204+0.1255j</td>
+<td>+0.9384+0.0388j (+0.9383+0.0369j)</td>
+<td>+0.9196−0.0895j (+0.9214−0.0807j)</td>
+</tr>
+</tbody>
+</table>
+<ol type="1">
+<li><strong>Halved clock mean</strong>: VG with <span class="math inline">\(\theta=-0.12\)</span> gives <span class="math inline">\(E[A_T]=0.0350\)</span> vs Gaussian <span class="math inline">\(0.0730\)</span> — marginal calibration of the driver does not pin down path-dependent correlation risk.</li>
+<li><strong>Sign flip</strong>: NIG with <span class="math inline">\(\beta=-2\)</span> makes <span class="math inline">\(\operatorname{Im}\phi_A(\xi)&lt;0\)</span>: negative average correlation from a driver whose marginals match a positive-correlation Gaussian specification (<a href="#fig-clock" class="quarto-xref">Figure&nbsp;1</a>).</li>
+</ol>
+<div id="fig-clock" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-clock-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="figures/phase11_clock_densities.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: Clock densities under jump vs Gaussian drivers: Fourier-inverted PIDE transforms vs MC histogram."><img src="figures/phase11_clock_densities.png" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-clock-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Clock densities under jump vs Gaussian drivers: Fourier-inverted PIDE transforms vs MC histogram.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="sec-anchors" class="level1">
+<h1>Implementation anchors</h1>
+<p>Two silent-corruption bugs were caught by requiring samplers and exponents to agree: (i) the gamma subordinator’s scale parameter must be <span class="math inline">\(\nu\)</span> (so <span class="math inline">\(E[G_t]=t\)</span>), not unity; (ii) exponent functions are <em>characteristic</em> exponents — real arguments are frequencies, and passing imaginary arguments silently produced real-valued garbage. We also record that a gradient-compensation term added on top of shifted convolution weights double-counts the truncated first moment and biases the process mean by exactly the Lévy-mean contribution. These are exactly the failure classes that marginal-only validation misses.</p>
+</section>
+<section id="sec-related" class="level1">
+<h1>Related literature</h1>
+<p>Lévy-driven stochastic volatility is standard (Bates; NIG-GARCH); Lévy drivers of a <em>bounded dependence coordinate</em> are absent from the audited corpus. FK integro-differential theory is classical <span class="citation" data-cites="sato1999">(<a href="#ref-sato1999" role="doc-biblioref">Sato 1999</a>)</span>; Gil–Pelaez inversion and small-jump approximations are standard tools; our contribution is their assembly into an exact pricing stack for correlation, plus the survival/collapse analysis.</p>
+</section>
+<section id="sec-conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>Jumps cost the reflection toolkit but not the transform stack. The practical message is sharp: calibrating a correlation model’s marginals — under any driver — says almost nothing about its path-dependent risk, and jump asymmetry moves the latter by economically large factors.</p>
+</section>
+<section id="sec-repro" class="level1">
+<h1>Reproducibility</h1>
+<p>Environment: conda <code>phase3-paper</code> (Python 3.12.13, numpy 2.5.1, scipy 1.18.0). Notebook <code>notebooks/phase11_levy.ipynb</code> (~321 s, seed 20260821); module <code>phase11_levy.py</code>; tests <code>tests/test_phase11_levy.py</code> (9/9).</p>
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-sato1999" class="csl-entry" role="listitem">
+Sato, Ken-iti. 1999. <em>L<span>é</span>vy Processes and Infinitely Divisible Distributions</em>.
+</div>
+<div id="ref-teng2016" class="csl-entry" role="listitem">
+Teng, Long, Matthias Ehrhardt, and Michael Günther. 2016. <span>“Modelling Stochastic Correlation.”</span> <em>Journal of Mathematics in Industry</em> 6 (1): 1–18. <a href="https://doi.org/10.1186/s13362-016-0018-4">https://doi.org/10.1186/s13362-016-0018-4</a>.
+</div>
+</div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>

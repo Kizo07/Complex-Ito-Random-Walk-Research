@@ -1,0 +1,40 @@
+/*-- scss:defaults --*/
+$font-family-sans-serif: "Source Sans 3", "Source Sans Pro", sans-serif;
+$font-family-monospace: "Source Code Pro", monospace;
+$body-color: #17212b;
+$link-color: #135f75;
+
+/*-- scss:rules --*/
+.quarto-title-block .quarto-title-banner {
+  background: linear-gradient(120deg, #173f5f, #135f75);
+}
+
+.quarto-title-banner,
+.quarto-title-banner h1,
+.quarto-title-banner .subtitle,
+.quarto-title-banner p,
+.quarto-title-banner a {
+  color: #ffffff !important;
+}
+
+.quarto-title-banner .quarto-title-meta-heading,
+.quarto-title-banner .keywords {
+  color: #d7eef5 !important;
+}
+
+.callout {
+  border-radius: 0.25rem;
+}
+
+figure figcaption {
+  text-align: left;
+}
+
+table {
+  font-variant-numeric: tabular-nums;
+}
+
+.theorem,
+.proof {
+  max-width: 100%;
+}
