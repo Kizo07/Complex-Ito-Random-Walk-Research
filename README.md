@@ -1,4 +1,76 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![Tests](https://img.shields.io/badge/tests-192%2F192-brightgreen)
+![Phases](https://img.shields.io/badge/phases-13%20complete-blue)
+![Reproducibility](https://img.shields.io/badge/seed-20260821-informational)
+
 # Complex–Itô Random-Walk Research
+
+A research program that starts from a rigorous bridge between complex polar
+form, Brownian quadratic variation, Itô's lemma, and random walks — and
+grows into an **exact-law framework for stochastic correlation**: a
+bounded-factor construction $ho_t=X_t/\sqrt{X_t^2+c^2}$ in which every
+object a derivatives desk needs is available in closed form or as a
+deterministic quadrature.
+
+## Headline results
+
+| # | Result | Phase |
+|---|--------|-------|
+| 1 | Complex embedding of arithmetic Brownian motion with stochastic radius | 1–4 |
+| 2 | One-phase Euler coordinates: exact classification & pricing conjugacy | 5 |
+| 3 | Exact bounded correlation: transitions, barriers, corridors, clock law | 6 |
+| 4 | Static inheritance + proportional-drift class; **forward-FK discovery** (backward equation fails off constant coefficients) | 7 |
+| 5 | Exact 1-D characteristic function of spread/basket returns; COS pricing; **opposite-curvature implied-correlation smiles** | 8 |
+| 6 | **Scale observational equivalence** theorem + closed-form exact MLE; empirical study on S&P pairs | 9 |
+| 7 | **Phase-Gram**: Gaussian-driven triangular angles → correlation matrices with exact finite-time law | 10 |
+| 8 | Lévy-powered drivers: marginals & clock survive via FK-PIDE; jump asymmetry flips the clock drift sign | 11 |
+| 9 | Pegged assets: defended bands, credibility clocks, closed-form de-peg derivatives | 12 |
+
+Everything is verified: **192/192 unit tests**, every notebook executed from
+a clean kernel with fixed seed `20260821`, all claims web-audited against
+the literature with per-phase novelty boundaries.
+
+## Technical papers
+
+Rendered manuscripts (Quarto, HTML + PDF under each `output/` directory):
+
+| Paper | Source |
+|-------|--------|
+| A Faithful One-Driver Complex Embedding of Arithmetic Brownian Motion | [`paper/phase3`](paper/phase3/index.qmd) |
+| Native Complex Geometric Brownian Motion | [`paper/phase4`](paper/phase4/index.qmd) |
+| One-Phase Euler Coordinates for Affine Brownian Factors | [`paper/one-phase-euler`](paper/one-phase-euler/index.qmd) |
+| Exact Bounded Correlation | [`paper/phase6`](paper/phase6/index.qmd) |
+| Exact Term Structure of Stochastic Correlation | [`paper/phase7`](paper/phase7/index.qmd) |
+| Fourier Pricing of Spread and Basket Options under Stochastic Correlation | [`paper/phase8`](paper/phase8/index.qmd) |
+| What Can Be Estimated? Scale Observational Equivalence and Exact MLE | [`paper/phase9`](paper/phase9/index.qmd) |
+| Phase-Gram: Correlation Matrices with Exact Finite-Time Law | [`paper/phase10`](paper/phase10/index.qmd) |
+| Lévy-Powered Bounded Factors | [`paper/phase11`](paper/phase11/index.qmd) |
+| The Economics of De-Peg | [`paper/phase12`](paper/phase12/index.qmd) |
+
+Consolidated theory statement: [`PHASE_13_FLAGSHIP_MANUSCRIPT.md`](PHASE_13_FLAGSHIP_MANUSCRIPT.md).
+
+## Repository layout
+
+```
+├── PHASE_{1..12}_*.md        # per-phase plans, literature reviews,
+│                             #   simulation records, syntheses
+├── PHASE_13_FLAGSHIP_MANUSCRIPT.md
+├── phase{6..12}_*.py         # research modules (one per phase ≥ 6)
+├── tests/                    # 192 unit tests across all modules
+├── notebooks/                # builders + executed discovery notebooks
+├── paper/                    # Quarto manuscripts (HTML + PDF outputs)
+└── .agent/                   # session status, handoffs, reviews
+```
+
+## Getting started
+
+```bash
+conda activate phase3-paper     # Python 3.12, numpy/scipy/matplotlib
+python -m unittest discover -s tests      # 192 tests
+quarto render paper/phaseN                # any manuscript, N in {3,4,6..12}
+```
+
+---
 
 This folder develops and numerically checks a rigorous bridge between complex
 polar form, Brownian quadratic variation, Itô's lemma, and random walks.
