@@ -1,0 +1,9 @@
+{
+  "matplotlib": "3.11.1",
+  "numpy": "2.5.1",
+  "platform": "Linux-7.2.0-1-cachyos-x86_64-with-glibc2.44",
+  "python": "3.12.13",
+  "scipy": "1.18.0",
+  "script": "scripts/build_phase14_figures.py",
+  "seed": 20260822
+}
