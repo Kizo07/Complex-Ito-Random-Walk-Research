@@ -1,6 +1,6 @@
 # Technical Papers
 
-This directory contains three independent Quarto manuscript projects. Each
+This directory contains independent Quarto manuscript projects. Each
 project owns its notebook, figures, tables, bibliography, styles, filters, and
 rendered outputs.
 
@@ -118,4 +118,26 @@ All six follow the same isolated-project layout as phases 3/4/6. Render:
 
 ```bash
 quarto render paper/phaseN   # N in {7,...,12}
+```
+
+## Phase 14
+
+**Hidden Exactness in Bounded-Factor Stochastic Models: Variance-Mixture
+Smiles, Leverage Closure, and Phase-Gram Stationarity**
+
+- author: Kanav Mehta
+- manuscript: [`phase14/index.qmd`](phase14/index.qmd)
+- source audit: [`phase14/RESEARCH_NOTES.md`](phase14/RESEARCH_NOTES.md)
+- deterministic figure builder:
+  [`phase14/scripts/build_phase14_figures.py`](phase14/scripts/build_phase14_figures.py)
+- PDF:
+  [`phase14/output/hidden-exactness-bounded-factor-models.pdf`](phase14/output/hidden-exactness-bounded-factor-models.pdf)
+- HTML:
+  [`phase14/output/hidden-exactness-bounded-factor-models.html`](phase14/output/hidden-exactness-bounded-factor-models.html)
+
+Render from the repository root:
+
+```bash
+conda run -n phase3-paper python paper/phase14/scripts/build_phase14_figures.py
+quarto render paper/phase14
 ```

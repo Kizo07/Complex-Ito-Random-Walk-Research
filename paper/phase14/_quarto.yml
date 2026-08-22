@@ -1,0 +1,59 @@
+project:
+  type: manuscript
+  output-dir: output
+  render:
+    - index.qmd
+
+manuscript:
+  article: index.qmd
+
+bibliography: references.bib
+
+filters:
+  - filters/format-figures.lua
+
+execute:
+  freeze: auto
+
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    theme:
+      - cosmo
+      - styles/paper.scss
+    link-external-newwindow: true
+    smooth-scroll: true
+  pdf:
+    pdf-engine: lualatex
+    documentclass: scrartcl
+    papersize: letter
+    fontsize: 11pt
+    geometry:
+      - top=0.92in
+      - bottom=0.92in
+      - inner=1.0in
+      - outer=1.0in
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    colorlinks: true
+    keep-tex: true
+    fig-pos: tbp
+    include-in-header:
+      - tex/header-includes.tex
+
+crossref:
+  fig-title: Figure
+  tbl-title: Table
+  eq-prefix: Eq.
+  sec-prefix: Section
+  thm-title: Theorem
+  lem-title: Lemma
+  cor-title: Corollary
+  prp-title: Proposition
+  def-title: Definition
+  exm-title: Example
+
+lang: en

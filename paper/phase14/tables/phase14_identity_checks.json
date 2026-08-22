@@ -1,0 +1,50 @@
+{
+  "leverage": {
+    "conditional_gauge_cf_max_gap": 3.868917235e-05,
+    "direct_conditional_cf_max_gap": 0.001627827791,
+    "direct_mc_se_max": 0.003131701429,
+    "ito_gauge_rms": 0.004007485459,
+    "n_paths": 100000,
+    "n_steps": 512,
+    "residual_covariance_min_eigenvalue": 0.815
+  },
+  "nonautonomous_reference": {
+    "absolute_gap": 0.8886725282,
+    "lambda": 0.7,
+    "misordered_mean": 0.9923333333,
+    "misordered_transform": 2.854769559,
+    "misordered_variance": 1.446358333,
+    "ratio": 1.451998306,
+    "time": 1.3,
+    "true_mean": 0.6261666667,
+    "true_transform": 1.966097031,
+    "true_variance": 0.9703416667
+  },
+  "phase8_wedge": {
+    "basket_curvature": 0.006159846206,
+    "basket_formula_atm": 0.08200930238,
+    "basket_inverted_atm": 0.08200930238,
+    "basket_jensen_correction": -0.02461941937,
+    "clock_mean": 0.1066287218,
+    "clock_variance": 0.1117383865,
+    "density_clock_mean": 0.1066272684,
+    "density_clock_variance": 0.1117392671,
+    "density_mass": 1.0,
+    "density_mean_error": -1.453321465e-06,
+    "density_variance_error": 8.805566584e-07,
+    "spread_curvature": -0.007992574981,
+    "spread_formula_atm": 0.1345296976,
+    "spread_inverted_atm": 0.1345296976,
+    "spread_jensen_correction": 0.02790097581
+  },
+  "seed": 20260822,
+  "two_point_inverted_atm_std": 1.975,
+  "two_point_mixture": {
+    "atm_implied_std": 1.975,
+    "atm_implied_std_second": 0.1036708861,
+    "atm_implied_variance_second": 0.4095,
+    "e_inverse_scale": 0.61,
+    "e_scale": 1.975,
+    "variance_scale": 0.511875
+  }
+}

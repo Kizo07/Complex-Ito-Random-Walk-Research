@@ -1,0 +1,25 @@
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{scrlayer-scrpage}
+\usepackage{etoolbox}
+
+\definecolor{PhaseNavy}{HTML}{153B55}
+\definecolor{PhaseTeal}{HTML}{0F6573}
+\definecolor{PhaseRust}{HTML}{A24D2F}
+
+\clearpairofpagestyles
+\ihead{\footnotesize\color{PhaseNavy}Hidden Exactness in Bounded-Factor Stochastic Models}
+\ohead{\footnotesize\color{PhaseTeal}Kanav Mehta}
+\cfoot{\pagemark}
+\setheadsepline{0.35pt}[\color{PhaseTeal}]
+
+\addtokomafont{section}{\color{PhaseNavy}}
+\addtokomafont{subsection}{\color{PhaseTeal}}
+\addtokomafont{subsubsection}{\color{PhaseTeal}}
+\setkomafont{pageheadfoot}{\normalfont}
+
+\AtBeginEnvironment{proof}{\small}
+\setlength{\emergencystretch}{2em}
