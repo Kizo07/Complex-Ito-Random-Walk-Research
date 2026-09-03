@@ -493,30 +493,52 @@ for \(T\ge1.5\), on the reduced grid (3 rate pairs \(\times\)
 \(\sigma\in\{0.2,0.4\}\) \(\times\) \(T\in\{0.5,1,3\}\) \(\times\) both
 kinds \(\times\) \(S\in\{90,100,110\}\)):
 
-\begin{longtable}[]{@{}lll@{}}
-\caption{Reduced-grid errors against the reference
-solver.}\label{tbl-reduced}\tabularnewline
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2424}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1818}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3636}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2121}}@{}}
+\caption{Reduced-grid errors against the converged tree
+oracle.}\label{tbl-reduced}\tabularnewline
 \toprule\noalign{}
-Method & RMSE & MAE \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Method
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+RMSE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MAE (mean)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MaxAE
+\end{minipage} \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Method & RMSE & MAE \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Method
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+RMSE
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MAE (mean)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+MaxAE
+\end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-PPA (\(m=10\), pinned) & \textbf{0.0079} & 0.054 \\
-Phase 15 spiral (collocated) & 0.0066 & \textbf{0.039} \\
-Barone-Adesi--Whaley & 0.164 & 0.437 \\
+PPA (\(m=10\), pinned) & 0.0024 & 0.00086 & 0.017 \\
+Phase 15 spiral (revised, collocated) & \textbf{0.00066} &
+\textbf{0.00043} & \textbf{0.0028} \\
+Barone-Adesi--Whaley & 0.161 & 0.096 & 0.427 \\
 \end{longtable}
 
-The PPA formula matches the Phase 15 spiral in RMSE and removes its
-quadrature entirely; its MAE is dominated by the \(T=3\) configurations,
-where the reference boundary itself is uncertain at the same order
-(Section~\ref{sec-scope}). The extended 90-configuration grid
-(\(\sigma\) up to \(0.6\), five spots) gives PPA RMSE \(0.016\) / MAE
-\(0.167\) versus \(0.285/1.143\) for BAW (Table~\ref{tbl-extended}).
+Honest reading: the \emph{revised} Phase 15 spiral family (regime-aware
+bases, four-node collocation) is the more accurate boundary model on
+this grid; the PPA construction's contribution is structural --- it is
+the quadrature-free pricing layer (and the machine-precision occupation
+resolvent it is built on), at a modest accuracy cost relative to the
+spiral. The extended 90-configuration grid (\(\sigma\) up to \(0.6\),
+five spots) is reported in Table~\ref{tbl-extended}.
 
 \begin{figure}[tbp]
 
@@ -539,29 +561,29 @@ the reference put boundary, base case. Right: error vs \(m\).}
 
 }
 
-\caption{\label{fig-benchmark}RMSE/MAE against the reference solver on
+\caption{\label{fig-benchmark}RMSE/MAE/MaxAE against the tree oracle on
 the reduced grid.}
 
 \end{figure}%
 
 \subsection{Extended grid}\label{sec-extended}
 
-\begin{longtable}[]{@{}lll@{}}
-\caption{Extended 90-configuration benchmark against the reference
-solver.}\label{tbl-extended}\tabularnewline
+\begin{longtable}[]{@{}llll@{}}
+\caption{Extended 90-configuration benchmark against the converged tree
+oracle (N=8000).}\label{tbl-extended}\tabularnewline
 \toprule\noalign{}
-Method & RMSE & MAE \\
+Method & RMSE & MAE (mean) & MaxAE \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Method & RMSE & MAE \\
+Method & RMSE & MAE (mean) & MaxAE \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-PPA (\(m=10\), pinned) & 0.0159 & \textbf{0.167} \\
-Phase 15 spiral (collocated) & \textbf{0.0158} & 0.181 \\
-Barone-Adesi--Whaley & 0.285 & 1.143 \\
+PPA (\(m=10\), pinned) & 0.0146 & 0.0026 & 0.212 \\
+Phase 15 spiral (revised) & 0.0017 & 0.0010 & 0.008 \\
+Barone-Adesi--Whaley & 0.2789 & 0.1620 & 1.131 \\
 \end{longtable}
 
 \section{Structural finding: the perpetual approach is not
@@ -645,17 +667,21 @@ s), zero integration.
   \emph{given the piecewise phase-affine boundary}, whose knots are
   numerical (Tier A) --- honest positioning, not a claim of solution.
 \item
-  \textbf{Reference uncertainty at long maturity.} The sequential
-  level-set reference solver accumulates small numerical differences
-  over its \(\sim250\) causal steps: boundary values at \(T=3\) differ
-  at the \(10^{-2}\)--\(10^{-1}\) scale across environments (e.g.~numpy
-  SIMD rounding), and prices at the \(10^{-2}\) scale (stationarity
-  keeps this one-to-two orders below the boundary differences). At
-  \(T=3\) the reference-vs-CRR spread is of the same order as the
-  formula errors, so the \(T=3\) MAE entries in
-  Table~\ref{tbl-reduced}--Table~\ref{tbl-extended} mix formula error
-  and reference uncertainty; for \(T\le1\) all formula errors are
-  \(\le0.013\).
+  \textbf{No hidden clipping.} PPA prices are the raw European +
+  closed-form EEP values; with approximate knots they can sit slightly
+  outside no-arbitrage bounds, and those deviations are visible in the
+  CSVs as diagnostic information rather than projected away. The bounds
+  \(C_A\le S\), \(P_A\le K\) are not enforced by the formula.
+\item
+  \textbf{The Volterra solver is not the oracle.} Its grid sensitivity
+  and flat-step fallbacks are documented in the Phase 15 revision; every
+  number in this paper is measured against the converged
+  Broadie--Detemple adjacent-averaged tree (spread reported per row).
+\item
+  \textbf{Environment sensitivity.} Long-maturity prices also drift at
+  the \(10^{-2}\) scale with environment-level floating-point
+  differences (e.g.~numpy SIMD paths); all paper numbers come from one
+  environment (\texttt{phase3-paper}).
 \item
   \textbf{Tier A is not evaluation-only.} The \(m\) scalar root-finds
   are fast but numerical; Tier B (explicit surfaces) is open

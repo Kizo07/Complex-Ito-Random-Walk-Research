@@ -193,14 +193,18 @@ def eep_ppa_closed(S, tau, knots_u, knots_v, K, r, q, sigma, kind):
 
 
 def american_ppa_from_knots(S, tau, knots_u, knots_v, K, r, q, sigma, kind):
-    """European + closed-form multipiece EEP."""
+    """European + closed-form multipiece EEP — the RAW formula.
+
+    No clipping or projection (review of 2026-09-02, claim 7): for
+    approximate knots the raw value can sit slightly outside no-arbitrage
+    bounds; that deviation is diagnostic information, not hidden by a
+    max().
+    """
     if tau <= 0.0:
         return max(S - K, 0.0) if kind == "call" else max(K - S, 0.0)
     euro = bs_european(S, K, r, q, sigma, tau, kind)
     prem = eep_ppa_closed(S, tau, knots_u, knots_v, K, r, q, sigma, kind)
-    price = euro + prem
-    intrinsic = max(S - K, 0.0) if kind == "call" else max(K - S, 0.0)
-    return max(price, euro, intrinsic)
+    return euro + prem
 
 
 # ---------------------------------------------------------------------------

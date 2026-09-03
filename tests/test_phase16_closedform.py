@@ -136,25 +136,32 @@ class TestPPAPricing(unittest.TestCase):
         ku2, kv2 = p16.solve_ppa_pinned(K, R, Q, SIG, 0.5, "put", m=8)
         self.assertNotAlmostEqual(math.exp(kv2[-1]), b_inf, places=1)
 
-    def test_price_bounds(self):
-        price, _, _ = p16.american_ppa_auto(100.0, K, R, Q, SIG, T, "call",
-                                            m=8)
+    def test_price_raw_formula_no_clipping(self):
+        # Review of 2026-09-02, claim 7: the PPA price must equal
+        # European + closed-form multipiece EEP exactly, with no hidden
+        # max().
+        ku, kv = p16.solve_ppa_pinned(K, R, Q, SIG, T, "call", m=8)
         euro = p15.bs_european(100.0, K, R, Q, SIG, T, "call")
-        self.assertGreaterEqual(price, euro - 1e-10)
-        self.assertLessEqual(price, 100.0)
+        prem = p16.eep_ppa_closed(100.0, T, ku, kv, K, R, Q, SIG, "call")
+        price = p16.american_ppa_from_knots(100.0, T, ku, kv, K, R, Q,
+                                            SIG, "call")
+        self.assertAlmostEqual(price, euro + prem, places=12)
+
+    def test_ppa_close_to_oracle(self):
+        oracle, spread = p15.tree_oracle(100.0, K, R, Q, SIG, T, "put",
+                                         Ns=(4000, 6000, 8000))
+        self.assertLess(spread, 2e-3)
+        price, _, _ = p16.american_ppa_auto(100.0, K, R, Q, SIG, T, "put",
+                                            m=8)
+        self.assertLess(abs(price - oracle), 1e-2)
 
     def test_ppa_beats_baw_atm(self):
-        bd = self.refs["put"]
-        err_ppa = err_baw = 0.0
-        for S in (90.0, 100.0, 110.0):
-            ref = p15.american_from_boundary(S, T, bd, K, R, Q, SIG, "put",
-                                             n_quad=96)
-            price, _, _ = p16.american_ppa_auto(S, K, R, Q, SIG, T, "put",
-                                                m=8)
-            err_ppa = max(err_ppa, abs(price - ref))
-            err_baw = max(err_baw, abs(p15.baw(S, K, R, Q, SIG, T, "put")
-                                       - ref))
-        self.assertLess(err_ppa, err_baw)
+        oracle, _ = p15.tree_oracle(100.0, K, R, Q, SIG, T, "put",
+                                    Ns=(4000, 6000, 8000))
+        price, _, _ = p16.american_ppa_auto(100.0, K, R, Q, SIG, T, "put",
+                                            m=8)
+        baw = p15.baw(100.0, K, R, Q, SIG, T, "put")
+        self.assertLess(abs(price - oracle), abs(baw - oracle))
 
 
 if __name__ == "__main__":

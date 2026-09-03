@@ -46,21 +46,28 @@ anywhere.**
 
 Recommended configuration m=10: ~0.07 s per option.
 
-## 4. Numbers (all produced in the phase3-paper shipping environment)
+## 4. Numbers — REVISED 2026-09-03 (oracle-based, correct labels)
+
+After the Phase 15 review all benchmarks were recomputed against the
+converged Broadie–Detemple adjacent-averaged tree oracle (RMSE / true
+MAE / MaxAE; the Volterra solver is not the oracle anywhere):
 
 Reduced grid (18 configs × 3 spots, T ≤ 3):
-- PPA: RMSE 0.0079, MAE 0.054
-- Phase 15 spiral: RMSE 0.0066, MAE 0.039
-- BAW: RMSE 0.164, MAE 0.437
+- PPA (m=10): RMSE 0.0024, MAE 0.00086, MaxAE 0.017
+- Phase 15 spiral (revised family): RMSE 0.00066, MAE 0.00043, MaxAE 0.0028
+- BAW: RMSE 0.161, MAE 0.096, MaxAE 0.427
 
 Extended grid (90 configs × 5 spots, σ ≤ 0.6):
-- PPA: RMSE 0.0159, MAE 0.167
-- Phase 15 spiral: RMSE 0.0158, MAE 0.181
-- BAW: RMSE 0.285, MAE 1.143
+- PPA (m=10): RMSE 0.0146, MAE 0.0026, MaxAE 0.212
+- Phase 15 spiral (revised family): RMSE 0.0017, MAE 0.00096, MaxAE 0.0081
+- BAW: RMSE 0.279, MAE 0.162, MaxAE 1.131
 
-MAE is dominated by T=3 configurations where the reference boundary
-itself carries uncertainty of the same order (see §5); for T ≤ 1 all
-formula errors are ≤ 0.013.
+Honest reading: the revised Phase 15 spiral is the more accurate
+boundary model; Phase 16's contribution is the quadrature-free pricing
+layer and the machine-precision occupation resolvent. PPA worst case:
+(r=0.1, q=0.05, σ=0.2, T=3, put, S=80), error −0.21 (deep-ITM
+long-maturity put). The substituted-boundary functional is first-order
+sensitive to boundary error — no stationarity claim is made anywhere.
 
 ## 5. Structural findings (documented in the paper)
 

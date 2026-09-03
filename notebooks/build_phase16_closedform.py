@@ -267,8 +267,13 @@ cells = [
         r"""
         ## 4. Perpetual pinning and the reduced-grid benchmark
 
-        For \(T\ge1\) the last knot is pinned at \(\ln b_\infty\); interior
-        knots are collocated. Recommended configuration: \(m=10\).
+        For \(T\ge1.5\) the last knot is pinned at \(\ln b_\infty\);
+        interior knots are collocated. Recommended configuration:
+        \(m=10\). **Revised after the review of 2026-09-02:** all errors
+        are measured against the converged Broadie–Detemple
+        adjacent-averaged tree oracle (not the grid-sensitive Volterra
+        solver), and metric labels are RMSE / true MAE (mean) / maximum
+        absolute error.
         """
     ),
     code(
@@ -282,62 +287,63 @@ cells = [
 
         bench = []
         for r_, q_, sig_, T_, kind in grid:
-            taus, bvals = p15.solve_boundary(K, r_, q_, sig_, T_, kind,
-                                             n_grid=250, n_quad=48,
-                                             delta=1e-8)
-            bd = lambda tau, ts=taus, bv=bvals: float(np.interp(tau, ts, bv))
             ku, kv = p16.solve_ppa_pinned(K, r_, q_, sig_, T_, kind, m=10)
-            k1, k2, eta, _ = p15.spiral_collocation(K, r_, q_, sig_, T_,
-                                                    kind)
+            k1, k2, el, er, _ = p15.spiral_collocation(K, r_, q_, sig_,
+                                                       T_, kind)
             for S in (90.0, 100.0, 110.0):
-                ref = p15.american_from_boundary(S, T_, bd, K, r_, q_,
-                                                 sig_, kind, n_quad=96)
+                oracle, spread = p15.tree_oracle(S, K, r_, q_, sig_, T_,
+                                                 kind, Ns=(8000, 12000))
                 ppa = p16.american_ppa_from_knots(S, T_, ku, kv, K, r_, q_,
                                                   sig_, kind)
                 sp, *_ = p15.american_spiral(S, K, r_, q_, sig_, T_, kind,
-                                             params=(k1, k2, eta))
+                                             params=(k1, k2, el, er))
                 bw = p15.baw(S, K, r_, q_, sig_, T_, kind)
                 bench.append(dict(r=r_, q=q_, sigma=sig_, T=T_, kind=kind,
-                                  S=S, ref=ref, ppa=ppa, spiral=sp, baw=bw))
+                                  S=S, oracle=oracle, spread=spread,
+                                  ppa=ppa, spiral=sp, baw=bw))
 
         arr = {k: np.array([x[k] for x in bench])
-               for k in ("ref", "ppa", "spiral", "baw")}
+               for k in ("oracle", "ppa", "spiral", "baw")}
         summary = {}
+        print(f"{'method':>8} {'RMSE':>9} {'MAE':>9} {'MaxAE':>9}")
         for name in ("ppa", "spiral", "baw"):
-            d = arr[name] - arr["ref"]
+            d = arr[name] - arr["oracle"]
             summary[name] = dict(rmse=float(np.sqrt(np.mean(d ** 2))),
-                                 mae=float(np.max(np.abs(d))))
-            print(f"{name:>7} vs reference: RMSE={summary[name]['rmse']:.5f} "
-                  f"MAE={summary[name]['mae']:.5f}")
+                                 mae=float(np.mean(np.abs(d))),
+                                 maxae=float(np.max(np.abs(d))))
+            print(f"{name:>8} {summary[name]['rmse']:>9.5f} "
+                  f"{summary[name]['mae']:>9.5f} "
+                  f"{summary[name]['maxae']:>9.5f}")
         with open(TABLES / "benchmark_reduced.csv", "w") as f:
-            f.write("r,q,sigma,T,kind,S,ref,ppa,spiral,baw\n")
+            f.write("r,q,sigma,T,kind,S,oracle,spread,ppa,spiral,baw\n")
             for x in bench:
                 f.write(f"{x['r']},{x['q']},{x['sigma']},{x['T']},"
-                        f"{x['kind']},{x['S']},{x['ref']:.6f},"
-                        f"{x['ppa']:.6f},{x['spiral']:.6f},"
-                        f"{x['baw']:.6f}\n")
+                        f"{x['kind']},{x['S']},{x['oracle']:.6f},"
+                        f"{x['spread']:.6f},{x['ppa']:.6f},"
+                        f"{x['spiral']:.6f},{x['baw']:.6f}\n")
         print("saved phase16_tables/benchmark_reduced.csv")
-        worst_row = max(bench, key=lambda x: abs(x["ppa"] - x["ref"]))
+        worst_row = max(bench, key=lambda x: abs(x["ppa"] - x["oracle"]))
         print(f"worst PPA case: r={worst_row['r']} q={worst_row['q']} "
               f"sig={worst_row['sigma']} T={worst_row['T']} "
               f"{worst_row['kind']} S={worst_row['S']} "
-              f"err={worst_row['ppa'] - worst_row['ref']:+.5f}")
+              f"err={worst_row['ppa'] - worst_row['oracle']:+.5f}")
         """
     ),
     code(
         r"""
-        fig, ax = plt.subplots(figsize=(5.2, 3.4))
+        fig, ax = plt.subplots(figsize=(5.6, 3.4))
         names = ["PPA", "Phase-15 spiral", "BAW"]
-        rms = [summary["ppa"]["rmse"], summary["spiral"]["rmse"],
-               summary["baw"]["rmse"]]
-        mae = [summary["ppa"]["mae"], summary["spiral"]["mae"],
-               summary["baw"]["mae"]]
+        keys = ("ppa", "spiral", "baw")
         xs = np.arange(3)
-        ax.bar(xs - 0.2, rms, width=0.4, label="RMSE")
-        ax.bar(xs + 0.2, mae, width=0.4, label="MAE")
+        ax.bar(xs - 0.27, [summary[k]["rmse"] for k in keys], width=0.27,
+               label="RMSE")
+        ax.bar(xs, [summary[k]["mae"] for k in keys], width=0.27,
+               label="MAE")
+        ax.bar(xs + 0.27, [summary[k]["maxae"] for k in keys], width=0.27,
+               label="MaxAE")
         ax.set_xticks(xs)
         ax.set_xticklabels(names)
-        ax.set_ylabel("error vs reference")
+        ax.set_ylabel("error vs tree oracle")
         ax.set_title("Reduced-grid benchmark (Phase 16)")
         ax.legend(fontsize=8)
         fig.tight_layout()
@@ -397,14 +403,15 @@ cells = [
         r"""
         ## 6. Tier B probe: eliminating the collocation solves
 
-        Can \((\kappa_1,\kappa_2,\eta)\) of the spiral be replaced by
-        explicit parameter surfaces \(\kappa_i(r,q,\sigma,T)\), removing
-        even the scalar solves? A 13-term quadratic feature fit on this
-        grid says: not yet at useful accuracy — the price RMSE degrades
-        from \(\approx0.009\) (collocated) to \(\approx0.05\). Documented
-        as an open direction (likely needs \(T\)-band partitioning or
-        richer bases); the PPA collocation (ten 1-D solves, \(\sim0.1\) s)
-        remains the operative recipe.
+        Can the spiral's collocated parameters
+        \((\kappa_1,\kappa_2,h_{\log},h_{\mathrm{root}})\) be replaced
+        by explicit surfaces over \((r,q,\sigma,T)\), removing even the
+        scalar solves? We fit 13-term quadratic feature surfaces per
+        parameter and per kind on the reduced grid, then price
+        end-to-end against the oracle. Measured degradation below —
+        documented as an open direction (likely needs \(T\)-band
+        partitioning or richer bases); the PPA collocation remains the
+        operative recipe.
         """
     ),
     code(
@@ -420,22 +427,56 @@ cells = [
         prm = {}
         for c in cfgs:
             r_, q_, sig_, T_, kind = c
-            k1, k2, eta, _ = p15.spiral_collocation(K, r_, q_, sig_, T_,
-                                                    kind)
-            prm[c] = (k1, k2, eta)
-        fit_rmse = []
+            k1, k2, el, er, _ = p15.spiral_collocation(K, r_, q_, sig_,
+                                                       T_, kind)
+            s_phi = 1.0 if kind == "call" else -1.0
+            prm[c] = (k1, k2, s_phi * el, s_phi * er)  # magnitudes
+        coefs = {kind: [] for kind in ("call", "put")}
+        fit_rms = []
         for kind in ("call", "put"):
             sub = [c for c in cfgs if c[4] == kind]
             F = np.vstack([features(*c[:4]) for c in sub])
             ks = np.array([prm[c] for c in sub])
-            for j in range(3):
+            for j in range(4):
                 coef, *_ = np.linalg.lstsq(F, ks[:, j], rcond=None)
-                fit_rmse.append(float(np.sqrt(np.mean(
+                coefs[kind].append(coef)
+                fit_rms.append(float(np.sqrt(np.mean(
                     (F @ coef - ks[:, j]) ** 2))))
-        print("surface fit RMS (k1,k2,eta per kind): "
-              + " ".join(f"{v:.3f}" for v in fit_rmse))
-        print("=> price RMSE with surfaces ~0.05 vs 0.009 collocated "
-              "(from the extended experiment); Tier B open")
+        print("surface fit RMS (k1,k2,h_log,h_root per kind): "
+              + " ".join(f"{v:.3f}" for v in fit_rms))
+
+        # end-to-end: surface-driven spiral prices vs oracle
+        d_col = []
+        d_surf = []
+        for c in cfgs:
+            r_, q_, sig_, T_, kind = c
+            k1, k2, el, er = prm[c]
+            s_phi = 1.0 if kind == "call" else -1.0
+            f = features(*c[:4])
+            k1s, k2s, hls, hrs = [float(f @ coefs[kind][j])
+                                  for j in range(4)]
+            for S in (90.0, 100.0, 110.0):
+                oracle, _ = p15.tree_oracle(S, K, r_, q_, sig_, T_, kind,
+                                            Ns=(8000,))
+                pc, *_ = p15.american_spiral(S, K, r_, q_, sig_, T_, kind,
+                                             params=(k1, k2, s_phi * el,
+                                                     s_phi * er))
+                ps, *_ = p15.american_spiral(S, K, r_, q_, sig_, T_, kind,
+                                             params=(k1s, k2s, s_phi * hls,
+                                                     s_phi * hrs))
+                d_col.append(pc - oracle)
+                d_surf.append(ps - oracle)
+        d_col = np.array(d_col)
+        d_surf = np.array(d_surf)
+        tierb = {
+            "collocated_rmse": float(np.sqrt(np.mean(d_col ** 2))),
+            "surface_rmse": float(np.sqrt(np.mean(d_surf ** 2))),
+            "surface_maxae": float(np.max(np.abs(d_surf))),
+        }
+        print(f"end-to-end vs oracle: collocated RMSE="
+              f"{tierb['collocated_rmse']:.5f}  surface RMSE="
+              f"{tierb['surface_rmse']:.5f}  surface MaxAE="
+              f"{tierb['surface_maxae']:.5f}")
         """
     ),
     md("## 7. Evidence summary"),
@@ -455,6 +496,7 @@ cells = [
             "perpetual_approach_rates": {
                 tag: [{"window_lo": lo, "kappa_eff": k} for lo, k in rows]
                 for tag, (_, _, _, rows) in decay.items()},
+            "tierb_probe": tierb,
             "ppa_wall_seconds": ppa_time,
             "runtime_seconds": time.time() - started,
         }

@@ -8,11 +8,14 @@ Last updated: 2026-09-03 (Phase 16 complete — toward closed-form American pric
   machine precision; multipiece phase-affine (PPA) boundaries give
   quadrature-free American prices (sequential collocation + perpetual
   pinning, m=10 recommended, ~0.07 s).
-- Extended grid: PPA RMSE 0.016 vs BAW 0.285 (90 configs x 5 spots).
+- Extended grid (revised vs tree oracle): PPA RMSE 0.0146 / MAE 0.0026
+  vs BAW 0.279 / 0.162 (90 configs x 5 spots); Phase 15 spiral
+  (revised family) RMSE 0.0017.
 - Structural findings: non-exponential perpetual approach (r=q
   degeneracy of the linearized memory kernel); Tier B parameter-surface
   attempt documented as open.
-- 218/218 tests green; notebook seed 20260903.
+- 227/227 tests green; notebooks re-executed 2026-09-03 after the
+  review revisions (Phase 15 Revision 2 + Phase 16 aligned).
 - Paper: paper/phase16/output/phase16-toward-closed-form-american.pdf.
 
 ## Phase 15 (2026-09-03)
