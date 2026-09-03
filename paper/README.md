@@ -141,3 +141,25 @@ Render from the repository root:
 conda run -n phase3-paper python paper/phase14/scripts/build_phase14_figures.py
 quarto render paper/phase14
 ```
+
+## Phase 15
+
+**American Calls and Puts under Black–Scholes–Merton from One-Driver
+Complex Geometric Brownian Motion**
+
+- manuscript: [`phase15/index.qmd`](phase15/index.qmd)
+- discovery notebook:
+  [`phase15/notebooks/phase15_discovery.ipynb`](phase15/notebooks/phase15_discovery.ipynb)
+- tables: [`phase15/tables/`](phase15/tables/)
+- PDF:
+  [`phase15/output/phase15-american-options-complex-gbm.pdf`](phase15/output/phase15-american-options-complex-gbm.pdf)
+
+Render from the repository root:
+
+```bash
+conda run -n phase3-paper python notebooks/build_phase15_american_spiral.py
+conda run -n phase3-paper jupyter nbconvert --to notebook --execute \
+  --inplace --ExecutePreprocessor.timeout=540 \
+  notebooks/phase15_american_spiral.ipynb
+quarto render paper/phase15
+```

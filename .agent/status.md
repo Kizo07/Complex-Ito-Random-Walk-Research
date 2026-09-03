@@ -1,6 +1,19 @@
 # Status
 
-Last updated: 2026-08-21 (Phases 7–13 complete)
+Last updated: 2026-09-03 (Phase 15 complete — American options)
+
+## Phase 15 (2026-09-03)
+
+- American calls/puts under BSM with dividend yield via Phase 3/4
+  complex-GBM phase-barrier geometry.
+- `phase15_american.py`: EEP machinery, causal level-set Volterra
+  reference solver, collocated logarithmic-spiral pricing formula,
+  BAW/CRR/PDE benchmarks.
+- Validated: Ju-exhibit TRUE values (<=2.2e-3), McDonald-Schroder
+  symmetry (<=2.4e-3), 206/206 tests, executed notebook seed 20260902.
+- Spiral formula RMSE 0.016 vs BAW 0.285 vs CRR-Richardson 0.019 on the
+  90-configuration grid.
+- Paper: paper/phase15/output/phase15-american-options-complex-gbm.pdf.
 
 ## Current state
 

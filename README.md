@@ -1,7 +1,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-![Tests](https://img.shields.io/badge/tests-192%2F192-brightgreen)
+![Tests](https://img.shields.io/badge/tests-206%2F206-brightgreen)
 ![Phases](https://img.shields.io/badge/phases-13%20complete-blue)
-![Reproducibility](https://img.shields.io/badge/seed-20260821-informational)
+![Reproducibility](https://img.shields.io/badge/seed-20260821%20%7C%2020260902-informational)
 
 # Complex–Itô Random-Walk Research
 
@@ -15,8 +15,9 @@ clocks, vanilla and multi-asset prices, estimators, matrix-valued
 extensions, jump drivers, and de-peg derivatives — available in closed form
 or as deterministic quadrature.
 
-Every claim is verified: **192/192 unit tests**, every notebook executed
-from a clean kernel with fixed seed `20260821`, all novelty claims audited
+Every claim is verified: **206/206 unit tests**, every notebook executed
+from a clean kernel with fixed seed (`20260821` for Phases 1–14,
+`20260902` for Phase 15), all novelty claims audited
 against the literature with per-phase boundary statements.
 
 ## Headline results
@@ -251,6 +252,29 @@ verification tables, and limitations register.
 **Documents.**
 [`PHASE_13_FLAGSHIP_MANUSCRIPT.md`](PHASE_13_FLAGSHIP_MANUSCRIPT.md)
 
+## Phase 15 — American options from one-driver complex GBM
+
+**Question.** Can the Phase 3/4 complex-GBM geometry produce pricing
+formulas for American calls and puts under BSM assumptions with dividend
+yield $q$?
+
+**Findings.**
+- The exercise boundary becomes a moving phase barrier on the Phase 4
+  process whose modulus is the stock price; the Kim/Jacka/
+  Carr-Jarrow-Myneni EEP machinery plus a causal level-set Volterra
+  solver gives a reference validated against published 10,000-step
+  binomial values ($|\Delta|\le2.2\times10^{-3}$) and put-call symmetry.
+- The boundary's short-maturity shape is the infinite-slope
+  $\sqrt{\tau|\ln\tau|}$ law; its coefficient depends on $r-q$.
+- The anchor-exact logarithmic-spiral boundary family with collocated
+  $(\kappa_1,\kappa_2,\eta)$ yields a closed-form-class pricing formula:
+  RMSE $0.016$ vs $0.285$ (Barone-Adesi-Whaley) and $0.019$
+  (Richardson-extrapolated trees) on a 90-configuration grid.
+
+**Documents.** [`PHASE_15_SYNTHESIS.md`](PHASE_15_SYNTHESIS.md) ·
+[`phase15_american.py`](phase15_american.py) ·
+[paper/phase15](paper/phase15/index.qmd)
+
 ---
 
 ## Technical papers
@@ -269,16 +293,18 @@ Quarto manuscripts, rendered HTML + PDF under each `output/` directory:
 | Phase-Gram: Correlation Matrices with Exact Finite-Time Law | [`paper/phase10`](paper/phase10/index.qmd) |
 | Lévy-Powered Bounded Factors | [`paper/phase11`](paper/phase11/index.qmd) |
 | The Economics of De-Peg | [`paper/phase12`](paper/phase12/index.qmd) |
+| American Calls and Puts under BSM from One-Driver Complex GBM | [`paper/phase15`](paper/phase15/index.qmd) |
 
 ## Verification and reproducibility
 
 ```bash
 conda activate phase3-paper            # Python 3.12, numpy/scipy/matplotlib
-python -m unittest discover -s tests   # 192 tests
+python -m unittest discover -s tests   # 206 tests
 quarto render paper/phaseN             # any manuscript, N in {3,4,6..12}
 ```
 
-- Full suite green on 2026-08-21 (182 s).
+- Full suite green on 2026-08-21 (182 s) and 2026-09-03 (206 tests,
+  199 s; Phase 15).
 - Notebooks executed from clean kernels, seed `20260821`; Monte Carlo
   standard errors reported wherever simulation appears.
 - Numerical convergence checked across at least two grid/time-step sizes.
