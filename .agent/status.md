@@ -1,6 +1,19 @@
 # Status
 
-Last updated: 2026-09-03 (Phase 15 complete — American options)
+Last updated: 2026-09-03 (Phase 16 complete — toward closed-form American prices)
+
+## Phase 16 (2026-09-03)
+
+- Closed-form occupation resolvent J(tau; a, m, lambda) validated to
+  machine precision; multipiece phase-affine (PPA) boundaries give
+  quadrature-free American prices (sequential collocation + perpetual
+  pinning, m=10 recommended, ~0.07 s).
+- Extended grid: PPA RMSE 0.016 vs BAW 0.285 (90 configs x 5 spots).
+- Structural findings: non-exponential perpetual approach (r=q
+  degeneracy of the linearized memory kernel); Tier B parameter-surface
+  attempt documented as open.
+- 218/218 tests green; notebook seed 20260903.
+- Paper: paper/phase16/output/phase16-toward-closed-form-american.pdf.
 
 ## Phase 15 (2026-09-03)
 
