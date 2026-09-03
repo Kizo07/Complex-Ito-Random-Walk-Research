@@ -207,8 +207,7 @@
   pdfkeywords={\xmpquote{American
 options}, \xmpquote{Black--Scholes--Merton}, \xmpquote{dividend
 yield}, \xmpquote{early exercise premium}, \xmpquote{free
-boundary}, \xmpquote{complex geometric Brownian
-motion}, \xmpquote{logarithmic spiral}, \xmpquote{collocation}},
+boundary}, \xmpquote{short-expiry asymptotics}, \xmpquote{collocation}},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -225,45 +224,38 @@ One-Driver Complex Geometric Brownian Motion}
   \apptocmd{\@title}{\par {\large #1 \par}}{}{}
 }
 \makeatother
-\subtitle{Phase-barrier geometry, a reference boundary solver, and the
-collocated logarithmic-spiral pricing formula}
+\subtitle{Phase-barrier geometry, a regime-aware boundary family, and a
+collocation pricing formula --- Revision 2 after mathematical review}
 \author{Complex--Itô Random-Walk Research Project}
 \date{September 3, 2026}
 \begin{document}
 \maketitle
 \begin{abstract}
-We revisit American option pricing under Black--Scholes--Merton
-assumptions with continuous dividend yield \(q\) through the one-driver
-complex geometric Brownian motion of Phase 4, whose modulus is exactly
-the stock price. In these coordinates the unknown exercise boundary
-becomes a moving phase barrier. We first build the exact machinery: the
-early-exercise-premium representation of Kim, Jacka, and
-Carr--Jarrow--Myneni together with the nonlinear Volterra equation for
-the boundary, solved by a stable causal level-set scheme that we
-validate against published 10,000-step binomial benchmark values
-(\(|\Delta|\le 2.2\times10^{-3}\)), McDonald--Schroder put--call
-symmetry (\(\le 2.4\times10^{-3}\)), and Richardson-extrapolated trees.
-The solver exposes two structural facts: the call residual vanishes
-identically above the boundary (the boundary is where it \emph{reaches}
-zero), and near maturity the boundary follows the infinite-slope shape
-\(\sqrt{\tau|\ln\tau|}\) with an effective coefficient that depends on
-\(r-q\). These facts motivate the Phase 15 pricing formula: a
-\textbf{logarithmic-spiral boundary family}
-\(\ln b(\tau)=\ln b_\infty+\ln(b_0/b_\infty)e^{-\kappa_1\tau}
-+\eta\sigma\sqrt{2\tau|\ln\max(\tau,\varepsilon)|}\,e^{-\kappa_2\tau}\),
-exact at both asymptotic limits --- the maturity anchor
-\(b_0=K\max(1,r/q)\) (resp. \(K\min(1,r/q)\)) and the perpetual boundary
-\(b_\infty\) --- with \((\kappa_1,\kappa_2,\eta)\) fixed by collocation
-of the value-matching residual, no boundary fitting. The American price
-is then European Black--Scholes plus one early-exercise-premium integral
-over an explicit integrand. On a 90-configuration benchmark grid (calls
-and puts, \(r,q\in\{0.03,\ldots,0.10\}\), \(\sigma\in\{0.2,0.4,0.6\}\),
-\(T\in\{0.5,1,3\}\), five spots) the formula attains RMSE \(0.016\)
-against the reference, versus \(0.285\) for Barone-Adesi--Whaley and
-\(0.019\) for Richardson-extrapolated binomial trees, while remaining a
-fast closed-form-class expression. We state precisely what is not
-claimed: no closed form for the true boundary is asserted, and the
-constant-coefficient free-boundary problem remains open.
+\textbf{Revision 2} of the Phase 15 paper, correcting every item of the
+external mathematical review of 2026-09-02. We price American calls and
+puts under Black--Scholes--Merton assumptions with continuous dividend
+yield \(q\) as European Black--Scholes plus the early-exercise premium
+(EEP; Kim, Jacka, Carr--Jarrow--Myneni) evaluated on a collocated
+boundary family. Revisions: (i) the put EEP is stated with its correct
+explicit sign (the one-line unified form needs an outer factor \(\phi\)
+for puts); (ii) the short-expiry boundary asymptotics are the
+established three regimes of Evans--Kuske--Keller and Chen--Zhu ---
+which our solved boundaries reproduce quantitatively --- not a single
+universal law; (iii) the boundary family is redesigned to be
+dimensionless (declared logarithm scale \(\hat\tau\)), smooth on
+\((0,\infty)\), regime-aware, and monotone through the former artificial
+cusp at \(\tau=1\); (iv) all stationarity/envelope claims are removed
+--- the substituted-boundary EEP functional is first-order sensitive to
+boundary error, demonstrated by perturbation; (v) every benchmark is
+recomputed against a converged Broadie--Detemple adjacent-averaged tree
+oracle, with the Volterra level-set solver demoted to a method under
+test and its grid sensitivity quantified; (vi) metric labels corrected
+(RMSE / true MAE / maximum absolute error). On a 90-configuration grid
+(450 prices, \(T\le3\), \(\sigma\le0.6\)) the revised formula attains
+RMSE \(1.5\times10^{-3}\), mean absolute error \(8\times10^{-4}\),
+maximum error \(7.8\times10^{-3}\) against the oracle, versus
+\(0.279/0.162/1.131\) for Barone-Adesi--Whaley. No closed form for the
+true free boundary is claimed.
 \end{abstract}
 
 \renewcommand*\contentsname{Table of contents}
@@ -272,659 +264,492 @@ constant-coefficient free-boundary problem remains open.
 \tableofcontents
 }
 
-\section{Introduction}\label{sec-introduction}
+\section{Revision record}\label{sec-revision}
 
-The American option problem under Black--Scholes--Merton (BSM)
-assumptions with a continuous dividend yield \(q\ge0\) has resisted
-closed-form solution for half a century. Merton's observation that the
-American call with \(q=0\) is worth exactly its European counterpart
-(Merton 1973) is the exception that proves the rule: with \(q>0\) (or
-for the put with any \(r>0\)) early exercise becomes optimal, and the
-price is determined by a free boundary --- the critical stock price
-\(b(t)\) below which (put) or above which (call) immediate exercise is
-optimal. Kim derived the early-exercise-premium (EEP) representation and
-showed that the boundary solves a nonlinear Volterra integral equation
-(Kim 1990); Jacka and Carr--Jarrow--Myneni established the same
-representation independently (Jacka 1991; Carr et al. 1992). Practical
-pricing has since relied on trees, finite differences, Monte Carlo, and
-analytic approximations --- most famously the quadratic approximation of
-Barone-Adesi and Whaley (Barone-Adesi and Whaley 1987) and the
-multipiece exponential boundary of Ju (Ju 1998).
+This is Revision 2 of the Phase 15 manuscript, responding point by point
+to \texttt{phase15-mathematical-review.md} (2026-09-02):
 
-This paper starts from a different object. The Phase 4 construction of
-this research program (Complex--Itô Random-Walk Research Project 2026)
-is the one-driver complex process
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Put sign.} Section~\ref{sec-eep} states the call and put
+  premiums separately and notes the outer factor \(\phi\) required by
+  any unified one-line form.
+\item
+  \textbf{Short-expiry asymptotics.} Section~\ref{sec-asymptotics}
+  replaces the universal claim with the three-regime results of Evans et
+  al. (2001) and Chen and Zhu (2010), and shows our numerics reproduce
+  them.
+\item
+  \textbf{Boundary family.} Section~\ref{sec-family} removes the
+  \(|\ln\max(\tau,\varepsilon)|\) term (artificial cusp at \(\tau=1\),
+  dimensionful logarithm, nonmonotone candidates) and replaces it with
+  smooth dimensionless regime-aware bases.
+\item
+  \textbf{Stationarity.} All envelope/stationarity claims are deleted;
+  Section~\ref{sec-collocation} demonstrates first-order sensitivity of
+  the substituted-boundary functional.
+\item
+  \textbf{Reference solver.} Section~\ref{sec-solver} documents the
+  solver's flat-step fallbacks and grid sensitivity, and
+  Section~\ref{sec-results} benchmarks against a converged tree oracle
+  instead.
+\item
+  \textbf{Metric labels.} RMSE / true MAE / MaxAE throughout; the worst
+  configurations are identified explicitly.
+\end{enumerate}
+
+\section{Setup and exact machinery}\label{sec-setup}
+
+\subsection{Risk-neutral dynamics and the complex-GBM
+picture}\label{sec-geometry}
+
+Under the risk-neutral measure, \(dS_t/S_t=(r-q)\,dt+\sigma\,dW_t\), and
+the Phase 4 one-driver complex process (Complex--Itô Random-Walk
+Research Project 2026)
 
 \begin{equation}\protect\phantomsection\label{eq-complex-gbm}{
 \mathcal Z_t
 =
 \mathcal Z_0
 \exp\!\left(
-\left[\left(\mu-\frac12\sigma^2\right)+i\omega\right]t
+\left[\left(r-q-\tfrac12\sigma^2\right)+i\omega\right]t
 +(\sigma+i\beta)W_t
-\right),
+\right)
 }\end{equation}
 
-whose modulus satisfies
-\(d|\mathcal Z_t|/|\mathcal Z_t|=\mu\,dt+\sigma\,dW_t\): it is
-\emph{exactly} geometric Brownian motion. Under the risk-neutral measure
-with \(\mu=r-q\), the modulus is the BSM stock price \(S_t\), and the
-phase lift is
+has modulus \(|\mathcal Z_t|=S_t\) (with \(|\mathcal Z_0|=S_0\)) and
+unwrapped phase \(\Theta_t=\Theta_0+\omega t+\beta W_t\). In the
+drift-matched gauge the phase is a deterministic affine function of
+log-price, \(\Theta_t=\Theta_0+(\beta/\sigma)\ln(S_t/S_0)\), so the
+exercise boundary becomes a moving phase barrier. \textbf{Scope, stated
+plainly:} this is an invertible reparameterization (for
+\(\beta/\sigma>0\); the exercise inequality reverses for \(\beta<0\),
+and at \(\beta=0\) phase carries no spot information). It does not
+reduce the optimal-stopping problem or add pricing information by
+itself; the substance of this paper is the boundary family and the EEP
+machinery that follow.
 
-\begin{equation}\protect\phantomsection\label{eq-phase}{
-\Theta_t=\Theta_0+\omega t+\beta W_t
-=\Theta_0+\frac{\beta}{\sigma}\ln\frac{S_t}{S_0}
-+\left[\omega-\frac{\beta}{\sigma}\left(r-q-\frac12\sigma^2\right)\right]t.
-}\end{equation}
+\subsection{The early-exercise premium, with correct put
+sign}\label{sec-eep}
 
-In the drift-matched gauge (the bracket vanishes) the phase is a pure
-scale of the log-price, and the American free-boundary problem becomes a
-\textbf{moving phase-barrier problem}: the call exercise region
-\(\{S_t\ge b(t)\}\) is the phase half-space
-\(\{\Theta_t\ge\theta_B(t)\}\) with
-\(\theta_B(t)=\Theta_0+(\beta/\sigma)\ln(b(t)/S_0)\). We use this
-geometry to do three things.
-
-\textbf{First (exact reference).} We implement the EEP representation
-and the Volterra boundary equation as a stable \emph{causal level-set
-solver} (Section~\ref{sec-reference}). Two structural facts organize the
-numerics: for the call, the value-matching residual \(F(y;\tau)\)
-satisfies \(F(y;\tau)<0\) for \(y<b(\tau)\) and \(F(y;\tau)=0\) for
-\textbf{all} \(y\ge b(\tau)\) --- the residual \emph{reaches} zero
-rather than crossing it (\textbf{?@sec-structure}) --- and the equation
-loses traction as \(\tau\downarrow0\), where the maturity anchor takes
-over. The reference prices reproduce published 10,000-step binomial
-benchmark values and obey put--call symmetry
-(Section~\ref{sec-validation}).
-
-\textbf{Second (geometry of the boundary).} The reference solutions
-expose the short-maturity law of the boundary: an infinite-slope
-approach with the universal \emph{shape} \(\sqrt{\tau|\ln\tau|}\) and an
-effective coefficient that depends on \(r-q\) at accessible maturities
-(Section~\ref{sec-asymptotics}). No finite-slope ansatz (in particular,
-no plain exponential spiral) can reproduce it.
-
-\textbf{Third (the Phase 15 formula).} Guided by the phase picture, we
-define the logarithmic-spiral boundary family, exact at \emph{both}
-asymptotic limits --- the maturity anchor and the perpetual boundary ---
-refined by the short-maturity asymptotic term
-(Section~\ref{sec-spiral}). Its three remaining parameters are fixed by
-collocation of the value-matching residual; no boundary fitting appears
-anywhere. The resulting price --- European Black--Scholes plus one EEP
-integral over an explicit integrand --- is a fast closed-form-class
-formula. On a 90-configuration benchmark grid it beats
-Barone-Adesi--Whaley by roughly an order of magnitude in RMSE and is on
-par with, or better than, Richardson-extrapolated binomial trees
-(Section~\ref{sec-results}).
-
-\subsubsection{Novelty boundary}\label{sec-novelty}
-
-\emph{Claimed as new:} the phase-barrier reformulation of the BSM
-free-boundary problem on the Phase 4 complex GBM; the causal level-set
-reference solver and its structural diagnostics (residual plateau,
-traction loss, \(\sqrt{\tau|\ln\tau|}\) shape); the logarithmic-spiral
-boundary family anchored exactly at both limits; the collocation-fixed
-pricing formula and its benchmark performance. \emph{Not claimed:} the
-EEP representation (Kim 1990; Jacka 1991; Carr et al. 1992), the
-maturity anchors (Kim 1990), the perpetual closed form
-(McDonald--Schroder, via (\textbf{merton1973-style?}) ODE roots),
-quadratic or multipiece approximations (Barone-Adesi and Whaley 1987;
-MacMillan 1986; Ju 1998), or any closed form for the true boundary ---
-the constant-coefficient free-boundary problem remains open, and this
-paper does not claim to solve it.
-
-\section{Exact machinery}\label{sec-machinery}
-
-\subsection{Risk-neutral dynamics and European
-baseline}\label{risk-neutral-dynamics-and-european-baseline}
-
-Under the risk-neutral measure \(\mathbb Q\),
-
-\begin{equation}\protect\phantomsection\label{eq-dynamics}{
-\frac{dS_t}{S_t}=(r-q)\,dt+\sigma\,dW_t,
-}\end{equation}
-
-and the European price with dividend yield is the standard
-Merton-adjusted Black--Scholes formula, which we write as
-\(V_E(S,K,\tau;\phi)\) with \(\phi=+1\) for calls and \(\phi=-1\) for
-puts. Put--call parity reads \(c-p=S e^{-q\tau}-K e^{-r\tau}\), and the
-American call with \(q=0\) reduces exactly to the European call (Merton
-1973).
-
-\subsection{Early-exercise-premium representation}\label{sec-eep}
-
-Let \(V\) be the American price and \(\tau=T-t\). Applying Itô's formula
-to \(e^{-rt}V(S_t,t)\) and using that \(V\) solves the BSM PDE in the
-continuation region and \(V=\phi(S-K)\) in the exercise region gives,
-with \(B(u)\) the boundary in calendar time (Kim 1990; Jacka 1991; Carr
-et al. 1992),
+Let \(\tau=T-t\) and \(b(\tau)\) the boundary in time to maturity. With
+\(d_{1,2}(S,B,s)=[\ln(S/B)+(r-q\pm\frac12\sigma^2)s]/(\sigma\sqrt s)\),
+the call and put premiums are
 
 \begin{equation}\protect\phantomsection\label{eq-eep-call}{
-V_A(S_t,t)=V_E(S_t,t)+\int_t^T e^{-r(u-t)}
-\,\mathbb E_t^{\mathbb Q}\!\left[
-\big(qS_u-rK\big)\,\mathbf 1_{\{S_u\ge B(u)\}}\right]du
-}\end{equation}
-
-for the call, with the integrand
-\((rK-qS_u)\mathbf 1_{\{S_u\le B(u)\}}\) for the put. Evaluating the
-conditional expectations in closed form yields the working
-representation used throughout: with \(b(\tau)\) the boundary as a
-function of time to maturity,
-
-\begin{equation}\protect\phantomsection\label{eq-eep}{
-\boxed{
-V_A(S,\tau)=V_E(S,\tau)+\int_0^\tau
-\Big[
-qS e^{-qs}\Phi\!\big(\phi d_1(S,b(\tau-s),s)\big)
--rK e^{-rs}\Phi\!\big(\phi d_2(S,b(\tau-s),s)\big)
-\Big]ds
-}
-}\end{equation}
-
-for the call (\(\phi=+1\)); the put (\(\phi=-1\)) carries
-\(\Phi(-d_1),\Phi(-d_2)\) with the two terms interchanged in sign, and
-
-\begin{equation}\protect\phantomsection\label{eq-d12}{
-d_{1,2}(S,B,s)=
-\frac{\ln(S/B)+(r-q\pm\frac12\sigma^2)s}{\sigma\sqrt s}.
-}\end{equation}
-
-Three properties of Eq.~\ref{eq-eep} are essential for what follows.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  \textbf{Stationarity.} The price is stationary to first order under
-  boundary perturbations (envelope property of the optimal stopping
-  problem): a boundary approximation with small error produces a
-  \emph{second-order} price error. This is why a coarse-boundary formula
-  can price accurately.
-\item
-  \textbf{Causality.} The integral at time to maturity \(\tau\) involves
-  the boundary only at arguments \(<\tau\). The boundary equation can be
-  solved sequentially from \(\tau=0\) upward.
-\item
-  \textbf{Degeneracy above the boundary (call).} For \(y\ge b(\tau)\),
-  immediate exercise is optimal, so the representation reproduces the
-  intrinsic value identically:
-  \((y-K)=V_E(y,\tau)+\mathrm{EEP}(y,\tau)\). Hence the value-matching
-  residual \(F(y;\tau):=(y-K)-V_E(y,\tau)-\mathrm{EEP}(y;\tau)\)
-  satisfies \(F<0\) for \(y<b(\tau)\) and \(F\equiv0\) for
-  \(y\ge b(\tau)\): the boundary is where the residual \emph{reaches}
-  zero. The put mirrors this with a positive hump and \(F\to-\infty\).
-\end{enumerate}
-
-\subsection{Boundary integral equation and anchors}\label{sec-anchors}
-
-Evaluating Eq.~\ref{eq-eep} at the boundary (\(S=b(\tau)\), value
-matching) gives the nonlinear Volterra equation
-
-\begin{equation}\protect\phantomsection\label{eq-volterra}{
-\phi\big(b(\tau)-K\big)
+\mathrm{EEP}^{c}(S,\tau)
 =
-V_E(b(\tau),\tau)+
 \int_0^\tau
 \Big[
-q\,b(\tau)e^{-qs}\Phi\big(\phi d_1(b(\tau),b(\tau-s),s)\big)
--rK e^{-rs}\Phi\big(\phi d_2(b(\tau),b(\tau-s),s)\big)
+qS e^{-qs}\Phi\big(d_1(S,b(\tau-s),s)\big)
+-rK e^{-rs}\Phi\big(d_2(S,b(\tau-s),s)\big)
 \Big]ds,
 }\end{equation}
 
-whose solution is the exercise boundary. The equation is anchored at
-both ends of the maturity axis:
+\begin{equation}\protect\phantomsection\label{eq-eep-put}{
+\mathrm{EEP}^{p}(S,\tau)
+=
+\int_0^\tau
+\Big[
+rK e^{-rs}\Phi\big(-d_2(S,b(\tau-s),s)\big)
+-qS e^{-qs}\Phi\big(-d_1(S,b(\tau-s),s)\big)
+\Big]ds.
+}\end{equation}
 
-\begin{itemize}
-\tightlist
-\item
-  \textbf{At maturity} (Kim 1990; Jacka 1991): exercising the call at
-  spot \(S\) just before expiry gains the dividend flow \(qS\) against
-  the interest \(rK\) on the strike, so
-  \begin{equation}\protect\phantomsection\label{eq-anchors}{b_c(0^+)=K\max(1,r/q) \quad(q>0),\qquad
-  b_p(0^+)=K\min(1,r/q),}\end{equation} with \(b_c(0^+)=\infty\) when
-  \(q=0\) (never exercise);
-\item
-  \textbf{At infinity} the perpetual McDonald--Schroder closed form:
-  with \(s_\pm\) the roots of \(\frac12\sigma^2 s(s-1)+(r-q)s-r=0\),
-  \begin{equation}\protect\phantomsection\label{eq-perpetual}{
-  b_\infty^{\mathrm{call}}=K\frac{s_+}{s_+-1},\qquad
-  b_\infty^{\mathrm{put}}=K\frac{s_-}{s_--1},
-  }\end{equation} and the corresponding perpetual prices.
-\end{itemize}
+Equivalently, the unified form carries an \textbf{outer factor \(\phi\)}
+for puts:
 
-\section{Reference solver and validation}\label{sec-reference}
+\begin{equation}\protect\phantomsection\label{eq-eep-unified}{
+V_A=V_E+\phi\int_0^\tau
+\Big[
+qS e^{-qs}\Phi(\phi d_1)-rK e^{-rs}\Phi(\phi d_2)
+\Big]ds,\qquad \phi=\begin{cases}+1&\text{call}\\-1&\text{put.}\end{cases}
+}\end{equation}
 
-\subsection{Causal level-set scheme}\label{sec-solver}
+Omitting the factor gives a put \emph{below} its European price (base
+case: \(7.493\) versus the correct \(7.661\) at \(r=q=0.05\),
+\(\sigma=0.2\), \(T=1\)), an arbitrage violation; the implementation and
+a unit test enforce the correct sign. The value-matching boundary
+equation inherits the same factor.
 
-We solve Eq.~\ref{eq-volterra} on a mildly clustered grid
-\(\tau_i=T(i/n)^{3/2}\), sequentially in \(i\). At step \(i\) the
-history \(b(\cdot)\) on \([0,\tau_{i-1}]\) is known; the residual
-\(F(y;\tau_i)\) is evaluated by Gauss--Legendre quadrature with history
-interpolation, and \(b(\tau_i)\) is located as the solution of
-\(F(y;\tau_i)=-\delta K\) (a genuine crossing, since \(F\) only
-\emph{reaches} zero), corrected linearly back toward the zero level,
-inside an adaptive scan window of width \(\sim8\sigma\sqrt{\tau_i}\)
-around the previous boundary. The level \(\delta>0\) is needed because
-exactly at the zero level the call problem is one-sided. The scheme
-respects the degeneracies documented in Section~\ref{sec-eep}: the
-\(\tau\downarrow0\) points, where \(\partial F/\partial y\to0\), are
-pinned to the anchor Eq.~\ref{eq-anchors} rather than solved.
+Anchors (Kim 1990; Jacka 1991): \(b_c(0^+)=K\max(1,r/q)\) (infinite for
+\(q=0\)), \(b_p(0^+)=K\min(1,r/q)\); perpetual boundaries
+\(b_\infty^c=K s_+/(s_+-1)\), \(b_\infty^p=K s_-/(s_-1)\) from the roots
+of \(\frac12\sigma^2s(s-1)+(r-q)s-r=0\) (\(s_+>1\) when \(q>0\); at
+\(q=0\), \(s_+=1\) and the call boundary is infinite, i.e.~never
+exercise, recovering Merton (1973)).
 
-\subsection{Validation}\label{sec-validation}
+\section{Short-expiry boundary asymptotics: three
+regimes}\label{sec-asymptotics}
 
-All checks below use the implementation of Section~\ref{sec-solver}; the
-executable record is the Phase 15 notebook (Section~\ref{sec-repro}).
+The established results for the put boundary near expiry (Evans et al.
+2001; Chen and Zhu 2010, eqs. (3.15)--(3.22)) are
 
-\textbf{Published benchmark values.} Ju's exhibits report ``true''
-prices from 10,000-step binomial trees (Ju 1998). Our reference
-reproduces them:
+\begin{equation}\protect\phantomsection\label{eq-regimes}{
+\begin{aligned}
+q<r:&\quad K-b_p(\tau)\sim K\sigma\sqrt{\tau|\ln\tau|},\\
+q=r:&\quad K-b_p(\tau)\sim K\sigma\sqrt{2\tau|\ln\tau|},\\
+q>r:&\quad b_p(\tau)=\tfrac rq K\left[1-\xi_1\sigma\sqrt{2\tau}+O(\tau)\right],
+\qquad \xi_1\approx0.4517,
+\end{aligned}
+}\end{equation}
 
-{\def\LTcaptype{none} % do not increment counter
+with calls inheriting mirrored regimes under \(r\leftrightarrow q\).
+Fitting our solved near-expiry boundaries (flat fallback steps excluded
+and counted):
+
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1224}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2245}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.4082}}
-  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2449}}@{}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.0808}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.4545}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1212}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2222}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1212}}@{}}
+\caption{Near-expiry regime fits from the Volterra
+solutions.}\label{tbl-regimes}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
-Case
+Regime
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Reference
+Fit (\(\sqrt{2\tau|\ln\tau|}\) normalization)
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-TRUE (10,000-step)
+Prediction
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-\(|\Delta|\)
+\(\sqrt{2\tau}\) slope
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Prediction
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Regime
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Fit (\(\sqrt{2\tau|\ln\tau|}\) normalization)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Prediction
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\(\sqrt{2\tau}\) slope
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Prediction
 \end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Put, \(S{=}K{=}40\), \(r{=}0.0488\), \(q{=}0\), \(\sigma{=}0.2\),
-\(T{=}0.5833\) & 1.9905 & 1.990 & \(4.6\times10^{-4}\) \\
-Call, \(S{=}K{=}100\), \(r{=}0.03\), \(q{=}0.07\), \(\sigma{=}0.4\),
-\(T{=}0.5\) & 10.237 & 10.239 & \(2.2\times10^{-3}\) \\
+put, \(r=0.07,q=0.03\) (\(q<r\)) & 0.724 & \(1/\sqrt2=0.707\) & --- &
+--- \\
+put, \(r=q=0.05\) & 1.044 & \(1\) & --- & --- \\
+put, \(r=0.03,q=0.07\) (\(q>r\)) & 0.09 (window artifact) & fits
+\(\sqrt\tau\), not \(\sqrt{\tau|\ln\tau|}\) & 0.0393 &
+\((r/q)\xi_1\sigma=0.0387\) \\
 \end{longtable}
+
+The earlier Phase 15 interpretation (``universal shape with
+\(r-q\)-dependent coefficient'') is withdrawn: the measured values are
+precisely the known regimes, including the fact that fitting a
+\(\sqrt{\tau|\ln\tau|}\) regressor to the \(q>r\) square-root law
+produces an apparent coefficient that tends to zero as
+\(\tau\downarrow0\).
+
+\section{The boundary family (redesigned)}\label{sec-family}
+
+With \(s_\phi=+1\) for calls and \(-1\) for puts, write the signed
+coefficients \(\eta_{\log}=s_\phi h_{\log}\),
+\(\eta_{\mathrm{root}}=s_\phi
+h_{\mathrm{root}}\) with \(h_{\log},h_{\mathrm{root}}\ge0\):
+
+\begin{equation}\protect\phantomsection\label{eq-family}{
+\boxed{
+\ln b(\tau)=\ln b_\infty+\ln\!\left(\frac{b_0}{b_\infty}\right)e^{-\kappa_1\tau}
++\sigma e^{-\kappa_2\tau}\Big[
+\eta_{\log}\,\psi_{\log}(\tau;\hat\tau)
++\eta_{\mathrm{root}}\,\psi_{\mathrm{root}}(\tau)
+\Big]
 }
+}\end{equation}
 
-\textbf{McDonald--Schroder symmetry.}
-\(P(S,K,r,q,\sigma,\tau)=C(K,S,q,r,\sigma,\tau)\) holds to
-\(2.4\times10^{-3}\) with independently solved boundaries
-(\(r{=}0.07,q{=}0.03,\sigma{=}0.2,T{=}1\)).
+\begin{equation}\protect\phantomsection\label{eq-shapes}{
+\psi_{\log}(\tau;\hat\tau)=\sqrt{2\tau\ln\!\left(1+\frac{\hat\tau}{\tau}\right)},
+\qquad
+\psi_{\mathrm{root}}(\tau)=\sqrt{2\tau}.
+}\end{equation}
 
-\textbf{Cross-method.} Richardson-extrapolated CRR trees
-(\(N\in\{1500,3000,6000\}\)) agree with the reference to
-\(\le7\times10^{-4}\) at the ATM point; implicit log-space finite
-differences agree to \(\sim3\times10^{-3}\) on coarser grids.
+Properties, each enforced by a unit test:
 
-\textbf{Value matching.} Sampled residuals of the solved boundary
-satisfy \(|F(b(\tau_i),\tau_i)|\lesssim10^{-2}\) on the \(K=100\) scale
---- the remaining error budget is dominated by the one-sided level-set
-bias \(O(\sqrt{\delta K})\), benign for prices by stationarity.
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Dimensionless.} \(\hat\tau\) is a declared time scale in the
+  same unit as \(\tau\); changing units rescales both, and the price is
+  unit-invariant (Section~\ref{sec-identities}).
+\item
+  \textbf{Smooth.} \(\psi_{\log}\) is smooth on \((0,\infty)\);
+  \(\psi_{\log}\sim\sqrt{2\tau|\ln(\tau/\hat\tau)|}\) as
+  \(\tau\downarrow0\). The former term \(|\ln\max(\tau,\varepsilon)|\)
+  had an infinite-slope cusp at \(\tau=1\) --- an arbitrary,
+  dimension-dependent point --- which is gone.
+\item
+  \textbf{Regime-aware.} The two bases carry the logarithmic and
+  square-root short-expiry shapes of Eq.~\ref{eq-regimes}; collocation
+  allocates their weights.
+\item
+  \textbf{Anchored.} \(b(0^+)=b_0\) and \(b(\tau)\to b_\infty\) for all
+  parameter values.
+\item
+  \textbf{Monotone in practice.} The old cusp produced
+  \(b(0.9)=132.3>b(1.0)=129.9<b(1.1)=136.2\) for the \(T=3\),
+  \(r=q=0.05\), \(\sigma=0.2\) call; the redesigned family gives a
+  monotone boundary through that neighborhood (regression-tested).
+  Monotonicity is a numerically verified property of the collocated
+  members, not an analytic guarantee of the whole family.
+\end{itemize}
 
-\section{Geometry of the boundary}\label{sec-asymptotics}
+\section{Collocation: a reported projection, no
+stationarity}\label{sec-collocation}
 
-\subsection{Phase-barrier picture}\label{sec-phase-picture}
+\((\kappa_1,\kappa_2,h_{\log},h_{\mathrm{root}})\) \textbf{minimize} the
+sum of squared value-matching residuals at four fractional nodes
+(\(\tau\in\{0.2,0.4,0.6,0.8\}\cdot T\)) under box constraints,
+multi-start L-BFGS-B. This is a projection: residuals are generally
+\emph{not} zero, and the published record reports, per calibration, the
+objective, the four residuals, the optimizer status, and the multi-start
+sensitivity. For the base case the residuals are
+\(\sim10^{-5}\)--\(10^{-4}\); degenerate long-maturity cases can leave
+residuals at the \(10^{-2}\) level, which is reported, not hidden.
 
-In the drift-matched gauge of Eq.~\ref{eq-phase}, the boundary is the
-phase curve \(\theta_B(t)=\Theta_0+(\beta/\sigma)\ln(b(T-t)/S_0)\)
-(Figure~\ref{fig-phase-boundary}): calls exercise above the curve, puts
-below it, and both curves run from the maturity anchor to the horizontal
-\emph{perpetual phase line} \(\theta_\infty\). The Phase 4 rank-one
-structure (both radius and phase driven by one \(W\)) is precisely what
-makes the barrier a \emph{curve} rather than a surface: the exercise
-decision is a one-dimensional first-passage question in the phase
-coordinate.
+\textbf{No stationarity claim.} The substituted-boundary functional
+\(V_E+\mathrm{EEP}[b]\) is first-order sensitive to boundary error: for
+\(d_{1,2}\) as above, the identity
+\(Se^{-qs}\varphi(d_1)=Be^{-rs}\varphi(d_2)\) gives
+\(\partial\,\mathrm{integrand}/\partial B
+=e^{-rs}\varphi(d_2)(rK-qB)/(B\sigma\sqrt s)\), so the first variation
+under a perturbation \(h\) is generally nonzero. Numerically, with
+\(b_\varepsilon(u)=b(u)e^{\varepsilon\sin(\pi u/T)}\) on the base call,
+\((V[b_\varepsilon]-V[b])/\varepsilon\) converges to \(\approx-0.345\)
+as \(\varepsilon\to0\) through
+\(10^{-2},5\times10^{-3},2.5\times10^{-3},
+1.25\times10^{-3}\) --- first order, not second. Accuracy below is
+established by direct benchmarking against the oracle, not by any
+envelope argument.
 
-\begin{figure}[tbp]
+\section{The Volterra solver and its known limits}\label{sec-solver}
 
-\centering{
+The causal sequential level-set solver (Phase 15, revised root logic)
+locates, at each grid point, where the value-matching residual reaches
+the level \(-\delta K\) on the continuation side --- the exact residual
+is identically zero on the exercise side (\(F\equiv0\) for \(y\ge b\)
+for calls, \(y\le b\) for puts; the previously claimed put ``positive
+hump'' is a numerical artifact and is no longer used). Its limits,
+stated plainly and instrumented (\texttt{SOLVER\_DIAGNOSTICS}):
 
-\pandocbounded{\includegraphics[keepaspectratio]{figures/f01_phase_boundary.png}}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Flat fallbacks.} Points without a bracketed level crossing
+  copy the previous value; counts are reported. Near \(\tau=0\) the
+  equation loses traction (\(\partial F/\partial y\to0\)), and in
+  long-maturity hard regimes the fallback fraction can exceed one half
+  of all steps.
+\item
+  \textbf{Monotonicity is enforced} by clipping toward the perpetual
+  limit: monotone output is a solver property, not an independent check.
+\item
+  \textbf{Grid sensitivity.} In the benchmark's hard regimes the solver
+  is not a reliable reference (Table~\ref{tbl-grid}):
+\end{itemize}
 
-}
-
-\caption{\label{fig-phase-boundary}Exercise boundary in phase
-coordinates for \(r=q=0.05\), \(\sigma=0.2\), \(T=1\) (reference
-solver). Dashed: the perpetual phase line.}
-
-\end{figure}%
-
-\subsection{Short-maturity shape}\label{sec-shape}
-
-Fitting \(b(\tau)=b_0+\eta\,c\,\sigma b_0\sqrt{2\tau|\ln\tau|}\) to the
-reference boundary on \(\tau\in(0,0.02)\) gives the coefficients in
-Table~\ref{tbl-coeffs}. Two facts stand out.
-
-\begin{longtable}[]{@{}lllll@{}}
-\caption{Short-maturity coefficient fits
-\(b(\tau)=b_0+\eta c\sigma b_0\sqrt{2\tau|\ln\tau|}\) on
-\(\tau\le0.02\).}\label{tbl-coeffs}\tabularnewline
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.4286}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5714}}@{}}
+\caption{Grid behavior of the Volterra solver against the tree oracle.
+The \(n=300\) value is an isolated outlier of \(\approx0.30\); fallback
+counts exceed 200 steps in this
+configuration.}\label{tbl-grid}\tabularnewline
 \toprule\noalign{}
-\(r\) & \(q\) & \(\sigma\) & kind & \(c\) \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Settings
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Price (\(S=120\), \(r=0.05\), \(q=0.10\), \(\sigma=0.2\), \(T=3\), call)
+\end{minipage} \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-\(r\) & \(q\) & \(\sigma\) & kind & \(c\) \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Settings
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Price (\(S=120\), \(r=0.05\), \(q=0.10\), \(\sigma=0.2\), \(T=3\), call)
+\end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-0.05 & 0.05 & 0.2 & call & 1.13 \\
-0.05 & 0.05 & 0.2 & put & 1.04 \\
-0.07 & 0.03 & 0.2 & call & 0.24 \\
-0.07 & 0.03 & 0.2 & put & 0.73 \\
-0.03 & 0.07 & 0.2 & call & 0.77 \\
-0.03 & 0.07 & 0.2 & put & 0.24 \\
-0.05 & 0.05 & 0.4 & call & 1.18 \\
-0.05 & 0.05 & 0.4 & put & 0.99 \\
+Solver \(n=250\) & 20.634 \\
+Solver \(n=300\) & 20.392 \\
+Solver \(n=350\) & 20.677 \\
+Solver \(n=700\) & 20.671 \\
+Adjacent-averaged CRR \(N\in\{8000,10000,12000\}\) (mean) & 20.692
+(spread \(1.1\times10^{-3}\)) \\
 \end{longtable}
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  The \textbf{shape} \(\sqrt{\tau|\ln\tau|}\) --- infinite slope at
-  maturity --- is universal. Any finite-slope ansatz (plain exponential
-  spirals included) fails to reproduce the boundary near \(\tau=0\).
-\item
-  The \textbf{coefficient} is near \(1\) only in the zero-drift case
-  \(r=q\); nonzero \(r-q\) shifts it substantially (down to
-  \(\approx0.24\) in the table). Whether the zero-drift value is the
-  true leading constant or the first term of a slowly convergent
-  correction cannot be resolved on accessible windows; either way the
-  practical coefficient is parameter-dependent.
-\end{enumerate}
-
-The second fact is a design input: the Phase 15 family keeps the shape
-exactly and lets collocation fix the effective coefficient.
-
-\section{The logarithmic-spiral boundary family}\label{sec-spiral}
-
-\subsection{Definition and limits}\label{sec-limits}
-
-Let \(b_0=b(0^+)\) be the maturity anchor Eq.~\ref{eq-anchors} and
-\(b_\infty\) the perpetual boundary Eq.~\ref{eq-perpetual}. The
-\textbf{refined spiral boundary} is
-
-\begin{equation}\protect\phantomsection\label{eq-spiral}{
-\boxed{
-\ln b(\tau)
-=
-\ln b_\infty+\ln\!\left(\frac{b_0}{b_\infty}\right)e^{-\kappa_1\tau}
-+\eta\,\sigma\sqrt{2\tau\,\big|\ln\max(\tau,\varepsilon)\big|}\,
-e^{-\kappa_2\tau}
-}
-}\end{equation}
-
-with \(\varepsilon\) a tiny cutoff, \(\eta>0\) for calls and \(\eta<0\)
-for puts. The first two terms are the plain logarithmic spiral: in the
-phase-time plane the boundary winds toward the perpetual phase line with
-exponential rate \(\kappa_1\) --- the geometric object singled out by
-Section~\ref{sec-phase-picture}. The third term adds the short-maturity
-asymptotic shape with exponential cutoff \(\kappa_2\). By construction,
-
-\begin{equation}\protect\phantomsection\label{eq-limits}{
-b(0^+)=b_0,\qquad \lim_{\tau\to\infty}b(\tau)=b_\infty,
-}\end{equation}
-
-for all parameter values: the family is anchored exactly at both
-asymptotic limits. Figure~\ref{fig-spiral-fit} compares best-fit members
-against the reference boundary; the refined family reduces the relative
-\(L^\infty\) boundary error by factors of \(2\)--\(10\) relative to the
-plain spiral.
-
-\begin{figure}[tbp]
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{figures/f02_spiral_fit.png}}
-
-}
-
-\caption{\label{fig-spiral-fit}Reference boundary (solid) against
-best-fit plain spiral (dashed) and refined spiral (dotted) for
-\(r=q=0.05\), \(\sigma=0.2\), \(T=1\).}
-
-\end{figure}%
-
-\subsection{Collocation}\label{sec-collocation}
-
-The three parameters \((\kappa_1,\kappa_2,\eta)\) are fixed without any
-boundary fitting: we drive the value-matching residual
-Eq.~\ref{eq-volterra} of the spiral boundary itself to zero at three
-fractional times to maturity \((\tau_1,\tau_2,\tau_3)=(T/4,T/2,3T/4)\),
-by bounded least squares (multi-start L-BFGS-B, box
-\(10^{-3}\le\kappa_i\le60\), \(0\le\eta\le2.5\)). The residual
-evaluations reuse the exact EEP machinery of Eq.~\ref{eq-eep} with the
-spiral boundary inside the integral, so the collocation is an honest
-projection of the free-boundary equation onto the family --- no
-reference solve is involved at pricing time.
-
-\subsection{The pricing formula}\label{sec-formula}
-
-\begin{equation}\protect\phantomsection\label{eq-formula}{
-\boxed{
-V_A(S,\tau)
-=
-V_E(S,\tau)
-+
-\int_0^\tau
-\Big[
-qS e^{-qs}\Phi\big(\phi d_1(S,b(\tau-s),s)\big)
--rK e^{-rs}\Phi\big(\phi d_2(S,b(\tau-s),s)\big)
-\Big]ds
-}
-}\end{equation}
-
-with \(b(\cdot)\) given by Eq.~\ref{eq-spiral} at the collocated
-parameters (\(\phi=+1\) call; the put uses \(\Phi(-d_1),\Phi(-d_2)\)).
-This is the \textbf{Phase 15 spiral formula}: European Black--Scholes
-plus one one-dimensional integral over a fully explicit integrand. Its
-limits are correct by construction: \(q=0\) calls return the European
-price (the boundary is infinite, the premium vanishes); the boundary
-limits Eq.~\ref{eq-limits} hold at both ends of the maturity axis; and
-stationarity (Section~\ref{sec-eep}) insures the price against residual
-boundary error to first order.
+Consequently \textbf{all benchmarks use the converged Broadie--Detemple
+adjacent-averaged tree} (Broadie and Detemple 1996) as the oracle
+(\(N\in\{8000,12000\}\), mean; spread reported per row), with the solver
+demoted to one method under test. (Prices also remain sensitive at the
+\(10^{-2}\) level to environment-level floating-point differences, e.g.
+numpy SIMD paths --- one more reason the tree, not the solver, is the
+oracle.)
 
 \section{Numerical results}\label{sec-results}
 
-\subsection{Reduced grid (notebook)}\label{sec-reduced}
+\subsection{Benchmarks against the
+oracle}\label{benchmarks-against-the-oracle}
 
-On 18 configurations \(\times\) 3 spots (\(r,q\in\{0.03,0.05,0.07\}\),
-\(\sigma\in\{0.2,0.4\}\), \(T\in\{0.5,1,3\}\), \(S\in\{90,100,110\}\),
-calls and puts), errors against the reference solver:
+Reduced grid: 18 configurations \(\times\) 3 spots
+(\(S\in\{90,100,110\}\)). Extended grid: 90 configurations \(\times\) 5
+spots (\(S\in\{80,\ldots,120\}\), \(\sigma\in\{0.2,0.4,0.6\}\),
+\(T\in\{0.5,1,3\}\), five \((r,q)\) pairs, both kinds). Metrics against
+the oracle, labeled correctly:
 
-\begin{longtable}[]{@{}lll@{}}
-\caption{Reduced-grid benchmark vs the reference
-solver.}\label{tbl-reduced}\tabularnewline
+\begin{longtable}[]{@{}lllll@{}}
+\caption{Benchmark metrics against the converged tree
+oracle.}\label{tbl-bench}\tabularnewline
 \toprule\noalign{}
-Method & RMSE & MAE \\
+Grid & Method & RMSE & MAE (mean) & MaxAE \\
 \midrule\noalign{}
 \endfirsthead
 \toprule\noalign{}
-Method & RMSE & MAE \\
+Grid & Method & RMSE & MAE (mean) & MaxAE \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Spiral formula & \textbf{0.0066} & \textbf{0.039} \\
-Barone-Adesi--Whaley & 0.1645 & 0.437 \\
-CRR--Richardson & 0.0089 & 0.069 \\
+Reduced & spiral formula & \textbf{0.00066} & \textbf{0.00043} &
+\textbf{0.0028} \\
+Reduced & Barone-Adesi--Whaley & 0.161 & 0.096 & 0.427 \\
+Reduced & Volterra solver (\(n=300\)) & 0.0077 & 0.0039 & 0.031 \\
+Extended & spiral formula & \textbf{0.00147} & \textbf{0.00081} &
+\textbf{0.0078} \\
+Extended & Barone-Adesi--Whaley & 0.279 & 0.162 & 1.131 \\
+Extended & Volterra solver (\(n=300\)) & 0.0206 & 0.0070 & 0.301 \\
 \end{longtable}
 
-Figure~\ref{fig-spot-errors} shows the spot profile for the base case:
-the spiral error stays within a few \(10^{-3}\) across all moneynesses
-where BAW costs \(10^{-2}\)--\(10^{-1}\).
+The worst spiral case on the extended grid is
+\((r,q,\sigma,T)=(0.05,0.10,0.2,1)\) call at \(S=120\) (error
+\(-0.0078\)); the worst BAW errors concentrate in deep-ITM long-maturity
+puts, e.g. the \(T=3\), \(\sigma=0.2\), \(r=0.07\), \(q=0.03\) put at
+\(S=80\) identified by the review. Raw formula values are used
+throughout --- no clipping --- and deep-ITM raw values that sit slightly
+outside no-arbitrage bounds are visible in the CSVs as diagnostic
+information.
 
-\begin{figure}[tbp]
+\subsection{Structural identities}\label{sec-identities}
 
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{figures/f03_spot_errors.png}}
-
-}
-
-\caption{\label{fig-spot-errors}Absolute price error vs spot, base case
-\(r=q=0.05\), \(\sigma=0.2\), \(T=1\), against the reference solver.}
-
-\end{figure}%
-
-\subsection{Extended grid}\label{sec-extended}
-
-The extended run covers 90 configurations (\(r,q\) in
-\(\{(0.05,0.05),(0.07,0.03),(0.03,0.07),(0.10,0.05),(0.05,0.10)\}\),
-\(\sigma\in\{0.2,0.4,0.6\}\), \(T\in\{0.5,1,3\}\), both kinds) at five
-spots \(S\in\{80,\ldots,120\}\) --- 450 prices:
-
-\begin{longtable}[]{@{}lll@{}}
-\caption{Extended 90-configuration benchmark vs the reference
-solver.}\label{tbl-extended}\tabularnewline
-\toprule\noalign{}
-Method & RMSE & MAE \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-Method & RMSE & MAE \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-Spiral formula & \textbf{0.0160} & \textbf{0.186} \\
-Barone-Adesi--Whaley & 0.285 & 1.142 \\
-CRR--Richardson & 0.019 & 0.298 \\
-\end{longtable}
-
-The formula is the best method against the reference in both norms:
-roughly \(18\times\) better than BAW in RMSE and ahead of the
-extrapolated tree, while costing a bounded least-squares solve plus one
-quadrature --- closed-form-class speed
-(Figure~\ref{fig-benchmark-summary}). Errors concentrate in
-long-maturity high-volatility puts (\(T=3\), \(\sigma=0.6\)), where a
-single global boundary family is most stretched; Section~\ref{sec-scope}
-quantifies this.
-
-\begin{figure}[tbp]
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{figures/f04_benchmark_summary.png}}
-
-}
-
-\caption{\label{fig-benchmark-summary}RMSE/MAE against the reference
-solver on the reduced grid.}
-
-\end{figure}%
-
-\subsection{Structural identities of the formula}\label{sec-identities}
-
-Verified in the notebook: the \(q=0\) call returns the European price to
-machine precision; the put price is monotone decreasing and convex in
-\(S\); and at \(T=30\) the spiral put price is within \(0.59\)
-(\(2.6\%\)) of the perpetual limit \(22.532\) --- slow but monotone
-approach, consistent with the family's exact \(\tau\to\infty\) boundary
-limit.
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Time-unit invariance.} The same option priced in years and in
+  months (rates per month, \(\sigma/\sqrt{12}\), \(\hat\tau=12\) months)
+  agrees to \(4.5\times10^{-5}\).
+\item
+  \textbf{Off-ATM put--call duality.} \(P(90,100;0.07,0.03)\) versus the
+  swapped call \(C(100,90;0.03,0.07)\), each on its own solved boundary:
+  agreement to \(2.0\times10^{-3}\).
+\item
+  \textbf{Zero-dividend call.} Returns the European price to machine
+  precision.
+\end{itemize}
 
 \section{Scope and limitations}\label{sec-scope}
 
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Not a closed form.} We do not claim a closed-form American
-  price. Eq.~\ref{eq-formula} is a closed-form-class expression (one
-  bounded least-squares solve of three scalar equations, one smooth
-  one-dimensional integral); the true free boundary remains open problem
-  territory, and our own reference solver is a numerical scheme.
+  \textbf{No closed form for the true boundary is claimed.} The
+  constant-coefficient free-boundary problem remains open; this paper
+  delivers a collocation formula on an engineered family, validated
+  against a converged oracle. The honest one-line description: a
+  benchmark-validated collocation formula built on standard EEP
+  machinery and an invertible complex-phase reparameterization of
+  log-price.
 \item
-  \textbf{Accuracy envelope.} On the extended grid the worst errors
-  (\(\sim0.1\)--\(0.19\)) occur for long-maturity (\(T=3\)),
-  high-volatility, dividend-heavy configurations. The formula is
-  designed for \(T\lesssim 1\)--\(2\); beyond that, multipiece
-  compositions of the family (piecewise collocation) or the reference
-  solver are the appropriate tools.
+  \textbf{Solver sensitivity.} The Volterra solver is grid-sensitive in
+  hard regimes (Table~\ref{tbl-grid}) and carries a heavy flat-step
+  fraction near maturity; it is not the oracle anywhere in this
+  revision.
 \item
-  \textbf{Stationarity is a shield, not a license.} Boundary errors of
-  several percent can price to \(10^{-3}\) by stationarity, but a badly
-  collocated family can still misprice; the benchmark grid is the
-  operative guarantee.
+  \textbf{Raw formula values.} No clipping: approximate-boundary prices
+  can sit slightly outside no-arbitrage bounds; the deviations are
+  reported, and the upper bounds \(C_A\le S\), \(P_A\le K\) are not
+  enforced by the formula.
 \item
-  \textbf{Short-maturity coefficient.} We document the coefficient's
-  \(r-q\)-dependence as measured; the limiting constant(s) are not
-  resolved. The \(\eta\) parameter makes the formula insensitive to this
-  gap.
+  \textbf{Near-expiry fits.} The regime fits exclude flat fallback steps
+  and are only as reliable as the remaining point count (reported
+  alongside).
 \item
-  \textbf{Model scope.} Constant \(r,q,\sigma\); continuous dividends;
-  standard single-asset American calls/puts. American options under the
-  Phase 6 stochastic-correlation framework or with discrete dividends
-  are open extensions.
+  \textbf{Model scope.} Constant \(r,q,\sigma\), continuous dividends,
+  standard single-asset American calls/puts.
 \end{itemize}
 
 \section{Reproducibility}\label{sec-repro}
 
 All computations run in the existing \texttt{phase3-paper} conda
-environment (Python 3.12, numpy 2.5.1, scipy 1.18.0, matplotlib 3.11.1);
-no packages were installed. Fixed seed \texttt{20260902} is recorded
-although no Monte Carlo appears in the pipeline. Artifacts:
+environment (Python 3.12, numpy, scipy, matplotlib); no packages
+installed. Fixed seed \texttt{20260902}. Artifacts:
 
 \begin{itemize}
 \tightlist
 \item
-  \texttt{phase15\_american.py} --- exact machinery, reference solver,
-  spiral formula, and benchmarks (BAW, CRR--Richardson, PDE);
+  \texttt{phase15\_american.py} --- EEP machinery, regime-aware spiral
+  family, collocation, solver with diagnostics, BAW, tree oracle;
 \item
-  \texttt{tests/test\_phase15\_american.py} --- 14 unit tests, all green
-  (\texttt{python\ -m\ unittest\ tests.test\_phase15\_american});
+  \texttt{tests/test\_phase15\_american.py} --- 22 tests including the
+  review's requested coverage (put sign, off-ATM duality, regime
+  asymptotics, time-unit invariance, monotonicity through \(\tau=1\), no
+  hidden clipping, grid behavior);
 \item
   \texttt{notebooks/build\_phase15\_american\_spiral.py} → executed
-  \texttt{notebooks/phase15\_american\_spiral.ipynb} --- the
-  computational record behind every number in this paper (figures in
-  \texttt{phase15\_figures/}, tables in \texttt{phase15\_tables/},
-  including the extended benchmark CSV);
+  notebook --- the computational record behind every number above
+  (\texttt{phase15\_figures/}, \texttt{phase15\_tables/}, including the
+  extended oracle CSV);
 \item
-  \texttt{paper/phase15/} --- this manuscript, its executed notebook
-  copy, and tables.
+  \texttt{paper/phase15/} --- this manuscript.
 \end{itemize}
-
-The notebook executes top-to-bottom from a clean kernel in under one
-minute.
 
 \section*{References}\label{references}
 \addcontentsline{toc}{section}{References}
 
 \protect\phantomsection\label{refs}
 \begin{CSLReferences}{1}{1}
-\bibitem[\citeproctext]{ref-baroneadesiwhaley1987}
-Barone-Adesi, Giovanni, and Robert E. Whaley. 1987. {``Efficient
-Analytic Approximation of {A}merican Option Values.''} \emph{Journal of
-Finance} 42 (2): 301--20.
+\bibitem[\citeproctext]{ref-broadiedetemple1996}
+Broadie, Mark, and Jérôme Detemple. 1996. {``{A}merican Option
+Valuation: New Bounds, Approximations, and a Comparison of Existing
+Methods.''} \emph{Review of Financial Studies} 9 (4): 1211--50.
 
-\bibitem[\citeproctext]{ref-carrjarrowmyneni1992}
-Carr, Peter, Robert Jarrow, and Ravi Myneni. 1992. {``Alternative
-Characterizations of {A}merican Put Options.''} \emph{Mathematical
-Finance} 2 (2): 87--106.
+\bibitem[\citeproctext]{ref-chenzhu2010}
+Chen, Wen-Ting, and Song-Ping Zhu. 2010. {``Optimal Exercise Price of
+{A}merican Options Near Expiry.''} \emph{ANZIAM Journal} 51: 375--91.
+\url{https://doi.org/10.1017/S1446181110000052}.
 
 \bibitem[\citeproctext]{ref-phase4paper}
 Complex--Itô Random-Walk Research Project. 2026. \emph{Native Complex
 Geometric Brownian Motion: Itô Correction, Stochastic Rotation, and
 Noise-Dimension Geometry}.
 
+\bibitem[\citeproctext]{ref-evanskuskekeller2001}
+Evans, Jonathan D., Randy Kuske, and Joseph B. Keller. 2001.
+{``{A}merican Options on Assets with Dividends Near Expiry.''}
+\emph{Mathematical Finance} 11 (2): 219--37.
+\url{https://doi.org/10.1111/1467-9965.02008}.
+
 \bibitem[\citeproctext]{ref-jacka1991}
 Jacka, Saul D. 1991. {``Optimal Stopping and the {A}merican Put
 Price.''} \emph{Annals of Applied Probability} 1 (1): 1--21.
 
-\bibitem[\citeproctext]{ref-ju1998}
-Ju, Nengjiu. 1998. {``Pricing an {A}merican Option by Approximating Its
-Early Exercise Boundary as a Multipiece Exponential Function.''}
-\emph{Review of Financial Studies} 11 (3): 627--46.
-
 \bibitem[\citeproctext]{ref-kim1990}
 Kim, In Joon. 1990. {``The Analytic Valuation of American Options.''}
 \emph{Review of Financial Studies} 3 (4): 547--72.
-
-\bibitem[\citeproctext]{ref-macmillan1986}
-MacMillan, Lawrence W. 1986. {``An Analytical Approximation for the
-{A}merican Put Price.''} \emph{Advances in Futures and Options Research}
-1: 119--39.
 
 \bibitem[\citeproctext]{ref-merton1973}
 Merton, Robert C. 1973. {``Theory of Rational Option Pricing.''}

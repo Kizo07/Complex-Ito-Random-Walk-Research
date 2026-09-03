@@ -1,21 +1,32 @@
 """Phase 15 — American options under BSM via one-driver complex GBM geometry.
 
+Revised 2026-09-03 after external mathematical review
+(phase15-mathematical-review.md); see PHASE_15_SYNTHESIS.md for the
+revision record.
+
 Exact machinery (Black–Scholes–Merton, continuous dividend yield q >= 0):
 
 * European prices (dividend-adjusted Black–Scholes).
 * Perpetual American prices (McDonald–Schroder closed form).
 * Early-exercise-premium (EEP) representation of Kim (1990) /
-  Jacka (1991) / Carr–Jarrow–Myneni (1992), written against a generic
-  exercise boundary given as a function of time to maturity.
+  Jacka (1991) / Carr–Jarrow–Myneni (1992), written separately for calls
+  and puts (the unified single-line form needs an outer factor phi for
+  puts; the split implementation is authoritative).
 * Nonlinear Volterra integral equation for the exercise boundary and a
-  reference fixed-point/Newton solver.
-* Phase-affine boundary family with closed-form perpetual EEP (drifted
-  Brownian resolvent) — the building block behind Ju (1998).
-* Logarithmic-spiral boundary family anchored exactly at the maturity
-  boundary and the perpetual boundary (the Phase 15 ansatz).
-* Benchmarks: Barone-Adesi–Whaley (1987) quadratic approximation,
-  Ju–Zhong multipiece quadratic approximation, CRR binomial tree with
-  Richardson extrapolation, implicit log-space finite differences (PSOR).
+  causal sequential level-set solver with explicit diagnostics
+  (SOLVER_DIAGNOSTICS); long-maturity values are grid-sensitive and the
+  solver is NOT the benchmark oracle.
+* Regime-aware logarithmic-spiral boundary family anchored exactly at the
+  maturity boundary and the perpetual boundary (the Phase 15 ansatz):
+  smooth dimensionless short-expiry shapes after Evans–Kuske–Keller (2001)
+  and Chen–Zhu (2010), with collocation as a bounded least-squares
+  projection (residuals reported, not assumed zero).
+* american_from_boundary returns the RAW European + EEP value (no hidden
+  clipping).
+* Benchmarks/oracles: Barone-Adesi–Whaley (1987) quadratic approximation,
+  CRR binomial tree, Broadie–Detemple adjacent-averaged tree (oracle),
+  Richardson extrapolation (flagged as oscillatory), implicit log-space
+  finite differences (PSOR).
 
 All formulas use the convention b(tau) = boundary as a function of time to
 maturity tau = T - t, with b(0+) the boundary at maturity.
@@ -152,14 +163,20 @@ def eep(S, tau, boundary, K, r, q, sigma, kind, n_quad=64):
 
 
 def american_from_boundary(S, tau, boundary, K, r, q, sigma, kind, n_quad=64):
-    """European + EEP, clipped by intrinsic + European floor."""
+    """European + EEP on the given boundary — the RAW formula.
+
+    No clipping and no projection are applied: for an approximate boundary
+    the raw value can sit slightly outside no-arbitrage bounds, and that
+    deviation is diagnostic information, not something to hide.  (Revision
+    R7 of the Phase 15 review: the earlier implementation silently
+    returned max(price, european, intrinsic), which is not the formula
+    stated in the manuscript and can materially change deep-ITM values.)
+    """
     if tau <= 0.0:
         return max(S - K, 0.0) if kind == "call" else max(K - S, 0.0)
     euro = bs_european(S, K, r, q, sigma, tau, kind)
     prem = eep(S, tau, boundary, K, r, q, sigma, kind, n_quad=n_quad)
-    price = euro + prem
-    intrinsic = max(S - K, 0.0) if kind == "call" else max(K - S, 0.0)
-    return max(price, euro, intrinsic)
+    return euro + prem
 
 
 # ---------------------------------------------------------------------------
@@ -254,6 +271,9 @@ def boundary_residual_grid(i, taus, bvals, K, r, q, sigma, kind, n_quad=48):
     return (K - bvals[i]) - euro - prem
 
 
+SOLVER_DIAGNOSTICS = {"fallbacks": 0}
+
+
 def solve_boundary(K, r, q, sigma, T, kind, n_grid=200, n_quad=48,
                    delta=1e-6, cluster=1.5, verbose=False):
     """Solve the boundary integral equation sequentially on tau in (0, T].
@@ -262,14 +282,27 @@ def solve_boundary(K, r, q, sigma, T, kind, n_grid=200, n_quad=48,
     boundary only at arguments < tau_i, so points are solved in increasing
     tau order against the already-solved history.
 
-    Residual structure: for the call, F(y) < 0 for y < b(tau) and
-    F(y) = 0 for all y >= b(tau) (deep ITM calls exercise immediately, so
-    the EEP representation reproduces intrinsic value identically above the
-    boundary).  The boundary is therefore the point where F *reaches* zero
-    from below, not a sign change.  We solve F(y) = -delta*K (a genuine
-    crossing) and correct linearly with the local derivative; delta -> 0
-    recovers the boundary (the price itself is stationary to first order in
-    boundary errors, so residual error is doubly benign).
+    Exact residual structure (both kinds): with the TRUE boundary, the
+    value-matching residual is identically zero on the exercise side —
+    F(y;τ) = 0 for all y ≥ b(τ) (call) and for all y ≤ b(τ) (put) —
+    because immediate exercise there makes the EEP representation
+    reproduce intrinsic value exactly; it is strictly one-signed on the
+    continuation side.  The boundary is therefore where F *reaches* zero,
+    not a sign change.  We locate F(y) = -δK (a genuine level crossing on
+    the continuation side) and correct linearly with the local slope.
+
+    Caveats, stated plainly (review R5):
+    - points where no bracketed level crossing is found take a FLAT STEP
+      (copy the previous value); each occurrence increments
+      SOLVER_DIAGNOSTICS["fallbacks"].  Flat steps are a known failure
+      mode near maturity where the equation loses traction (∂F/∂y → 0);
+      they corrupt asymptotic fits made from these solutions.
+    - monotonicity toward the perpetual limit is enforced by clipping,
+      so monotone output is a solver property, not an independent check.
+    - the sequential scheme amplifies small numerical differences over
+      hundreds of steps; long-maturity values are grid-sensitive (see the
+      convergence tables).  Converged tree/PDE prices are the benchmark
+      oracle, not this solver.
 
     Returns (taus, b_values) including tau = 0 with the maturity boundary.
     """
@@ -287,6 +320,7 @@ def solve_boundary(K, r, q, sigma, T, kind, n_grid=200, n_quad=48,
     xs_gl, ws_gl = np.polynomial.legendre.leggauss(n_quad)
     _, b_inf = perpetual_american(K, K, r, q, sigma, kind)
     n_scan = 600
+    SOLVER_DIAGNOSTICS["fallbacks"] = 0
 
     def resid_at(y, tau_i, s_nodes, B_nodes, w_factor):
         d1, d2 = d12_boundary(y, B_nodes, s_nodes, r, q, sigma)
@@ -335,35 +369,38 @@ def solve_boundary(K, r, q, sigma, T, kind, n_grid=200, n_quad=48,
             scan = prev * np.exp(np.linspace(0.0, w, n_scan))
         F_scan = boundary_residual_vec(scan, tau_i, B_nodes, s_nodes,
                                        w_factor, K, r, q, sigma, kind)
-        # require the put residual to have risen into its positive hump
-        # first (the degenerate endpoint F(0+) = 0 is noise-contaminated)
-        if kind == "put":
-            feas = np.arange(len(scan)) > int(np.argmax(F_scan))
-            idx_feas = np.where(feas)[0]
-            if len(idx_feas) == 0:
-                grid_b[i] = prev
-                continue
-            F_sub = F_scan[idx_feas]
-            scan_sub = scan[idx_feas]
-        else:
-            F_sub = F_scan
-            scan_sub = scan
+        # Level crossing on the continuation side.  Exact residual
+        # structure: F ≡ 0 on the exercise side of the boundary and
+        # one-signed on the continuation side; the scan is ascending, so
+        # for the put the plateau sits at the LOW-y end and for the call
+        # at the HIGH-y end.  (Review R7: the earlier put logic keyed on a
+        # "positive hump" that is not an exact structural fact — it is
+        # generated by numerical history error — and has been removed.)
+        on_level = F_scan > -delta * K
         if kind == "call":
-            cross = np.where(F_sub > -delta * K)[0]
+            idx = np.where(on_level)[0]
+            if len(idx) == 0 or int(idx[0]) == 0:
+                grid_b[i] = prev
+                SOLVER_DIAGNOSTICS["fallbacks"] += 1
+                continue
+            j = int(idx[0])
+            lo, hi = scan[j - 1], scan[j]
         else:
-            cross = np.where(F_sub < -delta * K)[0]
-        if len(cross) == 0:
-            grid_b[i] = prev
-            continue
-        j = int(cross[0])
-        if j == 0:
-            # already on the level set at the previous point: flat step
-            grid_b[i] = prev
-            continue
-        lo = scan_sub[j - 1]
-        hi = scan_sub[j]
+            idx = np.where(on_level)[0]
+            if len(idx) == 0:
+                grid_b[i] = prev
+                SOLVER_DIAGNOSTICS["fallbacks"] += 1
+                continue
+            j = int(idx[-1])
+            if j >= len(scan) - 1:
+                # the previous point itself sits on the plateau side
+                grid_b[i] = prev
+                SOLVER_DIAGNOSTICS["fallbacks"] += 1
+                continue
+            lo, hi = scan[j], scan[j + 1]
         if H(lo) * H(hi) > 0.0:
             grid_b[i] = prev
+            SOLVER_DIAGNOSTICS["fallbacks"] += 1
             continue
         y_delta = optimize.brentq(H, lo, hi, xtol=1e-14, rtol=8.9e-16)
         # linear correction from level -delta*K back to zero
@@ -454,61 +491,96 @@ def make_spiral(K, r, q, sigma, kind, kappa):
 
 
 # ---------------------------------------------------------------------------
-# Refined spiral family: universal short-maturity asymptotics included
+# Refined spiral family (revised after mathematical review R2/R3):
+# dimensionless, smooth on (0, inf), regime-aware short-maturity bases.
+#
+# Short-expiry asymptotics of the exercise boundary are REGIME-DEPENDENT
+# (Evans–Kuske–Keller 2001; Chen–Zhu 2010, eqs. (3.15)–(3.22)):
+#
+#   put, q < r:  K - b_p(τ) ~ K σ √(τ|ln τ|)
+#   put, q = r:  K - b_p(τ) ~ K σ √(2τ|ln τ|)
+#   put, q > r:  b_p(τ) = (r/q)K [1 - ξ₁ σ √(2τ) + O(τ)], ξ₁ ≈ 0.4517
+#
+# Calls inherit the mirrored regimes with r and q interchanged.  The
+# family therefore carries BOTH short-maturity shapes as bases — the
+# logarithmic one (critical/low-dividend regimes) and the pure square
+# root (high-dividend regime) — with nonnegative magnitudes fixed by
+# collocation.  The earlier |ln max(τ,ε)| implementation had an
+# artificial infinite-slope cusp at τ = 1 (an arbitrary, dimensionful
+# point) and produced nonmonotone boundaries; it is removed.
 # ---------------------------------------------------------------------------
 
-ASYM_EPS = 1e-14
+
+def spiral_shape_log(tau, tau_hat=1.0):
+    """Smooth dimensionless log-regime shape.
+
+    ψ_log(τ; τ̂) = √(2τ ln(1 + τ̂/τ)).
+
+    As τ→0: ψ ~ √(2τ|ln(τ/τ̂)|), matching the logarithmic short-expiry
+    law up to the declared scale τ̂.  τ̂ must be given in the same time
+    unit as τ (changing units rescales both); ψ is smooth on (0,∞),
+    strictly positive, and has no cusp.
+    """
+    return math.sqrt(2.0 * tau * math.log1p(tau_hat / tau))
 
 
-def spiral_refined_boundary(tau, b0, b_inf, sigma, eta, k1, k2):
+def spiral_shape_root(tau):
+    """Pure square-root shape ψ_root(τ) = √(2τ) of the q>r put regime."""
+    return math.sqrt(2.0 * tau)
+
+
+def spiral_refined_boundary(tau, b0, b_inf, sigma, eta_log, k1, k2,
+                            tau_hat=1.0, eta_root=0.0):
     """Refined spiral boundary, exact at both asymptotic limits.
 
     ln b(τ) = ln b_∞ + ln(b_0/b_∞) e^{-k1 τ}
-              + η σ √(2τ |ln max(τ,ε)|) e^{-k2 τ}
+              + σ e^{-k2 τ} [η_log ψ_log(τ; τ̂) + η_root ψ_root(τ)]
 
-    The square-root term is the short-maturity law: the shape
-    √(τ|ln τ|) (infinite slope at maturity) is universal; its effective
-    coefficient depends on r−q at accessible maturities and is absorbed
-    by η (η = +1 for calls, −1 for puts; the magnitude is fixed by
-    collocation).  The exponential cutoff restores the perpetual limit.
-    k1, k2 are fixed by collocation (see spiral_collocation).
+    η_log and η_root are SIGNED coefficients (positive for calls,
+    negative for puts) whose magnitudes are fixed by collocation;
+    write them as s_φ·(h_log, h_root) with h_* ≥ 0.  τ̂ (tau_hat) is the
+    declared time scale of the logarithm and must be supplied in the
+    same unit as τ (default 1.0 = one year when τ is in years).
     """
     tau = float(tau)
     if tau <= 0.0:
         return b0
-    t_safe = max(tau, ASYM_EPS)
     ln_b = (math.log(b_inf) + math.log(b0 / b_inf) * math.exp(-k1 * tau)
-            + eta * sigma * math.sqrt(2.0 * tau * abs(math.log(t_safe)))
-            * math.exp(-k2 * tau))
+            + sigma * math.exp(-k2 * tau)
+            * (eta_log * spiral_shape_log(tau, tau_hat)
+               + eta_root * spiral_shape_root(tau)))
     return math.exp(ln_b)
 
 
 def spiral_collocation(K, r, q, sigma, T, kind, n_quad=48,
-                       nodes=(0.25, 0.5, 0.75)):
-    """Fix (k1, k2, eta) of the refined spiral without any boundary fitting.
+                       nodes=(0.2, 0.4, 0.6, 0.8), tau_hat=1.0):
+    """Fix (k1, k2, h_log, h_root) by bounded least-squares MINIMIZATION of
+    the value-matching residuals at the collocation nodes.
 
-    Collocation: the value-matching residual of the boundary integral
-    equation is driven to zero (bounded least squares, multi-start) at
-    fractional times to maturity.  eta rescales the universal
-    short-maturity asymptotic term (eta = 1 is the leading law).
-
-    Returns (k1, k2, eta, info).
+    This is a projection, not an exact solve: with box constraints the
+    residuals are generally not driven to zero.  Returns
+    (k1, k2, eta_log_signed, eta_root_signed, info) with info recording
+    the objective, the residuals at the solution, the optimizer status,
+    and the multi-start sensitivity (spread of objectives).
     """
     b0 = boundary_at_maturity(K, r, q, kind)
     _, b_inf = perpetual_american(K, K, r, q, sigma, kind)
-    eta0 = 1.0 if kind == "call" else -1.0
+    s_phi = 1.0 if kind == "call" else -1.0
 
-    def bd(tau, k1, k2, eta):
-        return spiral_refined_boundary(tau, b0, b_inf, sigma, eta0 * eta,
-                                       k1, k2)
+    def bd(tau, k1, k2, h_log, h_root):
+        return spiral_refined_boundary(tau, b0, b_inf, sigma,
+                                       s_phi * h_log, k1, k2,
+                                       tau_hat=tau_hat,
+                                       eta_root=s_phi * h_root)
 
     def residuals(params):
-        k1, k2, eta = params
+        k1, k2, h_log, h_root = params
         out = []
         for f in nodes:
             tc = f * T
-            y = bd(tc, k1, k2, eta)
-            bdl = lambda tau, k1=k1, k2=k2, eta=eta: bd(tau, k1, k2, eta)
+            y = bd(tc, k1, k2, h_log, h_root)
+            bdl = lambda tau, k1=k1, k2=k2, h_log=h_log, h_root=h_root: \
+                bd(tau, k1, k2, h_log, h_root)
             out.append(boundary_equation_residual(y, tc, bdl, K, r, q,
                                                   sigma, kind, n_quad))
         return np.array(out)
@@ -517,42 +589,54 @@ def spiral_collocation(K, r, q, sigma, T, kind, n_quad=48,
         v = residuals(params)
         return float(v @ v)
 
-    best = None
-    for x0 in [(0.8, 1.1, 1.0), (0.5, 2.0, 0.6), (1.2, 0.8, 1.3),
-               (0.3, 1.5, 1.8)]:
-        res = optimize.minimize(obj, x0=x0,
-                                bounds=[(1e-3, 60.0), (1e-3, 60.0),
-                                        (0.0, 2.5)],
+    bounds = [(1e-3, 60.0), (1e-3, 60.0), (0.0, 2.5), (0.0, 2.5)]
+    starts = [(0.8, 1.1, 1.0, 0.0), (0.5, 2.0, 0.6, 0.3),
+              (1.2, 0.8, 0.4, 0.8), (0.3, 1.5, 0.9, 0.2)]
+    results = []
+    for x0 in starts:
+        res = optimize.minimize(obj, x0=x0, bounds=bounds,
                                 method="L-BFGS-B")
-        if best is None or res.fun < best[1]:
-            best = (res.x, res.fun)
-    k1, k2, eta = best[0]
-    return float(k1), float(k2), float(eta), {"objective": best[1]}
+        results.append(res)
+    best = min(results, key=lambda r_: r_.fun)
+    k1, k2, h_log, h_root = best.x
+    info = {
+        "objective": float(best.fun),
+        "residuals": residuals(list(best.x)).tolist(),
+        "optimizer_status": int(best.status),
+        "start_sensitivity": float(max(r_.fun for r_ in results)
+                                   - min(r_.fun for r_ in results)),
+        "tau_hat": tau_hat,
+    }
+    return (float(k1), float(k2), s_phi * float(h_log),
+            s_phi * float(h_root), info)
 
 
-def american_spiral(S, K, r, q, sigma, T, kind, n_quad=64, params=None):
-    """Phase 15 spiral pricing formula.
+def american_spiral(S, K, r, q, sigma, T, kind, n_quad=64, params=None,
+                    tau_hat=1.0):
+    """Phase 15 spiral pricing formula (raw European + EEP, no clipping).
 
-    American price = European + early-exercise premium evaluated on the
-    collocated refined-spiral boundary.  Returns (price, k1, k2, eta).
+    Returns (price, k1, k2, eta_log_signed, eta_root_signed).
     """
     if T <= 0.0:
         return (max(S - K, 0.0) if kind == "call" else max(K - S, 0.0),
-                None, None, None)
+                None, None, None, None)
     if kind == "call" and q <= 0.0:
-        return bs_european(S, K, r, q, sigma, T, kind), None, None, None
+        return (bs_european(S, K, r, q, sigma, T, kind),
+                None, None, None, None)
     if params is None:
-        k1, k2, eta, _ = spiral_collocation(K, r, q, sigma, T, kind)
+        k1, k2, eta_log, eta_root, _ = spiral_collocation(
+            K, r, q, sigma, T, kind, tau_hat=tau_hat)
     else:
-        k1, k2, eta = params
+        k1, k2, eta_log, eta_root = params
     b0 = boundary_at_maturity(K, r, q, kind)
     _, b_inf = perpetual_american(K, K, r, q, sigma, kind)
-    eta0 = 1.0 if kind == "call" else -1.0
     bd = lambda tau: spiral_refined_boundary(tau, b0, b_inf, sigma,
-                                             eta0 * eta, k1, k2)
+                                             eta_log, k1, k2,
+                                             tau_hat=tau_hat,
+                                             eta_root=eta_root)
     price = american_from_boundary(S, T, bd, K, r, q, sigma, kind,
                                    n_quad=n_quad)
-    return price, k1, k2, eta
+    return price, k1, k2, eta_log, eta_root
 
 
 # ---------------------------------------------------------------------------
@@ -640,13 +724,53 @@ def crr_american(S, K, r, q, sigma, tau, kind, N):
 
 
 def crr_richardson(S, K, r, q, sigma, tau, kind, Ns=(1000, 2000, 4000)):
-    """Second-order Richardson extrapolation in 1/N on CRR prices."""
+    """Second-order Richardson extrapolation in 1/N on CRR prices.
+
+    NOTE (review R5): Richardson extrapolation on the raw American CRR
+    price is itself oscillatory in the sawtooth regime; for benchmark
+    oracles use crr_american_adjacent_avg at several large N instead.
+    """
     prices = [crr_american(S, K, r, q, sigma, tau, kind, N) for N in Ns]
     hs = [1.0 / N for N in Ns]
     # fit price = a + b h + c h^2, report a
     A = np.vstack([np.ones(3), hs, np.array(hs) ** 2]).T
     coef = np.linalg.solve(A, prices)
     return float(coef[0])
+
+
+def crr_american_adjacent_avg(S, K, r, q, sigma, tau, kind, N):
+    """CRR American tree with Broadie–Detemple adjacent averaging.
+
+    Rolls the tree back to the final two nodes and averages them instead
+    of taking one more exercise-aware step; this strongly damps the
+    odd-even sawtooth and is the tree oracle used for the revised
+    benchmarks.  Converged values are stable across N in the thousands.
+    """
+    dt = tau / N
+    u = math.exp(sigma * math.sqrt(dt))
+    d = 1.0 / u
+    p = (math.exp((r - q) * dt) - d) / (u - d)
+    disc = math.exp(-r * dt)
+    idx = np.arange(N + 1)
+    ST = S * u ** (N - idx) * d ** idx
+    if kind == "call":
+        V = np.maximum(ST - K, 0.0)
+    else:
+        V = np.maximum(K - ST, 0.0)
+    for _ in range(N, 1, -1):
+        V_hold = disc * (p * V[:-1] + (1.0 - p) * V[1:])
+        ST = ST[:-1] / u
+        intrinsic = (ST - K) if kind == "call" else (K - ST)
+        V = np.maximum(V_hold, intrinsic)
+    return 0.5 * float(V[0] + V[1])
+
+
+def tree_oracle(S, K, r, q, sigma, tau, kind, Ns=(8000, 10000, 12000)):
+    """Benchmark oracle: mean of adjacent-averaged CRR prices over Ns,
+    with the spread reported as a convergence diagnostic."""
+    prices = [crr_american_adjacent_avg(S, K, r, q, sigma, tau, kind, N)
+              for N in Ns]
+    return float(np.mean(prices)), float(np.max(prices) - np.min(prices))
 
 
 # ---------------------------------------------------------------------------
