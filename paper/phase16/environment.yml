@@ -1,0 +1,24 @@
+name: phase3-paper
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - numpy
+  - scipy
+  - pandas
+  - matplotlib
+  - seaborn
+  - sympy
+  - plotly
+  - python-kaleido
+  - jupyter
+  - jupyterlab
+  - ipykernel
+  - nbformat
+  - nbclient
+  - nbconvert
+  - jupyter-cache
+  - pip
+  - pip:
+      - jupyterlab-quarto
+

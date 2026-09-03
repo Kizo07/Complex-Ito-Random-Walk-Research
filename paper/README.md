@@ -163,3 +163,25 @@ conda run -n phase3-paper jupyter nbconvert --to notebook --execute \
   notebooks/phase15_american_spiral.ipynb
 quarto render paper/phase15
 ```
+
+## Phase 16
+
+**Toward Closed-Form American Option Prices: Phase-Affine Boundaries and
+the Occupation Resolvent**
+
+- manuscript: [`phase16/index.qmd`](phase16/index.qmd)
+- discovery notebook:
+  [`phase16/notebooks/phase16_discovery.ipynb`](phase16/notebooks/phase16_discovery.ipynb)
+- tables: [`phase16/tables/`](phase16/tables/)
+- PDF:
+  [`phase16/output/phase16-toward-closed-form-american.pdf`](phase16/output/phase16-toward-closed-form-american.pdf)
+
+Render from the repository root:
+
+```bash
+conda run -n phase3-paper python notebooks/build_phase16_closedform.py
+conda run -n phase3-paper jupyter nbconvert --to notebook --execute \
+  --inplace --ExecutePreprocessor.timeout=520 \
+  notebooks/phase16_closedform.ipynb
+quarto render paper/phase16
+```
