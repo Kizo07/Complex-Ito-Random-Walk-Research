@@ -1,5 +1,5 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-![Tests](https://img.shields.io/badge/tests-206%2F206-brightgreen)
+![Tests](https://img.shields.io/badge/tests-218%2F218-brightgreen)
 ![Phases](https://img.shields.io/badge/phases-13%20complete-blue)
 ![Reproducibility](https://img.shields.io/badge/seed-20260821%20%7C%2020260902-informational)
 
@@ -275,6 +275,30 @@ yield $q$?
 [`phase15_american.py`](phase15_american.py) ·
 [paper/phase15](paper/phase15/index.qmd)
 
+## Phase 16 — Toward closed-form American prices
+
+**Question.** Remove the last numerical integral from the Phase 15
+American pricing formula.
+
+**Findings.**
+- The discounted occupation integral of drifted Brownian motion,
+  $J(\tau;a,m,\lambda)=\int_0^\tau e^{-\lambda s}\Phi((a+ms)/\sqrt s)ds$,
+  has a closed form (drift-diffusion resolvent + finite-horizon tail);
+  validated to machine precision ($4.9\times10^{-14}$ worst on 60
+  randomized trials).
+- Multipiece phase-affine boundaries with sequential value-matching
+  collocation and perpetual pinning give American prices as finite sums
+  of $\Phi$-evaluations: no numerical integration anywhere
+  (~0.07 s per option at $m=10$).
+- Extended grid: PPA RMSE $0.016$ vs BAW $0.285$; the boundary's
+  approach to the perpetual limit is shown to be non-exponential
+  ($r=q$ degeneracy of the linearized memory kernel), which justifies
+  pinning over decay extrapolation.
+
+**Documents.** [`PHASE_16_SYNTHESIS.md`](PHASE_16_SYNTHESIS.md) ·
+[`phase16_closedform.py`](phase16_closedform.py) ·
+[paper/phase16](paper/phase16/index.qmd)
+
 ---
 
 ## Technical papers
@@ -294,17 +318,18 @@ Quarto manuscripts, rendered HTML + PDF under each `output/` directory:
 | Lévy-Powered Bounded Factors | [`paper/phase11`](paper/phase11/index.qmd) |
 | The Economics of De-Peg | [`paper/phase12`](paper/phase12/index.qmd) |
 | American Calls and Puts under BSM from One-Driver Complex GBM | [`paper/phase15`](paper/phase15/index.qmd) |
+| Toward Closed-Form American Option Prices: Phase-Affine Boundaries and the Occupation Resolvent | [`paper/phase16`](paper/phase16/index.qmd) |
 
 ## Verification and reproducibility
 
 ```bash
 conda activate phase3-paper            # Python 3.12, numpy/scipy/matplotlib
-python -m unittest discover -s tests   # 206 tests
+python -m unittest discover -s tests   # 218 tests
 quarto render paper/phaseN             # any manuscript, N in {3,4,6..12}
 ```
 
-- Full suite green on 2026-08-21 (182 s) and 2026-09-03 (206 tests,
-  199 s; Phase 15).
+- Full suite green on 2026-08-21 (182 s), 2026-09-03 (206 tests,
+  199 s; Phase 15), and 2026-09-03 (218 tests; Phase 16).
 - Notebooks executed from clean kernels, seed `20260821`; Monte Carlo
   standard errors reported wherever simulation appears.
 - Numerical convergence checked across at least two grid/time-step sizes.
